@@ -1,1 +1,536 @@
-
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Book a Court</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
+authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
+storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="PASTE_SITE_KEY_HERE"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--disabled:#64748B;--brand-l:#9DBBF5;--link:#7FA7F0;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#15336B;--sel-tx:#FFFFFF;--sel-bd:#3B5CA0;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#232C3B;--past-tx:#7E8CA0;--past-bd:#333F52;--input-bg:#0E1626;--input-line:#2E3B52;--input-focus:#3B5CA0;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--btn-dis-bg:#232E42;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+*{box-sizing:border-box;margin:0;padding:0}
+body,html{max-width:100%;overflow-x:hidden}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 110px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}
+.brand .eyebrow{font-size:11px;letter-spacing:.18em;font-weight:700;color:var(--muted);text-transform:uppercase}
+.brand h1{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1}
+.subline{color:var(--muted);font-size:14px;margin:10px 2px 0}
+.hero-wrap{position:relative;width:100%;height:230px;border-radius:var(--radius);overflow:hidden;margin-top:16px;box-shadow:var(--shadow);background:var(--navy-d)}
+.hero-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease}
+.hero-wrap img.active{opacity:1}
+.hero-dots{position:absolute;bottom:12px;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:2}
+.hero-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5)}
+.hero-dots span.on{background:#fff}
+.grid-layout{display:grid;grid-template-columns:300px 1fr 320px;gap:18px;margin-top:18px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.card h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px}
+.card h3.sm{font-size:14px;margin-bottom:12px}
+.cal-nav{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.cal-nav .today{flex:1}
+.btn-ghost{border:1px solid var(--line);background:var(--elev);border-radius:10px;padding:9px 12px;font:inherit;font-weight:600;cursor:pointer;color:var(--text)}
+.btn-ghost:hover{border-color:var(--brand-l)}
+.btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+.cal-month{text-align:center;font-weight:700;color:var(--text);margin-bottom:8px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-grid .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0}
+.cal-day{position:relative;aspect-ratio:1;display:grid;place-items:center;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--text)}
+.cal-day:hover:not(.disabled):not(.active){background:var(--open-bg)}
+.cal-day.disabled{color:var(--disabled);cursor:not-allowed}
+.cal-day.active{background:var(--navy);color:#fff}
+.cal-day.has-cart::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--green)}
+.cal-day.active.has-cart::after{background:#fff}
+.cal-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+.cal-note strong{color:var(--text)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.legend .item{display:flex;gap:10px;align-items:flex-start}
+.legend .sw{width:22px;height:22px;border-radius:6px;flex:none;margin-top:1px}
+.legend .lab{font-size:13px;font-weight:700}
+.legend .sub{font-size:11px;color:var(--muted)}
+.info-bar{background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:500;margin-bottom:14px}
+.table-scroll{overflow-x:auto}
+table.slots{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}
+table.slots thead th{font-size:13px;font-weight:700;color:var(--text);padding:10px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--card);z-index:2}
+table.slots thead th:first-child{text-align:left;left:0;z-index:3}
+table.slots thead th:not(:first-child){min-width:104px}
+table.slots td.cell{border-bottom:1px solid var(--line);padding:6px;min-width:104px}
+table.slots .time-cell{font-size:13px;font-weight:700;color:var(--text);padding:0 10px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;left:0;background:var(--card);z-index:2;width:80px}
+.cell-inner{border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700;white-space:nowrap}
+.cell-open{background:var(--open-bg);color:var(--open-tx);cursor:pointer;box-shadow:inset 0 0 0 1px var(--open-bd)}
+.cell-open:hover{outline:2px solid var(--green);outline-offset:-2px}
+.cell-selected{background:var(--sel-bg);color:var(--sel-tx);cursor:pointer;box-shadow:inset 0 0 0 1.5px var(--sel-bd)}
+.cell-booked{background:var(--book-bg);color:var(--book-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--book-bd)}
+.cell-pending{background:var(--pend-bg);color:var(--pend-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--pend-bd)}
+.cell-past{background:var(--past-bg);color:var(--past-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--past-bd)}
+.summary{position:sticky;top:18px}
+.sum-empty{color:var(--muted);font-size:14px}
+.sum-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:340px;overflow-y:auto}
+.sum-date{font-size:12px;font-weight:800;color:var(--text);margin:10px 0 2px}
+.sum-date:first-child{margin-top:0}
+.sum-item{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.sum-item .meta{display:flex;flex-direction:column}
+.sum-item .price{font-weight:700;color:var(--text);white-space:nowrap}
+.sum-item .x{color:var(--muted);cursor:pointer;font-weight:700}
+.sum-total{display:flex;justify-content:space-between;align-items:center;margin:14px 0}
+.sum-total .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.sum-total .tot-wrap{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+.sum-total .orig{font-size:13px;font-weight:700;color:var(--muted);text-decoration:line-through}
+.voucher{margin:-4px 0 14px}
+.voucher-in{display:flex;gap:8px}
+.voucher-in input{flex:1;min-width:0;padding:11px 12px;border:1px solid var(--input-line);border-radius:10px;font:inherit;text-transform:uppercase;background:var(--input-bg);color:var(--text)}
+.voucher-in input:focus{outline:2px solid var(--input-focus);border-color:var(--input-focus)}
+.btn-apply{flex-shrink:0;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:0 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+.btn-apply:hover{background:var(--navy-d)}
+.voucher-msg{font-size:12.5px;font-weight:600;margin-top:8px;min-height:16px}
+.sum-total .val{font-size:26px;font-weight:800;color:var(--text)}
+.btn{width:100%;background:var(--green);color:#fff;border:1px solid var(--btn-bd);padding:15px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:background .15s ease}
+.btn:hover{background:var(--green-d)}
+.btn:disabled{background:var(--btn-dis-bg);color:var(--disabled);cursor:not-allowed}
+.btn-navy{background:var(--navy)}
+.btn-navy:hover{background:var(--navy-d)}
+.sum-note{font-size:12px;color:var(--muted);margin-top:10px}
+.footer{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);text-align:center}
+.footer-addr{display:flex;justify-content:center;align-items:center;margin-bottom:8px}
+.footer-addr a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13.5px;font-weight:600;text-decoration:none}
+.footer-addr a:hover{color:var(--brand-l);text-decoration:underline}
+.footer-addr a svg{width:15px;height:15px;flex:none}
+.footer-social{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 4px}
+.footer-social a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13.5px;font-weight:600;text-decoration:none}
+.footer-social a:hover{color:var(--brand-l);text-decoration:underline}
+.footer-social a svg{width:15px;height:15px;flex:none}
+.footer-social .dot{color:var(--muted);font-weight:700;padding:0 4px}
+.footer-meta{margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;font-size:13px}
+.footer-meta a,.footer-meta button.flink{color:var(--muted);font-weight:600;text-decoration:none;background:0 0;border:none;font:inherit;cursor:pointer;padding:0}
+.footer-meta a:hover,.footer-meta button.flink:hover{color:var(--brand-l);text-decoration:underline}
+.footer-meta .dot{color:var(--line);padding:0 6px}
+.modal-doc{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:640px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow);text-align:left;overflow:hidden}
+.modal-doc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line);flex:none}
+.modal-doc-head h3{font-size:18px;font-weight:800;color:var(--text)}
+.doc-x{background:var(--elev);border:none;color:var(--muted);width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer;flex:none}
+.doc-x:hover{color:var(--text)}
+.modal-doc-body{padding:20px 22px;overflow-y:auto;color:var(--text-2);font-size:13.5px;line-height:1.65}
+.modal-doc-body h4{color:var(--text);font-size:15px;font-weight:800;margin:18px 0 8px}
+.modal-doc-body h4:first-child{margin-top:0}
+.modal-doc-body p{margin-bottom:10px}
+.modal-doc-body ul{margin:0 0 10px 18px}
+.modal-doc-body li{margin-bottom:5px}
+.modal-doc-body .upd{color:var(--muted);font-size:12px;margin:-2px 0 14px}
+.modal-doc-body a{color:var(--link);word-break:break-word}
+.mobile-bar{display:none}
+@media (max-width:1000px){.grid-layout{grid-template-columns:1fr}
+.hero-wrap{height:190px}
+.summary .btn{display:none}
+.mobile-bar{display:flex;position:fixed;left:0;right:0;bottom:0;background:#1f2227;color:#fff;padding:12px 16px;gap:18px;align-items:center;z-index:40;box-shadow:0 -4px 20px rgba(0,0,0,.18)}
+.mobile-bar .mb-lab{font-size:10px;letter-spacing:.1em;opacity:.8;font-weight:700}
+.mobile-bar .mb-val{font-size:18px;font-weight:800}
+.mobile-bar .mb-btn{margin-left:auto;width:auto;background:#fff;color:var(--navy);padding:13px 22px;font-size:15px}
+.mobile-bar .mb-btn:disabled{background:rgba(255,255,255,.4);color:rgba(255,255,255,.7)}
+}
+@media (min-width:1001px){.grid-layout>div{position:sticky;top:18px;align-self:start}
+.table-scroll{max-height:calc(100vh - 240px);overflow-y:auto}
+}
+.checkout{max-width:620px;margin:0 auto}
+.checkout .card{margin-bottom:16px}
+label.fl{display:block;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--text)}
+.field-gap{margin-bottom:16px}
+input[type=email],input[type=tel],input[type=text]{width:100%;padding:12px 14px;border:1px solid var(--input-line);border-radius:10px;font:inherit;background:var(--input-bg);color:var(--text)}
+input:focus{outline:2px solid var(--input-focus);border-color:var(--input-focus)}
+.pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:480px){.pay-methods{grid-template-columns:1fr}
+}
+.pay-opt{border:1.5px solid var(--line);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:13px;background:var(--elev);color:var(--text)}
+.pay-opt.on{border-color:var(--sel-bd);background:var(--info-bg);color:var(--text)}
+.pay-detail{text-align:center;margin-top:18px}
+.pay-detail .scan{font-size:13px;color:var(--muted);margin-bottom:10px}
+.pay-detail img{width:200px;max-width:70%;border-radius:12px}
+.pay-acct{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:left}
+.pay-acct .nm{font-size:13px;color:var(--muted)}
+.pay-acct .no{font-size:17px;font-weight:800;color:var(--text)}
+.copy-btn{background:var(--elev);border:none;color:var(--text);padding:9px 16px;border-radius:9px;font:inherit;font-weight:700;cursor:pointer}
+.copy-btn:hover{background:#20304a}
+.exact{text-align:center;font-size:13px;color:var(--pend-tx);margin-top:12px}
+.upload{border:2px dashed var(--line);border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer}
+.upload:hover{border-color:var(--brand-l)}
+.upload .big{font-weight:700;color:var(--text)}
+.upload .small{font-size:12px;color:var(--muted);margin-top:4px}
+.upload img.preview{max-width:200px;border-radius:10px;margin-top:6px}
+.hold-note{background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px}
+.hold-note strong{color:var(--pend-tx)}
+.timer-bar{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:16px;box-shadow:0 8px 24px rgba(21,69,95,.22)}
+.timer-bar .tb-ico{font-size:22px;line-height:1}
+.timer-bar .tb-txt{font-size:13px;font-weight:600;opacity:.92}
+.timer-bar .tb-txt strong{display:block;font-size:12px;font-weight:700;opacity:.8;letter-spacing:.02em}
+.timer-bar .tb-count{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:800;font-size:26px;letter-spacing:.02em;background:rgba(255,255,255,.14);padding:6px 14px;border-radius:10px;min-width:96px;text-align:center}
+.timer-bar.urgent{background:#b5342a;box-shadow:0 8px 24px rgba(181,52,42,.35);animation:tbpulse 1s ease-in-out infinite}
+@keyframes tbpulse{0%,100%{transform:scale(1)}
+50%{transform:scale(1.012)}
+}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;place-items:center;padding:20px;z-index:80}
+.modal-overlay.show{display:grid}
+.modal-box{background:var(--elev);border:1px solid var(--line);border-radius:18px;padding:28px 24px;max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow)}
+.modal-box .m-ico{width:64px;height:64px;border-radius:50%;background:var(--book-bg);color:var(--book-tx);display:grid;place-items:center;font-size:30px;margin:0 auto 16px}
+.modal-box h3{font-size:19px;color:var(--text);margin-bottom:8px}
+.modal-box p{color:var(--muted);font-size:14px;margin-bottom:20px}
+.success{max-width:520px;margin:40px auto;text-align:center}
+.success .check{width:84px;height:84px;border-radius:50%;background:var(--open-bg);color:var(--open-tx);display:grid;place-items:center;font-size:42px;margin:0 auto 18px}
+.success h2{color:var(--text);font-size:26px;margin-bottom:14px}
+.success .idlabel{font-size:13px;color:var(--muted)}
+.success .idbox{display:inline-block;background:var(--elev);color:var(--text);font-weight:800;font-size:20px;padding:10px 22px;border-radius:12px;margin:6px 0 16px;letter-spacing:.04em}
+.success p.msg{color:var(--muted);font-size:14px;margin-bottom:22px}
+.success .btn{margin-bottom:12px}
+.error-box,.loading{text-align:center;padding:60px 16px;color:var(--muted)}
+.error-box{color:var(--book-tx);font-weight:600}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--navy-d);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:60}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}
+}
+body,html{max-width:100%;overflow-x:hidden}
+.grid-layout>*{min-width:0}
+.table-scroll{max-width:100%}
+img{max-width:100%}
+@media (max-width:1000px){.hero-wrap{height:190px}
+}
+body,html{max-width:100%;overflow-x:hidden}
+.grid-layout>*{min-width:0}
+.table-scroll{max-width:100%}
+img{max-width:100%}
+@media (max-width:1000px){.hero-wrap{height:190px}
+}
+table.slots thead th{position:sticky;top:0;background:var(--card);z-index:2}
+table.slots thead th:first-child{left:0;z-index:3}
+table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
+@media (min-width:1001px){.grid-layout>div{position:sticky;top:18px;align-self:start}
+.table-scroll{max-height:calc(100vh - 240px);overflow-y:auto}
+}
+</style> </head> <body> <div class="wrap"> <div class="brand"> <img id="logo" alt="" style="display:none"/> <div>
+<div class="eyebrow">Pickleball</div>
+<h1 id="bizName">Loading…</h1>
+</div> </div> <p class="subline" id="bizTagline">
+</p> <div id="heroWrap" class="hero-wrap" style="display:none">
+</div> <div id="loading" class="loading">Connecting to the booking system…</div> <div id="errorBox" class="error-box" style="display:none">
+</div> <div id="app" style="display:none"> <div class="grid-layout"> <div> <div class="card"> <h3>Select a date</h3> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
+</div> <div class="cal-grid" id="calGrid">
+</div> <p class="cal-note" id="calNote">
+</p> </div> <div class="card" style="margin-top:16px"> <h3 class="sm">Slot legend</h3> <div class="legend"> <div class="item">
+<div class="sw" style="background:var(--open-bg)">
+</div>
+<div>
+<div class="lab">Open</div>
+<div class="sub">Available</div>
+</div>
+</div> <div class="item">
+<div class="sw" style="background:var(--sel-bg)">
+</div>
+<div>
+<div class="lab">Selected</div>
+<div class="sub">You selected</div>
+</div>
+</div> <div class="item">
+<div class="sw" style="background:var(--book-bg)">
+</div>
+<div>
+<div class="lab">Booked</div>
+<div class="sub">Not available</div>
+</div>
+</div> <div class="item">
+<div class="sw" style="background:var(--pend-bg)">
+</div>
+<div>
+<div class="lab">Pending</div>
+<div class="sub">On hold</div>
+</div>
+</div> <div class="item">
+<div class="sw" style="background:var(--past-bg)">
+</div>
+<div>
+<div class="lab">Past</div>
+<div class="sub">Unavailable</div>
+</div>
+</div> </div> </div> </div> <div class="card"> <h3>Select your slots</h3> <div class="info-bar">Tap a cell to select. You can pick slots across <strong>multiple dates</strong> — switch dates and your selections are kept.</div> <div class="table-scroll">
+<table class="slots">
+<thead>
+<tr id="gridHead">
+</tr>
+</thead>
+<tbody id="gridBody">
+</tbody>
+</table>
+</div> </div> <div class="card summary"> <h3>Reservation Summary</h3> <div id="sumEmpty" class="sum-empty">No slots selected yet. Pick a date, then tap open slots.</div> <div id="sumList" class="sum-list">
+</div> <div class="sum-total">
+<span class="lab">Estimated total</span>
+<span class="tot-wrap">
+<span class="orig" id="sumOrig" style="display:none">
+</span>
+<span class="val" id="sumTotal">₱0</span>
+</span>
+</div> <div class="voucher"> <div class="voucher-in">
+<input id="voucherInput" placeholder="Voucher code" autocomplete="off"/>
+<button class="btn-apply" id="applyVoucherBtn">Apply voucher</button>
+</div> <div class="voucher-msg" id="voucherMsg">
+</div> </div> <button class="btn" id="continueBtn" disabled="disabled">Continue</button> <p class="sum-note">Your booking starts as pending until the club confirms it.</p> </div> </div> <div class="footer" id="footerLinks">
+</div> </div> <div id="checkoutView" class="checkout" style="display:none"> <button class="btn-ghost" id="backToSlots" style="margin-top:18px;margin-bottom:16px">‹ Back to slots</button> <div class="timer-bar" id="timerBar"> <span class="tb-ico">⏱️</span> <span class="tb-txt">
+<strong>TIME LEFT TO COMPLETE</strong>Finish your details &amp; payment before the timer ends.</span> <span class="tb-count" id="timerCount">05:00</span> </div> <div class="card"> <h3>Booker information</h3> <div class="field-gap">
+<label class="fl">Full name</label>
+<input type="text" id="nameInput" placeholder="Juan Dela Cruz"/>
+</div> <div class="field-gap">
+<label class="fl">Mobile number</label>
+<input type="tel" id="contactInput" placeholder="09XX XXX XXXX"/>
+</div> <div>
+<label class="fl">Email</label>
+<input type="email" id="emailInput" placeholder="you@email.com" inputmode="email" autocomplete="email"/>
+<div class="sum-note" style="margin-top:6px">We'll send your booking status and confirmation to this email.</div>
+</div> </div> <div class="card"> <h3>Select a payment method</h3> <p class="sum-note" style="margin:-6px 0 14px">Choose one option below.</p> <div class="pay-methods" id="payMethods">
+</div> <div class="pay-detail" id="payDetail" style="display:none">
+</div> </div> <div class="card"> <h3>Upload receipt</h3> <p class="sum-note" style="margin:-6px 0 14px">Upload your payment proof. <strong style="color:var(--cancel)">Required.</strong>
+</p> <div class="upload" id="uploadBox"> <div class="big">☁️ Tap to upload image</div> <div class="small">JPG or PNG, max 5MB</div> <img class="preview" id="receiptPreview" style="display:none"/> </div> <input type="file" id="receiptInput" accept="image/*" style="display:none"/> </div> <button class="btn btn-navy" id="submitBtn">Submit Booking</button> <div class="hold-note">🔒 Your slot is held as <strong>Pending</strong>. We'll confirm it shortly after verifying your payment.</div> <div class="footer" id="footerLinks2">
+</div> </div> <div id="successView" class="success" style="display:none"> <div class="check">✓</div> <h2>Booking received!</h2> <div class="idlabel">Booking ID</div> <div class="idbox" id="successId">—</div> <p class="msg">Your payment is being verified. You'll get a confirmation shortly. Your slot is on hold.</p> <button class="btn btn-navy" id="viewStatusBtn">View Booking Status</button> <button class="btn-ghost" id="anotherBtn" style="width:100%;padding:15px">Make another booking</button> </div> </div> <div class="mobile-bar" id="mobileBar"> <div>
+<div class="mb-lab">SLOTS</div>
+<div class="mb-val" id="mbSlots">0</div>
+</div> <div>
+<div class="mb-lab">TOTAL</div>
+<div class="mb-val" id="mbTotal">₱0</div>
+</div> <button class="btn mb-btn" id="mbContinue" disabled="disabled">Continue</button> </div> <div class="modal-overlay" id="expireOverlay"> <div class="modal-box"> <div class="m-ico">⏱️</div> <h3>Time's up</h3> <p id="expireMsg">Your 10-minute reservation window has expired, so your selected slots have been released. Please pick your slots again.</p> <button class="btn btn-navy" id="expireBtn" style="width:100%">Back to booking</button> </div> </div> <div class="modal-overlay" id="docOverlay"> <div class="modal-doc"> <div class="modal-doc-head">
+<h3 id="docTitle">—</h3>
+<button class="doc-x" id="docClose" aria-label="Close">✕</button>
+</div> <div class="modal-doc-body" id="docBody">
+</div> </div> </div> <div class="toast" id="toast">
+</div> <script>let db;const MOCK_SETTINGS={businessName:"The Kitchen Arena",tagline:"",logoUrl:"https://i.imgur.com/f9JdWZ5.png",
+heroUrls:["https://i.imgur.com/o8on1AC.png","https://i.imgur.com/mYglc2P.png","https://i.imgur.com/JJFUwZI.png","https://i.imgur.com/fEq4uxu.png","https://i.imgur.com/z0sGoPK.png"],
+openHour:8,closeHour:24,slotMinutes:60,ratePerHour:500,advanceDays:30,checkoutMinutes:5,idPrefix:"TKA",
+paymentMethods:["GCash","Bank"],gcashName:"Dianamary A.",gcashNumber:"09499608680",
+gcashQrUrl:"https://i.imgur.com/jKmSwx5.png",bankName:"BPI • As Cabin",bankNumber:"0120004218",
+bankQrUrl:"https://i.imgur.com/i48rQbZ.png",
+address:"Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga",
+addressName:"The Kitchen Arena - Pampanga",mapsLink:"https://maps.app.goo.gl/rhFxDEoSyNywry5v9?g_st=ic",
+facebookLink:"https://www.facebook.com/profile.php?id=61589844632164",facebookName:"Facebook",
+instagramLink:"https://www.instagram.com/thekitchen.arena",instagramName:"Instagram"},MOCK_COURTS=[{name:"Court 1"},{
+name:"Court 2"},{name:"Court 3"},{name:"Court 4"},{name:"Court 5"}];function _mockBookings(){return[{status:"confirmed",
+court:"Court 1",slots:["20:00","21:00"]},{status:"confirmed",court:"Court 3",slots:["22:00"]},{status:"confirmed",
+court:"Court 4",slots:["23:00"]},{status:"pending",court:"Court 2",slots:["21:00"]},{status:"pending",court:"Court 5",
+slots:["19:00"]}]}function _snap(e){return{forEach:t=>e.forEach((e,o)=>t({id:e.id||"d"+o,data:()=>e})),docs:e,
+empty:0===e.length,size:e.length}}db={collection:e=>({doc:t=>({get:async()=>"settings"===e&&"config"===t?{exists:!0,
+id:"config",data:()=>MOCK_SETTINGS}:{exists:!1,data:()=>null},set:async()=>({}),update:async()=>({})}),
+get:async()=>_snap("courts"===e?MOCK_COURTS:[]),where:(e,t,o)=>({onSnapshot:e=>{try{e(_snap(_mockBookings()))}catch(e){
+console.warn(e)}return()=>{}},get:async()=>_snap(_mockBookings())})})}
+;let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0
+;const $=e=>document.getElementById(e);function showError(e){$("loading").style.display="none",
+$("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}function toast(e){
+const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
+function pad2(e){return String(e).padStart(2,"0")}function dstr(e){
+return e.getFullYear()+"-"+pad2(e.getMonth()+1)+"-"+pad2(e.getDate())}function today(){const e=new Date
+;return e.setHours(0,0,0,0),e}function parseDstr(e){const[t,o,n]=e.split("-").map(Number);return new Date(t,o-1,n)}
+function niceDateShort(e){return parseDstr(e).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
+function hm2min(e){if(!e)return 0;const[t,o]=String(e).split(":").map(Number);return 60*(t||0)+(o||0)}
+function hourLabel(e){let t=Math.floor(e/60),o=e%60;const n=t>=12&&t<24?"PM":"AM";let a=t%12;return 0===a&&(a=12),
+0===o?a+n:a+":"+pad2(o)+n}function slotRangeLabel(e,t){return hourLabel(e)+"-"+hourLabel(e+t)}function peso(e){
+return"₱"+Number(e).toLocaleString("en-PH")}function darken(e,t){
+3===(e=String(e).replace("#","")).length&&(e=e.split("").map(e=>e+e).join(""));const o=parseInt(e,16)
+;return"#"+[Math.round((o>>16&255)*t),Math.round((o>>8&255)*t),Math.round((255&o)*t)].map(e=>("0"+e.toString(16)).slice(-2)).join("")
+}function ck(e,t,o){return e+"|"+t+"|"+o}async function loadData(){if(db)try{
+const e=await db.collection("settings").doc("config").get();if(!e.exists)return void showError("Settings not found.")
+;SETTINGS=e.data();const t=await db.collection("courts").get();if(COURTS=[],t.forEach(e=>{const t=e.data()
+;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court"})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
+!COURTS.length)return void showError("No active courts found.");try{const e=await db.collection("rates").get();RATES=[],
+e.forEach(e=>{const t=e.data();let o=hm2min(t.start),n=hm2min(t.end);n<=o&&(n+=1440),RATES.push({start:o,end:n,
+rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start)}catch(e){RATES=[]}try{
+const e=await db.collection("promos").get();PROMOS=[],e.forEach(e=>PROMOS.push({id:e.id,...e.data()}))}catch(e){
+PROMOS=[]}applyTheme(),renderBrand(),startHero(),renderFooterLinks();const o=today();viewYear=o.getFullYear(),
+viewMonth=o.getMonth(),selectedDate=dstr(o),renderCalendar(),renderGridHead(),watchAvailability(),updateSummary(),
+$("loading").style.display="none",$("app").style.display="block"}catch(e){console.error(e),
+showError("Failed to load data: "+(e.message||e))}}function applyTheme(){
+const e=document.documentElement.style,t=SETTINGS.colorPrimary||"#0D2863",o=SETTINGS.colorAccent||"#0D2863"
+;e.setProperty("--navy",t),e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||"#0A1E4C"),e.setProperty("--green",o),
+e.setProperty("--green-d",SETTINGS.colorAccentDark||"#0A1E4C"),
+e.setProperty("--sel-bg",SETTINGS.slotSelectedBg||"#15336B")}function renderBrand(){
+if($("bizName").textContent=SETTINGS.businessName||"Court Booking",$("bizTagline").textContent=SETTINGS.tagline||"",
+document.title=(SETTINGS.businessName||"Court")+" — Booking",SETTINGS.logoUrl){const e=$("logo");e.src=SETTINGS.logoUrl,
+e.style.display="block"}}function heroImages(){
+return Array.isArray(SETTINGS.heroUrls)&&SETTINGS.heroUrls.length?SETTINGS.heroUrls.filter(Boolean):SETTINGS.heroUrl?[SETTINGS.heroUrl]:[]
+}function startHero(){const e=heroImages();if(!e.length)return;const t=$("heroWrap");if(t.style.display="block",
+t.innerHTML="",e.forEach((e,o)=>{const n=document.createElement("img");n.src=e,0===o&&n.classList.add("active"),
+t.appendChild(n)}),e.length>1){const o=document.createElement("div");o.className="hero-dots",e.forEach((e,t)=>{
+const n=document.createElement("span");0===t&&n.classList.add("on"),o.appendChild(n)}),t.appendChild(o);let n=0
+;setInterval(()=>{const e=t.querySelectorAll("img");e[n].classList.remove("active"),
+o.children[n].classList.remove("on"),n=(n+1)%e.length,e[n].classList.add("active"),o.children[n].classList.add("on")
+},4e3)}}function esc(e){return String(null==e?"":e).replace(/[&<>"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",
+'"':"&quot;"}[e]))}
+const LAYAW_FB="https://www.facebook.com/profile.php?id=61591455718209",IC_PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',IC_FB='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.88v-6.99H7.9V12h2.5V9.8c0-2.47 1.47-3.84 3.72-3.84 1.08 0 2.2.19 2.2.19v2.42h-1.24c-1.22 0-1.6.76-1.6 1.54V12h2.72l-.43 2.89h-2.29v6.99A10 10 0 0 0 22 12z"/></svg>',IC_IG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>'
+;function renderFooterLinks(){let e="";if(SETTINGS.address||SETTINGS.addressName){
+const t=SETTINGS.addressName||SETTINGS.address
+;e='<div class="footer-addr"><a href="'+esc(SETTINGS.mapsLink||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(SETTINGS.address||t))+'" target="_blank" rel="noopener">'+IC_PIN+"<span>"+esc(t)+"</span></a></div>"
+}const t=[]
+;SETTINGS.facebookLink&&t.push('<a href="'+esc(SETTINGS.facebookLink)+'" target="_blank" rel="noopener">'+IC_FB+"<span>"+esc(SETTINGS.facebookName||"Facebook")+"</span></a>"),
+SETTINGS.instagramLink&&t.push('<a href="'+esc(SETTINGS.instagramLink)+'" target="_blank" rel="noopener">'+IC_IG+"<span>"+esc(SETTINGS.instagramName||"Instagram")+"</span></a>")
+;const o=e+(t.length?'<div class="footer-social">'+t.join('<span class="dot">•</span>')+"</div>":"")+('<div class="footer-meta"><button type="button" class="flink" data-doc="privacy">Privacy</button><span class="dot">·</span><button type="button" class="flink" data-doc="terms">Terms</button><span class="dot">·</span><a href="'+LAYAW_FB+'" target="_blank" rel="noopener">Built by Layaw System</a></div>')
+;$("footerLinks").innerHTML=o,$("footerLinks2").innerHTML=o,document.querySelectorAll("[data-doc]").forEach(e=>{
+e.onclick=()=>openDoc(e.getAttribute("data-doc"))})}const DOC_PRIVACY={title:"Privacy Policy",
+html:'<p class="upd">Last updated: July 3, 2026</p>\n<h4>1. Introduction</h4>\n<p>Welcome to The Kitchen Arena. This site is a white-label court booking experience powered by the Layaw System ("Platform"), operated by Layaw System ("we," "our," or "us"). The Kitchen Arena is the venue you are booking with. For personal information processed through the Platform, Layaw System is the personal information controller. We follow the Data Privacy Act of 2012 (Republic Act No. 10173).</p>\n<p>When you submit a booking, you confirm that you have read and agree to this Privacy Policy. If you do not agree, please do not submit a booking. If you only browse without booking, we may still collect limited technical data (such as cookies or security logs).</p>\n<h4>2. When We Are Allowed to Use Your Information</h4>\n<p>We use your personal information only when the law allows, including when:</p>\n<ul><li>We need it to handle your booking (our agreement with you)</li><li>You consent — for example, when you submit a booking and agree to this Policy</li><li>We have a valid business need that respects your rights — such as preventing fraud or keeping the Platform secure</li><li>The law requires us to keep or use certain records</li></ul>\n<p>If we rely on your consent, you may withdraw it (Section 10). Some information is required to complete a booking; without it, we may not be able to confirm your reservation.</p>\n<h4>3. Information We Collect</h4>\n<p><strong>You provide:</strong></p>\n<ul><li><strong>Booking details:</strong> name, phone number, email, court choice, date and time, and booking reference</li><li><strong>Proof of payment:</strong> if the venue requires it, a receipt image you upload so the venue can verify your payment</li><li><strong>Messages to us:</strong> feedback, support requests, and other communications</li></ul>\n<p><strong>Collected automatically:</strong> usage data, device data (browser, OS, IP address), and cookies/local storage used for staff/owner sign-in, security, and preferences.</p>\n<p><strong>Payments — what we do not collect:</strong> we do not ask for your card number, e-wallet login, or bank credentials on our booking form. Paying the venue (cash, bank transfer, or QR such as GCash) happens directly with the venue. We do not process card payments. If you upload a receipt image, we store it only so the venue can confirm your payment.</p>\n<h4>4. Cookies and Outside Services We Use</h4>\n<p>We rely on trusted providers who may handle personal information only to perform their work for us:</p>\n<ul><li><strong>Google Firebase</strong> (Firestore, Authentication, App Check) — stores booking data, manages venue/staff sign-in, and verifies requests come from the real app. Data may be kept outside the Philippines.</li><li><strong>GitHub Pages</strong> — hosts the website; may log technical data such as IP addresses.</li><li><strong>Google reCAPTCHA v3</strong> — helps block bots and abuse.</li></ul>\n<h4>5. How We Use Your Information</h4>\n<ul><li>Run the booking Platform and manage your reservations</li><li>Send your booking details to the venue you chose</li><li>Send confirmations and booking-related messages</li><li>Verify a payment when you upload a receipt (status/reference only)</li><li>Improve the Platform, prevent fraud, and meet legal requirements in the Philippines</li></ul>\n<h4>6. Who We Share Information With</h4>\n<p>The venue you book with (The Kitchen Arena) receives the details needed for your reservation and should use them only to run the venue. We may also share information with service providers (Section 4), for legal requests, in a business change (with notice where the law requires), or with your permission. <strong>We do not sell your personal information.</strong></p>\n<h4>7. How We Protect Your Information</h4>\n<ul><li>Encrypted connections (HTTPS)</li><li>Access controls that keep your contact details readable only by the venue\'s authorized managers and staff</li><li>Security monitoring and vendor review</li></ul>\n<p>No online system is perfectly secure, but we work to protect your information.</p>\n<h4>8. How Long We Keep Information</h4>\n<p>We keep information only as long as we need it — while your booking is active and for support, up to seven (7) years for records the law requires (tax, accounting, compliance), and a shorter time for logs. You may ask us to delete data we hold; we will comply where the law allows.</p>\n<h4>9. If a Data Breach Occurs</h4>\n<p>If we learn of a breach that could seriously harm people, we will contain it, assess it, and notify the National Privacy Commission and affected users when the law requires. If you think your information was exposed, contact us using Section 14.</p>\n<h4>10. Your Rights (Philippines)</h4>\n<p>Under the Data Privacy Act you may have the right to be informed, access, correct, delete or block, object, withdraw consent, seek damages, and complain to the NPC. To use these rights, contact us (Section 14). You can also visit privacy.gov.ph.</p>\n<h4>11. Users Under 18</h4>\n<p>The Platform is for users 18 and older. We do not knowingly collect information from children. If you think a child gave us personal information, contact us and we will delete it.</p>\n<h4>12. Data Stored Outside the Philippines</h4>\n<p>Some providers (such as Google Firebase) store or process data in other countries. When we send data abroad, we follow the Data Privacy Act and share only what is needed to run the Platform.</p>\n<h4>13. Changes to This Policy</h4>\n<p>We may update this Policy. The new version will appear here with a new "Last updated" date. For important changes, we may also show a notice on the Platform.</p>\n<h4>14. Contact Us</h4>\n<p><strong>Layaw System</strong> (platform operator)<br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>The Kitchen Arena</strong> (venue)<br>Email: <a href="mailto:arbiejaynunag1210@gmail.com">arbiejaynunag1210@gmail.com</a><br>Location: Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga</p>\n<h4>15. Governing Law</h4>\n<p>This Privacy Policy follows the laws of the Republic of the Philippines, including the Data Privacy Act of 2012 (RA 10173) and rules from the National Privacy Commission.</p>'
+},DOC_TERMS={title:"Terms of Service",
+html:'<p class="upd">Last updated: July 3, 2026</p>\n<h4>1. Acceptance of Terms</h4>\n<p>By accessing or using this booking site ("Platform"), you agree to these Terms of Service ("Terms"). If you do not agree, please do not use the Platform. The Platform is provided by Layaw System ("we," "us," or "our"). The Kitchen Arena is the venue operator for courts you book on this site.</p>\n<h4>2. Description of Service</h4>\n<p>The Platform lets you browse courts and time slots, book slots online, pay the venue directly via GCash or bank transfer and upload proof of payment, and receive booking confirmations once the venue confirms. The Platform facilitates bookings; it does not process card payments or hold funds.</p>\n<h4>3. Bookings and Accounts</h4>\n<p>To reserve a court, you provide your name, contact number, and email, and agree to give accurate information. You do not need an account to book. You must be at least 18 years old. Venue owners and staff access management tools through secured accounts and are responsible for keeping their credentials confidential.</p>\n<h4>4. Booking and Payment Terms</h4>\n<ul><li>A new booking starts as <strong>pending</strong> until the venue confirms it</li><li>Payment is made directly to the venue via GCash, bank transfer, or on-site cash — not through an online card processor on this Platform</li><li>When required, you upload a receipt so the venue can verify payment</li><li>Prices are shown in Philippine Pesos (PHP); the venue sets its own rates</li><li>Once reviewed, you receive a confirmation with a reference number you can check on the status page</li><li>Cancellations and refunds are determined by the venue</li><li>A pending booking that is not paid or confirmed within the venue\'s holding period may expire and be released to others</li></ul>\n<h4>5. Venue Terms</h4>\n<p>The Kitchen Arena is responsible for accurate court information, keeping availability and pricing current, honoring confirmed bookings, maintaining safe courts, handling customer service, complying with laws, and not discriminating against players.</p>\n<h4>6. User Conduct</h4>\n<p>You agree not to use the Platform for illegal purposes, impersonate others, upload malware, attempt unauthorized access, scrape data, interfere with operations, post false content or fake proof of payment, or harass venue staff or other users.</p>\n<h4>7. Intellectual Property</h4>\n<p>The Platform, including its software and design, is the property of Layaw System or its licensors. You may not copy, modify, distribute, sell, or lease any part without our written permission. The venue keeps ownership of photos and content it uploads but grants Layaw System a non-exclusive license to display them to operate the booking service.</p>\n<h4>8. Disclaimers and Limitation of Liability</h4>\n<p>The Platform is provided "AS IS" and "AS AVAILABLE" without warranties of any kind. We do not guarantee it will be uninterrupted, secure, or error-free, that listings are accurate, or that bookings will be honored by the venue. To the maximum extent permitted by law, Layaw System is not liable for any indirect, incidental, special, consequential, or punitive damages, or loss of profits, data, or goodwill, arising from your use of or inability to use the Platform, unauthorized access, disputes with the venue, or interruptions.</p>\n<h4>9. Indemnification</h4>\n<p>You agree to indemnify and hold harmless Layaw System and its operators from claims, liabilities, damages, and expenses (including reasonable legal fees) arising from your use of the Platform, your violation of these Terms or third-party rights, or content you submit.</p>\n<h4>10. Termination</h4>\n<p>We may suspend or terminate access to the Platform at any time, with or without notice, including if we believe you have violated these Terms. Upon termination, your right to use the Platform ceases.</p>\n<h4>11. Dispute Resolution</h4>\n<p>These Terms are governed by the laws of the Republic of the Philippines. Disputes shall be resolved in the appropriate courts of the Philippines. Before filing any legal action, we encourage you to contact us to seek an informal resolution.</p>\n<h4>12. Changes to Terms</h4>\n<p>We may modify these Terms at any time and will post the updated Terms with a new "Last updated" date. Continued use after changes constitutes acceptance.</p>\n<h4>13. Severability</h4>\n<p>If any provision is found unenforceable, it will be limited or removed to the minimum extent necessary, and the remaining provisions stay in effect.</p>\n<h4>14. Entire Agreement</h4>\n<p>These Terms, together with our Privacy Policy, are the entire agreement between you and Layaw System regarding the Platform and supersede prior agreements.</p>\n<h4>15. Contact Information</h4>\n<p><strong>Layaw System</strong><br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>The Kitchen Arena</strong><br>Email: <a href="mailto:arbiejaynunag1210@gmail.com">arbiejaynunag1210@gmail.com</a><br>Location: Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga</p>'
+};function openDoc(e){const t="terms"===e?DOC_TERMS:DOC_PRIVACY;$("docTitle").textContent=t.title,
+$("docBody").innerHTML=t.html,$("docBody").scrollTop=0,$("docOverlay").classList.add("show")}function closeDoc(){
+$("docOverlay").classList.remove("show")}function advanceDays(){return Math.min(Number(SETTINGS.advanceDays??30),30)}
+function maxDate(){const e=today();return e.setDate(e.getDate()+advanceDays()),e}function dateHasCart(e){
+for(const t of cart)if(t.slice(0,10)===e)return!0;return!1}function renderCalendar(){
+$("calMonth").textContent=["January","February","March","April","May","June","July","August","September","October","November","December"][viewMonth]+" "+viewYear
+;const e=$("calGrid");e.innerHTML="",["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach(t=>{
+const o=document.createElement("div");o.className="dow",o.textContent=t,e.appendChild(o)})
+;const t=new Date(viewYear,viewMonth,1).getDay(),o=new Date(viewYear,viewMonth+1,0).getDate(),n=today(),a=maxDate()
+;for(let o=0;o<t;o++)e.appendChild(document.createElement("div"));for(let t=1;t<=o;t++){
+const o=new Date(viewYear,viewMonth,t),r=dstr(o),s=document.createElement("div");s.className="cal-day",s.textContent=t,
+o<n||o>a?s.classList.add("disabled"):(r===selectedDate&&s.classList.add("active"),
+dateHasCart(r)&&s.classList.add("has-cart"),s.onclick=()=>{selectedDate=r,renderCalendar(),watchAvailability(),
+renderGrid()}),e.appendChild(s)}
+$("prevMonth").disabled=new Date(viewYear,viewMonth,1)<=new Date(n.getFullYear(),n.getMonth(),1),
+$("nextMonth").disabled=new Date(viewYear,viewMonth+1,1)>a,
+$("calNote").innerHTML="Bookings available until <strong>"+maxDate().toLocaleDateString("en-US",{month:"short",
+day:"numeric",year:"numeric"})+"</strong> ("+advanceDays()+" days from today)."}function buildSlots(){
+const e=Number(SETTINGS.openHour??8),t=Number(SETTINGS.closeHour??22),o=Number(SETTINGS.slotMinutes??60),n=[]
+;for(let a=60*e;a+o<=60*t;a+=o)n.push({mins:a,key:pad2(Math.floor(a/60))+":"+pad2(a%60),label:slotRangeLabel(a,o)})
+;return n}function rateForSlot(e){if(RATES.length){const t=RATES.find(t=>e>=t.start&&e<t.end);if(t)return t.rate}
+return Number(SETTINGS.ratePerHour??0)}function slotCost(e){return Number(SETTINGS.slotMinutes??60)/60*rateForSlot(e)}
+function renderGridHead(){const e=$("gridHead");e.innerHTML="";const t=document.createElement("th")
+;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const o=document.createElement("th");o.textContent=t.name,
+e.appendChild(o)})}function watchAvailability(){db&&(availUnsub&&(availUnsub(),availUnsub=null),
+availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{bookedSet=new Set,
+pendingSet=new Set,e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
+;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),renderGrid()
+},e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
+;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
+;buildSlots().forEach(a=>{const r=document.createElement("tr"),s=document.createElement("td");s.className="time-cell",
+s.textContent=a.label,r.appendChild(s);const i=t&&a.mins+n<=o;COURTS.forEach(e=>{const t=document.createElement("td")
+;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),s=document.createElement("div")
+;s.className="cell-inner",i?(cart.has(n)&&cart.delete(n),s.className+=" cell-past",
+s.textContent="Past"):bookedSet.has(o)?(s.className+=" cell-booked",
+s.textContent="Booked"):pendingSet.has(o)?(s.className+=" cell-pending",
+s.textContent="Pending"):cart.has(n)?(s.className+=" cell-selected",s.textContent="Selected",s.onclick=()=>{
+cart.delete(n),afterCartChange()}):(s.className+=" cell-open",s.textContent="Open",s.onclick=()=>{cart.add(n),
+afterCartChange()}),t.appendChild(s),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
+updateSummary(),renderCalendar()}function cartTotal(){let e=0;return cart.forEach(t=>{
+e+=slotCost(hm2min(t.split("|")[2]))}),e}function promoQualifies(e,t,o){const n=parseDstr(t).getDay()
+;if(Array.isArray(e.days)&&e.days.length&&!e.days.includes(n))return!1
+;if(Array.isArray(e.dateRanges)&&e.dateRanges.length&&!e.dateRanges.some(e=>t>=e.start&&t<=e.end))return!1
+;if(Array.isArray(e.timeWindows)&&e.timeWindows.length){const t=hm2min(o)
+;if(!e.timeWindows.some(e=>t>=Number(e.start)&&t<Number(e.end)))return!1}return!0}function computePromoDiscount(e){
+const t=Number(e.usageLimit||0);if(t>0&&Number(e.usageCount||0)>=t)return{discount:0,
+reason:"has reached its usage limit"};const o=Number(e.minHours||0);if(o>0){
+if(cart.size*(Number(SETTINGS.slotMinutes??60)/60)<o)return{discount:0,
+reason:"requires a booking of at least "+o+" hour"+(1===o?"":"s")}}let n=0,a=0;if(cart.forEach(t=>{
+const[o,r,s]=t.split("|"),i=slotCost(hm2min(s));a+=i,promoQualifies(e,o,s)&&(n+=i)}),n<=0)return{discount:0,
+reason:"doesn't apply to your selected date or time"}
+;let r="amount"===e.discountType?Math.min(Number(e.discountValue||0),a):Math.round(n*Number(e.discountValue||0)/100)
+;return r<0&&(r=0),r>a&&(r=a),{discount:r}}function currentDiscount(){
+return appliedPromo&&computePromoDiscount(appliedPromo).discount||0}function netTotal(){
+return Math.max(0,cartTotal()-currentDiscount())}function setVoucherMsg(e,t){const o=$("voucherMsg")
+;o&&(o.textContent=e||"",o.style.color=t?"var(--green-d)":"var(--cancel)")}function updateSummary(){
+const e=$("sumList"),t=$("sumEmpty");e.innerHTML="";let o=0;if(0===cart.size)t.style.display="block";else{
+t.style.display="none";const n=Number(SETTINGS.slotMinutes??60),a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|")
+;(a[t]=a[t]||[]).push({date:t,court:o,hhmm:n,key:e})}),Object.keys(a).sort().forEach(t=>{
+const r=document.createElement("div");r.className="sum-date",r.textContent=niceDateShort(t),e.appendChild(r),
+a[t].sort((e,t)=>e.court.localeCompare(t.court)||hm2min(e.hhmm)-hm2min(t.hhmm)).forEach(t=>{
+const a=hm2min(t.hhmm),r=slotCost(a);o+=r;const s=document.createElement("div");s.className="sum-item"
+;const i=document.createElement("div")
+;i.className="meta",i.innerHTML="<span>"+t.court+"</span><span style='color:var(--muted);font-size:12px'>"+slotRangeLabel(a,n)+"</span>"
+;const l=document.createElement("div");l.style.cssText="display:flex;gap:10px;align-items:center"
+;const c=document.createElement("span");c.className="price",c.textContent=peso(r);const d=document.createElement("span")
+;d.className="x",d.textContent="✕",d.onclick=()=>{cart.delete(t.key),afterCartChange()},l.appendChild(c),
+l.appendChild(d),s.appendChild(i),s.appendChild(l),e.appendChild(s)})})}let n=0;if(appliedPromo){
+const e=computePromoDiscount(appliedPromo);e.discount>0?n=e.discount:(appliedPromo=null,
+$("voucherInput").value.trim()&&setVoucherMsg("Voucher no longer applies to your selected slots.",!1))}
+const a=Math.max(0,o-n),r=$("sumOrig");n>0?(r.style.display="block",r.textContent=peso(o),
+$("sumTotal").textContent=peso(a)):(r.style.display="none",$("sumTotal").textContent=peso(o)),
+$("continueBtn").disabled=0===cart.size,$("mbSlots").textContent=cart.size,$("mbTotal").textContent=peso(a),
+$("mbContinue").disabled=0===cart.size}function holdMins(){const e=Number(SETTINGS&&SETTINGS.checkoutMinutes)
+;return e&&e>0?e:5}function startHoldTimer(){clearHoldTimer(),holdDeadline=Date.now()+6e4*holdMins()
+;const e=$("timerBar");e&&(e.style.display="flex",e.classList.remove("urgent")),updateTimer(),
+holdTimer=setInterval(updateTimer,1e3)}function clearHoldTimer(){holdTimer&&(clearInterval(holdTimer),holdTimer=null)}
+function updateTimer(){const e=Math.max(0,Math.round((holdDeadline-Date.now())/1e3)),t=$("timerCount")
+;t&&(t.textContent=pad2(Math.floor(e/60))+":"+pad2(e%60));const o=$("timerBar")
+;o&&(e<=60?o.classList.add("urgent"):o.classList.remove("urgent")),e<=0&&expireHold()}function expireHold(){
+clearHoldTimer(),cart.clear(),chosenPayment=null,receiptData=null;const e=$("expireMsg")
+;e&&(e.textContent="Your "+holdMins()+"-minute reservation window has expired, so your selected slots have been released. Please pick your slots again."),
+$("expireOverlay").classList.add("show")}function goCheckout(){0!==cart.size&&($("app").style.display="none",
+$("checkoutView").style.display="block",$("mobileBar").style.display="none",renderPayMethods(),startHoldTimer(),
+window.scrollTo({top:0,behavior:"smooth"}))}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
+name:SETTINGS.gcashName,number:SETTINGS.gcashNumber,qr:SETTINGS.gcashQrUrl},{key:"Maya",label:"Maya",
+name:SETTINGS.mayaName,number:SETTINGS.mayaNumber,qr:SETTINGS.mayaQrUrl},{key:"Bank",label:"Bank Transfer",
+name:SETTINGS.bankName,number:SETTINGS.bankNumber,qr:SETTINGS.bankQrUrl
+}],t=Array.isArray(SETTINGS.paymentMethods)?SETTINGS.paymentMethods:null
+;return e.filter(e=>t?t.includes(e.key):e.number||e.qr)}function renderPayMethods(){
+const e=paymentOptions(),t=$("payMethods");t.innerHTML="",chosenPayment=null,$("payDetail").style.display="none",
+e.length?e.forEach(e=>{const o=document.createElement("div");o.className="pay-opt",o.textContent=e.label,o.onclick=()=>{
+chosenPayment=e.key,[...t.children].forEach(e=>e.classList.remove("on")),o.classList.add("on"),showPayDetail(e)},
+t.appendChild(o)}):t.innerHTML='<p class="sum-note">No payment methods configured.</p>'}function showPayDetail(e){
+const t=$("payDetail");t.style.display="block";let o=""
+;if(e.qr&&(o+='<div class="scan">Scan to pay with '+e.label+'</div><img src="'+e.qr+'" alt="'+e.label+' QR" />'),
+(e.name||e.number)&&(o+='<div class="pay-acct"><div><div class="nm">'+(e.name||"")+'</div><div class="no" id="payNo">'+(e.number||"")+"</div></div>",
+e.number&&(o+='<button class="copy-btn" id="copyNo">Copy</button>'),o+="</div>"),
+o+='<div class="exact">Please send the exact amount: <strong style="color:var(--text);font-size:17px;">'+peso(netTotal())+"</strong></div>",
+t.innerHTML=o,e.number){const t=$("copyNo");t&&(t.onclick=()=>{
+navigator.clipboard.writeText(e.number).then(()=>toast("Number copied!")).catch(()=>toast("Copy failed"))})}}
+async function nextBookingId(){let e=SETTINGS.idPrefix
+;e||(e=(SETTINGS.businessName||"BK").split(/\s+/).map(e=>e[0]).join("").replace(/[^A-Za-z]/g,"").toUpperCase().slice(0,4)||"BK")
+;const t=db.collection("meta").doc("counters"),o=await db.runTransaction(async e=>{const o=await e.get(t)
+;let n=o.exists&&o.data().bookingSeq?o.data().bookingSeq:0;return n++,e.set(t,{bookingSeq:n},{merge:!0}),n}),n=new Date
+;return e+"-"+(pad2(n.getMonth()+1)+pad2(n.getDate())+String(n.getFullYear()).slice(-2))+"-"+String(o).padStart(4,"0")}
+$("docClose").onclick=closeDoc,$("docOverlay").onclick=e=>{e.target===$("docOverlay")&&closeDoc()},
+document.addEventListener("keydown",e=>{"Escape"===e.key&&closeDoc()}),$("prevMonth").onclick=()=>{viewMonth--,
+viewMonth<0&&(viewMonth=11,viewYear--),renderCalendar()},$("nextMonth").onclick=()=>{viewMonth++,
+viewMonth>11&&(viewMonth=0,viewYear++),renderCalendar()},$("todayBtn").onclick=()=>{const e=today()
+;viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),renderCalendar(),watchAvailability(),renderGrid()
+},$("applyVoucherBtn").onclick=()=>{const e=$("voucherInput").value.trim().toUpperCase()
+;if(!e)return void setVoucherMsg("Enter a voucher code.",!1)
+;if(0===cart.size)return void setVoucherMsg("Select your slots first.",!1)
+;const t=PROMOS.find(t=>String(t.code||"").toUpperCase()===e&&!1!==t.active);if(!t)return appliedPromo=null,
+setVoucherMsg("Invalid or inactive voucher code.",!1),void updateSummary();const o=computePromoDiscount(t)
+;if(!o.discount)return appliedPromo=null,setVoucherMsg("This voucher "+(o.reason||"can't be applied")+".",!1),
+void updateSummary();appliedPromo=t,setVoucherMsg('Voucher "'+e+'" applied — you save '+peso(o.discount)+".",!0),
+updateSummary()},$("expireBtn").onclick=()=>{$("expireOverlay").classList.remove("show"),
+$("checkoutView").style.display="none",$("successView").style.display="none",$("app").style.display="block",
+window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),$("nameInput").value="",$("contactInput").value="",
+$("emailInput").value="",appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),
+$("receiptPreview").style.display="none";const e=$("uploadBox").querySelector(".big")
+;e&&(e.textContent="☁️ Tap to upload image"),renderGrid(),updateSummary(),renderCalendar(),window.scrollTo({top:0,
+behavior:"smooth"})},$("continueBtn").onclick=goCheckout,$("mbContinue").onclick=goCheckout,
+$("backToSlots").onclick=()=>{clearHoldTimer(),$("checkoutView").style.display="none",$("app").style.display="block",
+window.innerWidth<=1e3&&($("mobileBar").style.display="flex")},$("uploadBox").onclick=()=>$("receiptInput").click(),
+$("receiptInput").onchange=e=>{const t=e.target.files[0];if(!t)return
+;if(t.size>5242880)return void toast("Image too large (max 5MB).");const o=new FileReader;o.onload=e=>{const t=new Image
+;t.onload=()=>{const e=1e3;let o=t.width,n=t.height;o>e&&(n=Math.round(n*e/o),o=e)
+;const a=document.createElement("canvas");a.width=o,a.height=n,a.getContext("2d").drawImage(t,0,0,o,n),
+receiptData=a.toDataURL("image/jpeg",.6);const r=$("receiptPreview");r.src=receiptData,r.style.display="inline-block",
+$("uploadBox").querySelector(".big").textContent="✓ Receipt added (tap to change)"},t.src=e.target.result},
+o.readAsDataURL(t)},$("submitBtn").onclick=async()=>{
+const e=$("nameInput").value.trim(),t=$("contactInput").value.trim(),o=$("emailInput").value.trim()
+;if(!e)return void toast("Please enter your name.");if(!t)return void toast("Please enter your mobile number.")
+;if(!o)return void toast("Please enter your email address.")
+;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o))return void toast("Please enter a valid email address.")
+;if(paymentOptions().length&&!chosenPayment)return void toast("Please select a payment method.")
+;if(paymentOptions().length&&!receiptData)return void toast("Please upload your payment receipt.")
+;const n=$("submitBtn");n.disabled=!0,n.textContent="Submitting…";try{const a={};[...cart].forEach(e=>{
+const[t,o,n]=e.split("|");((a[t]=a[t]||{})[o]=a[t][o]||[]).push(n)});for(const e of Object.keys(a)){
+const t=await db.collection("bookings").where("date","==",e).get(),o=new Set;t.forEach(e=>{const t=e.data()
+;"cancelled"!==t.status&&(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))})
+;for(const t of Object.keys(a[e]))for(const r of a[e][t])if(o.has(t+"|"+r))return toast("Sorry, "+t+" "+hourLabel(hm2min(r))+" on "+niceDateShort(e)+" was just taken."),
+n.disabled=!1,void(n.textContent="Submit Booking")}const r=await nextBookingId(),s=db.batch(),i={};let l=0
+;Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{const o=a[e][t].reduce((e,t)=>e+slotCost(hm2min(t)),0)
+;i[e+"|"+t]=o,l+=o})});const c=appliedPromo&&computePromoDiscount(appliedPromo).discount||0,d=c>0&&l>0?(l-c)/l:1
+;if(Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{
+const o=a[e][t].sort(),n=Math.round(i[e+"|"+t]*d),l=db.collection("bookings").doc();s.set(l,{bookingId:r,date:e,court:t,
+slots:o,startTime:o[0],endTime:o[o.length-1],amount:n,paymentMethod:chosenPayment||"",status:"pending",
+createdAt:firebase.firestore.FieldValue.serverTimestamp()})})}),s.set(db.collection("bookingContacts").doc(r),{
+bookingId:r,bookerName:e,contact:t,email:o,promoCode:appliedPromo?String(appliedPromo.code||""):"",discount:c,
+createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await s.commit(),receiptData)try{
+await db.collection("receipts").doc(r).set({bookingId:r,image:receiptData,
+createdAt:firebase.firestore.FieldValue.serverTimestamp()})}catch(e){console.warn("receipt save failed",e)}
+if(appliedPromo&&appliedPromo.id)try{await db.collection("promos").doc(appliedPromo.id).update({
+usageCount:firebase.firestore.FieldValue.increment(1)})}catch(e){console.warn("promo usage:",e)}
+$("checkoutView").style.display="none",$("successView").style.display="block",clearHoldTimer(),cart.clear(),
+appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),$("successId").textContent=r,
+$("viewStatusBtn").onclick=()=>{window.location.href="status.html?id="+encodeURIComponent(r)},window.scrollTo({top:0,
+behavior:"smooth"})}catch(e){console.error(e),toast("Something went wrong. Please try again."),n.disabled=!1,
+n.textContent="Submit Booking"}},$("anotherBtn").onclick=()=>{clearHoldTimer(),cart.clear(),chosenPayment=null,
+receiptData=null,appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),
+$("nameInput").value="",$("contactInput").value="",$("emailInput").value="",$("receiptPreview").style.display="none",
+$("uploadBox").querySelector(".big").textContent="☁️ Tap to upload image",$("successView").style.display="none",
+$("app").style.display="block",window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),renderGrid(),
+updateSummary(),renderCalendar(),window.scrollTo({top:0,behavior:"smooth"})},setInterval(()=>{
+SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),loadData()
+;try{$("submitBtn").onclick=function(){toast("Preview mode — this is a design preview. No booking is saved.")}
+}catch(e){}</script> </body> </html>
