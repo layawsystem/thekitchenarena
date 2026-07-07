@@ -1,7 +1,7 @@
 <!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Booking Status</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
 authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
 storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
-appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#3B5CA0;--green-d:#205E37;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--pend-bg:#3E3212;--pend-tx:#E0B93E;--ok-bg:#15321F;--ok-tx:#48A768;--cancel-bg:#3E1A20;--cancel-tx:#E88A92;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--pend-bg:#3E3212;--pend-tx:#E0B93E;--ok-bg:#15321F;--ok-tx:#48A768;--cancel-bg:#3E1A20;--cancel-tx:#E88A92;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}input,select,textarea{color:var(--text)}input::placeholder,textarea::placeholder{color:var(--muted)}
 *{box-sizing:border-box;margin:0;padding:0}
 body,html{max-width:100%;overflow-x:hidden}
 body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -55,7 +55,7 @@ body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI"
 .toast.show{opacity:1}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}
 }
-</style> </head> <body> <div class="wrap"> <div class="pagehead"> <a href="index.html" title="Back">‹</a> <h1>Booking Status</h1> </div> <div id="loading" class="loading">Loading your booking…</div> <div id="errorBox" class="error-box" style="display:none">
+@media print{:root{--bg:#fff;--card:#fff;--elev:#fff;--text:#000;--text-2:#111;--muted:#333;--line:#ccc;--sidebar:#fff;--sidebar-2:#fff;--input-bg:#fff;--input-line:#999}body,html{background:#fff!important;color:#000!important}*{color:#000!important;box-shadow:none!important;text-shadow:none!important}.card,.kpi,.pos-row,.container,.content{background:#fff!important;border-color:#ccc!important}.rev-total,.kpi .kd .up,.pos-row.change strong,.up{color:#04284D!important}svg [fill],svg[fill]{fill:#04284D!important}svg [stroke]{stroke:#04284D!important}.sidebar,.hamburger,.icon-btn,.bell,.signout,.user-menu,.save-bar button,.act{display:none!important}}</style> </head> <body> <div class="wrap"> <div class="pagehead"> <a href="index.html" title="Back">‹</a> <h1>Booking Status</h1> </div> <div id="loading" class="loading">Loading your booking…</div> <div id="errorBox" class="error-box" style="display:none">
 </div> <div id="content" style="display:none"> <div class="card idcard"> <div>
 <div class="l">Booking ID</div>
 <div class="v" id="bid">—</div>
@@ -101,7 +101,7 @@ showError("Could not connect. Check the Firebase config.")}async function init()
 const t=await db.collection("settings").doc("config").get();if(t.exists){SETTINGS=t.data()
 ;const e=document.documentElement.style;SETTINGS.colorPrimary&&(e.setProperty("--navy",SETTINGS.colorPrimary),
 e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary,.68))),
-SETTINGS.colorAccent&&e.setProperty("--green",SETTINGS.colorAccent),
+e.setProperty("--green","#0D2863"),
 document.title=(SETTINGS.businessName||"Booking")+" — Status"}watch()}catch(t){console.error(t),
 showError("Failed to load: "+(t.message||t))}else showError("No booking ID provided.")}function watch(){unsub&&unsub(),
 unsub=db.collection("bookings").where("bookingId","==",BID).onSnapshot(t=>{ORDER=[],t.forEach(t=>ORDER.push(t.data())),
