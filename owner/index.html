@@ -663,6 +663,10 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </label>
 <input id="set_contactNumber"/>
 </div> <div class="fld">
+<label>Booking alert email <span style="color:var(--muted);font-weight:500">(where "New booking" emails go)</span>
+</label>
+<input id="set_notifyEmail" type="email" placeholder="owner@email.com"/>
+</div> <div class="fld">
 <label>Address name</label>
 <input id="set_addressName"/>
 </div> <div class="fld full">
@@ -1107,7 +1111,7 @@ setVal("set_checkoutMinutes",e.checkoutMinutes),setVal("set_idPrefix",e.idPrefix
 setChk("pm_maya",t.includes("maya")),setChk("pm_bank",t.includes("bank")),setVal("set_gcashName",e.gcashName),
 setVal("set_gcashNumber",e.gcashNumber),setVal("set_gcashQrUrl",e.gcashQrUrl),setVal("set_mayaName",e.mayaName),
 setVal("set_mayaNumber",e.mayaNumber),setVal("set_mayaQrUrl",e.mayaQrUrl),setVal("set_bankName",e.bankName),
-setVal("set_bankNumber",e.bankNumber),setVal("set_bankQrUrl",e.bankQrUrl),setVal("set_contactNumber",e.contactNumber),
+setVal("set_bankNumber",e.bankNumber),setVal("set_bankQrUrl",e.bankQrUrl),setVal("set_contactNumber",e.contactNumber),setVal("set_notifyEmail",e.notifyEmail),
 setVal("set_addressName",e.addressName),setVal("set_address",e.address),setVal("set_mapsLink",e.mapsLink),
 setVal("set_facebookName",e.facebookName),setVal("set_facebookLink",e.facebookLink),
 setVal("set_instagramName",e.instagramName),setVal("set_instagramLink",e.instagramLink)}function sNum(e,t){const n=$(e)
@@ -1172,7 +1176,7 @@ $("pm_maya").checked&&e.push("Maya"),$("pm_bank").checked&&e.push("Bank");saveCo
 gcashName:sStr("set_gcashName"),gcashNumber:sStr("set_gcashNumber"),gcashQrUrl:sStr("set_gcashQrUrl"),
 mayaName:sStr("set_mayaName"),mayaNumber:sStr("set_mayaNumber"),mayaQrUrl:sStr("set_mayaQrUrl"),
 bankName:sStr("set_bankName"),bankNumber:sStr("set_bankNumber"),bankQrUrl:sStr("set_bankQrUrl"),
-contactNumber:sStr("set_contactNumber"),addressName:sStr("set_addressName"),address:sStr("set_address"),
+contactNumber:sStr("set_contactNumber"),notifyEmail:sStr("set_notifyEmail"),addressName:sStr("set_addressName"),address:sStr("set_address"),
 mapsLink:sStr("set_mapsLink"),facebookName:sStr("set_facebookName"),facebookLink:sStr("set_facebookLink"),
 instagramName:sStr("set_instagramName"),instagramLink:sStr("set_instagramLink")},$("saveSettingsBtn"),$("settingsMsg"))}
 ;let RATES_ALL=[];async function renderRates(){const e=$("ratesList");e.innerHTML='<div class="empty">Loading…</div>'
