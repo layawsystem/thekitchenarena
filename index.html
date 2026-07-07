@@ -1,7 +1,7 @@
 <!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Book a Court</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
 authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
 storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
-appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="PASTE_SITE_KEY_HERE"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--disabled:#64748B;--brand-l:#9DBBF5;--link:#7FA7F0;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#15336B;--sel-tx:#FFFFFF;--sel-bd:#3B5CA0;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#232C3B;--past-tx:#7E8CA0;--past-bd:#333F52;--input-bg:#0E1626;--input-line:#2E3B52;--input-focus:#3B5CA0;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--btn-dis-bg:#232E42;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--disabled:#64748B;--brand-l:#9DBBF5;--link:#7FA7F0;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#15336B;--sel-tx:#FFFFFF;--sel-bd:#3B5CA0;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#232C3B;--past-tx:#7E8CA0;--past-bd:#333F52;--input-bg:#0E1626;--input-line:#2E3B52;--input-focus:#3B5CA0;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--btn-dis-bg:#232E42;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
 *{box-sizing:border-box;margin:0;padding:0}
 body,html{max-width:100%;overflow-x:hidden}
 body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -290,25 +290,11 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <button class="doc-x" id="docClose" aria-label="Close">✕</button>
 </div> <div class="modal-doc-body" id="docBody">
 </div> </div> </div> <div class="toast" id="toast">
-</div> <script>let db;const MOCK_SETTINGS={businessName:"The Kitchen Arena",tagline:"",logoUrl:"https://i.imgur.com/f9JdWZ5.png",
-heroUrls:["https://i.imgur.com/o8on1AC.png","https://i.imgur.com/mYglc2P.png","https://i.imgur.com/JJFUwZI.png","https://i.imgur.com/fEq4uxu.png","https://i.imgur.com/z0sGoPK.png"],
-openHour:8,closeHour:24,slotMinutes:60,ratePerHour:500,advanceDays:30,checkoutMinutes:5,idPrefix:"TKA",
-paymentMethods:["GCash","Bank"],gcashName:"Dianamary A.",gcashNumber:"09499608680",
-gcashQrUrl:"https://i.imgur.com/jKmSwx5.png",bankName:"BPI • As Cabin",bankNumber:"0120004218",
-bankQrUrl:"https://i.imgur.com/i48rQbZ.png",
-address:"Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga",
-addressName:"The Kitchen Arena - Pampanga",mapsLink:"https://maps.app.goo.gl/rhFxDEoSyNywry5v9?g_st=ic",
-facebookLink:"https://www.facebook.com/profile.php?id=61589844632164",facebookName:"Facebook",
-instagramLink:"https://www.instagram.com/thekitchen.arena",instagramName:"Instagram"},MOCK_COURTS=[{name:"Court 1"},{
-name:"Court 2"},{name:"Court 3"},{name:"Court 4"},{name:"Court 5"}];function _mockBookings(){return[{status:"confirmed",
-court:"Court 1",slots:["20:00","21:00"]},{status:"confirmed",court:"Court 3",slots:["22:00"]},{status:"confirmed",
-court:"Court 4",slots:["23:00"]},{status:"pending",court:"Court 2",slots:["21:00"]},{status:"pending",court:"Court 5",
-slots:["19:00"]}]}function _snap(e){return{forEach:t=>e.forEach((e,o)=>t({id:e.id||"d"+o,data:()=>e})),docs:e,
-empty:0===e.length,size:e.length}}db={collection:e=>({doc:t=>({get:async()=>"settings"===e&&"config"===t?{exists:!0,
-id:"config",data:()=>MOCK_SETTINGS}:{exists:!1,data:()=>null},set:async()=>({}),update:async()=>({})}),
-get:async()=>_snap("courts"===e?MOCK_COURTS:[]),where:(e,t,o)=>({onSnapshot:e=>{try{e(_snap(_mockBookings()))}catch(e){
-console.warn(e)}return()=>{}},get:async()=>_snap(_mockBookings())})})}
-;let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0
+</div> <script>let db;try{const e=firebase.initializeApp(firebaseConfig);try{
+APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e).activate(APPCHECK_SITE_KEY,!0)
+}catch(e){console.warn("AppCheck:",e)}db=firebase.firestore()}catch(e){
+showError("Could not connect. Check the Firebase config at the top of this file.")}
+let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0
 ;const $=e=>document.getElementById(e);function showError(e){$("loading").style.display="none",
 $("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}function toast(e){
 const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
@@ -373,10 +359,10 @@ $("calMonth").textContent=["January","February","March","April","May","June","Ju
 const o=document.createElement("div");o.className="dow",o.textContent=t,e.appendChild(o)})
 ;const t=new Date(viewYear,viewMonth,1).getDay(),o=new Date(viewYear,viewMonth+1,0).getDate(),n=today(),a=maxDate()
 ;for(let o=0;o<t;o++)e.appendChild(document.createElement("div"));for(let t=1;t<=o;t++){
-const o=new Date(viewYear,viewMonth,t),r=dstr(o),s=document.createElement("div");s.className="cal-day",s.textContent=t,
-o<n||o>a?s.classList.add("disabled"):(r===selectedDate&&s.classList.add("active"),
-dateHasCart(r)&&s.classList.add("has-cart"),s.onclick=()=>{selectedDate=r,renderCalendar(),watchAvailability(),
-renderGrid()}),e.appendChild(s)}
+const o=new Date(viewYear,viewMonth,t),r=dstr(o),i=document.createElement("div");i.className="cal-day",i.textContent=t,
+o<n||o>a?i.classList.add("disabled"):(r===selectedDate&&i.classList.add("active"),
+dateHasCart(r)&&i.classList.add("has-cart"),i.onclick=()=>{selectedDate=r,renderCalendar(),watchAvailability(),
+renderGrid()}),e.appendChild(i)}
 $("prevMonth").disabled=new Date(viewYear,viewMonth,1)<=new Date(n.getFullYear(),n.getMonth(),1),
 $("nextMonth").disabled=new Date(viewYear,viewMonth+1,1)>a,
 $("calNote").innerHTML="Bookings available until <strong>"+maxDate().toLocaleDateString("en-US",{month:"short",
@@ -393,15 +379,15 @@ pendingSet=new Set,e.forEach(e=>{const t=e.data();if("cancelled"===t.status)retu
 ;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),renderGrid()
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
 ;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
-;buildSlots().forEach(a=>{const r=document.createElement("tr"),s=document.createElement("td");s.className="time-cell",
-s.textContent=a.label,r.appendChild(s);const i=t&&a.mins+n<=o;COURTS.forEach(e=>{const t=document.createElement("td")
-;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),s=document.createElement("div")
-;s.className="cell-inner",i?(cart.has(n)&&cart.delete(n),s.className+=" cell-past",
-s.textContent="Past"):bookedSet.has(o)?(s.className+=" cell-booked",
-s.textContent="Booked"):pendingSet.has(o)?(s.className+=" cell-pending",
-s.textContent="Pending"):cart.has(n)?(s.className+=" cell-selected",s.textContent="Selected",s.onclick=()=>{
-cart.delete(n),afterCartChange()}):(s.className+=" cell-open",s.textContent="Open",s.onclick=()=>{cart.add(n),
-afterCartChange()}),t.appendChild(s),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
+;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
+i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+n<=o;COURTS.forEach(e=>{const t=document.createElement("td")
+;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
+;i.className="cell-inner",s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
+i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
+i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
+i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
+cart.delete(n),afterCartChange()}):(i.className+=" cell-open",i.textContent="Open",i.onclick=()=>{cart.add(n),
+afterCartChange()}),t.appendChild(i),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
 updateSummary(),renderCalendar()}function cartTotal(){let e=0;return cart.forEach(t=>{
 e+=slotCost(hm2min(t.split("|")[2]))}),e}function promoQualifies(e,t,o){const n=parseDstr(t).getDay()
 ;if(Array.isArray(e.days)&&e.days.length&&!e.days.includes(n))return!1
@@ -412,7 +398,7 @@ const t=Number(e.usageLimit||0);if(t>0&&Number(e.usageCount||0)>=t)return{discou
 reason:"has reached its usage limit"};const o=Number(e.minHours||0);if(o>0){
 if(cart.size*(Number(SETTINGS.slotMinutes??60)/60)<o)return{discount:0,
 reason:"requires a booking of at least "+o+" hour"+(1===o?"":"s")}}let n=0,a=0;if(cart.forEach(t=>{
-const[o,r,s]=t.split("|"),i=slotCost(hm2min(s));a+=i,promoQualifies(e,o,s)&&(n+=i)}),n<=0)return{discount:0,
+const[o,r,i]=t.split("|"),s=slotCost(hm2min(i));a+=s,promoQualifies(e,o,i)&&(n+=s)}),n<=0)return{discount:0,
 reason:"doesn't apply to your selected date or time"}
 ;let r="amount"===e.discountType?Math.min(Number(e.discountValue||0),a):Math.round(n*Number(e.discountValue||0)/100)
 ;return r<0&&(r=0),r>a&&(r=a),{discount:r}}function currentDiscount(){
@@ -424,13 +410,13 @@ t.style.display="none";const n=Number(SETTINGS.slotMinutes??60),a={};[...cart].f
 ;(a[t]=a[t]||[]).push({date:t,court:o,hhmm:n,key:e})}),Object.keys(a).sort().forEach(t=>{
 const r=document.createElement("div");r.className="sum-date",r.textContent=niceDateShort(t),e.appendChild(r),
 a[t].sort((e,t)=>e.court.localeCompare(t.court)||hm2min(e.hhmm)-hm2min(t.hhmm)).forEach(t=>{
-const a=hm2min(t.hhmm),r=slotCost(a);o+=r;const s=document.createElement("div");s.className="sum-item"
-;const i=document.createElement("div")
-;i.className="meta",i.innerHTML="<span>"+t.court+"</span><span style='color:var(--muted);font-size:12px'>"+slotRangeLabel(a,n)+"</span>"
+const a=hm2min(t.hhmm),r=slotCost(a);o+=r;const i=document.createElement("div");i.className="sum-item"
+;const s=document.createElement("div")
+;s.className="meta",s.innerHTML="<span>"+t.court+"</span><span style='color:var(--muted);font-size:12px'>"+slotRangeLabel(a,n)+"</span>"
 ;const l=document.createElement("div");l.style.cssText="display:flex;gap:10px;align-items:center"
 ;const c=document.createElement("span");c.className="price",c.textContent=peso(r);const d=document.createElement("span")
 ;d.className="x",d.textContent="✕",d.onclick=()=>{cart.delete(t.key),afterCartChange()},l.appendChild(c),
-l.appendChild(d),s.appendChild(i),s.appendChild(l),e.appendChild(s)})})}let n=0;if(appliedPromo){
+l.appendChild(d),i.appendChild(s),i.appendChild(l),e.appendChild(i)})})}let n=0;if(appliedPromo){
 const e=computePromoDiscount(appliedPromo);e.discount>0?n=e.discount:(appliedPromo=null,
 $("voucherInput").value.trim()&&setVoucherMsg("Voucher no longer applies to your selected slots.",!1))}
 const a=Math.max(0,o-n),r=$("sumOrig");n>0?(r.style.display="block",r.textContent=peso(o),
@@ -508,15 +494,15 @@ const[t,o,n]=e.split("|");((a[t]=a[t]||{})[o]=a[t][o]||[]).push(n)});for(const e
 const t=await db.collection("bookings").where("date","==",e).get(),o=new Set;t.forEach(e=>{const t=e.data()
 ;"cancelled"!==t.status&&(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))})
 ;for(const t of Object.keys(a[e]))for(const r of a[e][t])if(o.has(t+"|"+r))return toast("Sorry, "+t+" "+hourLabel(hm2min(r))+" on "+niceDateShort(e)+" was just taken."),
-n.disabled=!1,void(n.textContent="Submit Booking")}const r=await nextBookingId(),s=db.batch(),i={};let l=0
+n.disabled=!1,void(n.textContent="Submit Booking")}const r=await nextBookingId(),i=db.batch(),s={};let l=0
 ;Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{const o=a[e][t].reduce((e,t)=>e+slotCost(hm2min(t)),0)
-;i[e+"|"+t]=o,l+=o})});const c=appliedPromo&&computePromoDiscount(appliedPromo).discount||0,d=c>0&&l>0?(l-c)/l:1
+;s[e+"|"+t]=o,l+=o})});const c=appliedPromo&&computePromoDiscount(appliedPromo).discount||0,d=c>0&&l>0?(l-c)/l:1
 ;if(Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{
-const o=a[e][t].sort(),n=Math.round(i[e+"|"+t]*d),l=db.collection("bookings").doc();s.set(l,{bookingId:r,date:e,court:t,
+const o=a[e][t].sort(),n=Math.round(s[e+"|"+t]*d),l=db.collection("bookings").doc();i.set(l,{bookingId:r,date:e,court:t,
 slots:o,startTime:o[0],endTime:o[o.length-1],amount:n,paymentMethod:chosenPayment||"",status:"pending",
-createdAt:firebase.firestore.FieldValue.serverTimestamp()})})}),s.set(db.collection("bookingContacts").doc(r),{
+createdAt:firebase.firestore.FieldValue.serverTimestamp()})})}),i.set(db.collection("bookingContacts").doc(r),{
 bookingId:r,bookerName:e,contact:t,email:o,promoCode:appliedPromo?String(appliedPromo.code||""):"",discount:c,
-createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await s.commit(),receiptData)try{
+createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await i.commit(),receiptData)try{
 await db.collection("receipts").doc(r).set({bookingId:r,image:receiptData,
 createdAt:firebase.firestore.FieldValue.serverTimestamp()})}catch(e){console.warn("receipt save failed",e)}
 if(appliedPromo&&appliedPromo.id)try{await db.collection("promos").doc(appliedPromo.id).update({
@@ -531,6 +517,4 @@ $("nameInput").value="",$("contactInput").value="",$("emailInput").value="",$("r
 $("uploadBox").querySelector(".big").textContent="☁️ Tap to upload image",$("successView").style.display="none",
 $("app").style.display="block",window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),renderGrid(),
 updateSummary(),renderCalendar(),window.scrollTo({top:0,behavior:"smooth"})},setInterval(()=>{
-SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),loadData()
-;try{$("submitBtn").onclick=function(){toast("Preview mode — this is a design preview. No booking is saved.")}
-}catch(e){}</script> </body> </html>
+SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),loadData()</script> </body> </html>
