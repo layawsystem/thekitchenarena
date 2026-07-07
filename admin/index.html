@@ -1,7 +1,7 @@
 <!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Admin</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
 authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
 storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
-appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#48A768;--green-d:#3E9560;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--input-bg:#0E1626;--input-line:#2E3B52;--open-bg:#15321F;--open-tx:#48A768;--pend-bg:#3E3212;--pend-tx:#E0B93E;--conf-bg:#15321F;--conf-tx:#48A768;--ok-bg:#15321F;--ok-tx:#48A768;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--pos:#2747E8;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--input-bg:#0E1626;--input-line:#2E3B52;--open-bg:#15321F;--open-tx:#48A768;--pend-bg:#3E3212;--pend-tx:#E0B93E;--conf-bg:#15321F;--conf-tx:#48A768;--ok-bg:#15321F;--ok-tx:#48A768;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}input,select,textarea,.note-input{color:var(--text)}input::placeholder,textarea::placeholder,.note-input::placeholder{color:var(--muted)}input[type=color]{color:var(--text)}
 *{box-sizing:border-box;margin:0;padding:0}
 body,html{max-width:100%;overflow-x:hidden}
 body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -128,7 +128,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .pos-row{display:flex;align-items:center;justify-content:space-between;font-size:15px}
 .pos-row strong{font-size:18px;color:var(--text)}
 .pos-row.change{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
-.pos-row.change strong{font-size:22px;color:var(--green-d)}
+.pos-row.change strong{font-size:22px;color:var(--pos)}
 .pos-row.change.neg strong{color:var(--cancel)}
 .walk-err{color:var(--cancel);font-size:13px;font-weight:600;margin-top:12px;min-height:16px}
 .empty{text-align:center;padding:40px 16px;color:var(--muted)}
@@ -167,7 +167,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .toast.show{opacity:1}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}
 }
-</style> </head> <body> <div id="loginView" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand">
+@media print{:root{--bg:#fff;--card:#fff;--elev:#fff;--text:#000;--text-2:#111;--muted:#333;--line:#ccc;--sidebar:#fff;--sidebar-2:#fff;--input-bg:#fff;--input-line:#999}body,html{background:#fff!important;color:#000!important}*{color:#000!important;box-shadow:none!important;text-shadow:none!important}.card,.kpi,.pos-row,.container,.content{background:#fff!important;border-color:#ccc!important}.rev-total,.kpi .kd .up,.pos-row.change strong,.up{color:#04284D!important}svg [fill],svg[fill]{fill:#04284D!important}svg [stroke]{stroke:#04284D!important}.sidebar,.hamburger,.icon-btn,.bell,.signout,.user-menu,.save-bar button,.act{display:none!important}}</style> </head> <body> <div id="loginView" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand">
 <img id="loginLogo" alt="" style="display:none"/>
 <div>
 <div class="eyebrow">Admin access</div>
@@ -176,7 +176,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div> <p class="sub">Sign in with your name and 6-digit PIN.</p> <label class="fl" for="adminName">Admin name</label> <input type="text" id="adminName" placeholder="Your name" autocomplete="username"/> <label class="fl" for="adminPin">6-digit PIN</label> <input type="password" id="adminPin" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="current-password" style="letter-spacing:.3em"/> <div class="login-err" id="loginErr">
 </div> <button class="btn" id="signinBtn" style="margin-top:6px">Sign in</button> </div> </div> <div id="dashView" style="display:none"> <div class="topbar"> <img id="topLogo" alt="" style="display:none"/> <div>
 <div class="eyebrow">Admin Dashboard</div>
-<h1 id="topBiz">Dashboard</h1>
+<h1 id="topBiz">The Kitchen Arena</h1>
 </div> <div class="spacer">
 </div> <button class="bell" id="bellBtn">🔔<span class="dot" id="bellDot" style="display:none">0</span>
 </button> <button class="signout" id="signoutBtn">Sign out</button> </div> <div class="container"> <div class="book-2col"> <div class="book-left"> <div class="card"> <div class="cal-head">
@@ -253,7 +253,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div> </div> <div class="walk-err" id="walkErr">
 </div> <div class="modal-actions"> <button class="btn-ghost" id="walkCancel">Cancel</button> <button class="act act-confirm" id="walkConfirm">Confirm &amp; Save</button> </div> </div>
 </div> <div id="boot" class="loading">Loading…</div> <div class="toast" id="toast">
-</div> <script>let db,auth,viewYear,viewMonth,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],ADMIN_NAME="",walkCart=new Set
+</div> <script>const TKA_LOGO="https://i.imgur.com/SPrzHHN.png";let db,auth,viewYear,viewMonth,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],ADMIN_NAME="",walkCart=new Set
 ;try{const t=firebase.initializeApp(firebaseConfig,"layawAdmin");try{
 APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(t).activate(APPCHECK_SITE_KEY,!0)
 }catch(t){console.warn("AppCheck:",t)}
@@ -288,11 +288,9 @@ function emailOf(t){return cinfo(t).email||t.email||""}async function loadBase()
 const t=await db.collection("settings").doc("config").get();if(t.exists){SETTINGS=t.data()
 ;const e=document.documentElement.style;SETTINGS.colorPrimary&&(e.setProperty("--navy",SETTINGS.colorPrimary),
 e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary,.68))),
-SETTINGS.colorAccent&&(e.setProperty("--green",SETTINGS.colorAccent),
-e.setProperty("--green-d",SETTINGS.colorAccentDark||darken(SETTINGS.colorAccent,.82)))
-;const n=SETTINGS.businessName||"Dashboard";$("loginBiz").textContent=n,$("topBiz").textContent=n,
-document.title=n+" — Admin",SETTINGS.logoUrl&&[$("loginLogo"),$("topLogo")].forEach(t=>{t.src=SETTINGS.logoUrl,
-t.style.display="block"})}const e=await db.collection("courts").get();COURTS=[],e.forEach(t=>{const e=t.data()
+e.setProperty("--green","#0D2863"),e.setProperty("--green-d","#0A1E4C")
+;const n=SETTINGS.businessName||"The Kitchen Arena";$("loginBiz").textContent=n,$("topBiz").textContent=n,
+document.title=n+" — Admin",(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;[$("loginLogo"),$("topLogo")].forEach(function(t){if(!t)return;t.src=_lu;t.style.display="block"})})()}const e=await db.collection("courts").get();COURTS=[],e.forEach(t=>{const e=t.data()
 ;!1!==e.active&&COURTS.push({id:t.id,name:e.name||"Court"})}),COURTS.sort((t,e)=>t.name.localeCompare(e.name))}catch(t){
 console.warn(t)}}function adminSlug(t){return String(t||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"")}
 function adminEmail(t){const e=adminSlug(t);return e?e+"@courtadmin.app":""}async function startDashboard(){
