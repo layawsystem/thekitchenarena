@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>The Kitchen Arena — Confirm Booking</title>
+<script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
+authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
+storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{--navy:#04284D;--teal:#0B97A6;--ice:#9EC2CD;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--ok-bg:#15321F;--ok-tx:#48A768;--pend-bg:#3E3212;--pend-tx:#E0B93E;--cancel-bg:#3E1A20;--cancel-tx:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+input,select,textarea{color:var(--text)}input::placeholder{color:var(--muted)}
+*{box-sizing:border-box;margin:0;padding:0}
+body,html{max-width:100%;overflow-x:hidden}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 50px}
+.pagehead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.pagehead h1{font-size:20px;font-weight:800;color:var(--ice);margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.idcard{display:flex;align-items:center;gap:12px}
+.idcard .l{font-size:13px;color:var(--muted)}
+.idcard .v{font-size:22px;font-weight:800;color:var(--text);letter-spacing:.02em}
+.pill{margin-left:auto;font-size:11px;font-weight:800;padding:5px 11px;border-radius:999px}
+.pill.pending{background:var(--pend-bg);color:var(--pend-tx)}
+.pill.confirmed{background:var(--ok-bg);color:var(--ok-tx)}
+.pill.cancelled{background:var(--cancel-bg);color:var(--cancel-tx)}
+.det-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px}
+.det-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;margin-bottom:8px}
+.det-row .left{display:flex;align-items:center;gap:8px;color:var(--text);font-weight:600}
+.det-row .time{color:var(--text);font-weight:600}
+.det-day+.det-day{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.det-divider{border:none;border-top:1px solid var(--line);margin:12px 0}
+.det-amt{display:flex;justify-content:space-between;font-size:15px;margin-top:8px}
+.det-amt .lab{color:var(--text);font-weight:600}
+.det-amt .val{font-weight:800;color:var(--text)}
+.who{font-size:14px;color:var(--text-2);margin-bottom:6px}
+.who strong{color:var(--text)}
+.receipt-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px}
+.receipt-img{width:100%;border-radius:12px;border:1px solid var(--line);display:block}
+.receipt-none{color:var(--muted);font-size:14px}
+.btn{display:block;width:100%;text-align:center;border:none;border-radius:12px;padding:16px;font:inherit;font-weight:800;cursor:pointer;color:#fff;background:var(--teal);margin-bottom:12px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{display:block;width:100%;text-align:center;border:1px solid var(--line);background:var(--elev);border-radius:12px;padding:15px;font:inherit;font-weight:700;cursor:pointer;color:var(--text);text-decoration:none}
+.error-box,.loading{text-align:center;padding:60px 16px;color:var(--muted)}
+.error-box{color:var(--cancel-tx);font-weight:600}
+.login{max-width:360px;margin:40px auto}
+.fl{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+.fi{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--elev);color:var(--text)}
+.login-err{color:var(--cancel-tx);font-size:13px;margin-top:10px;min-height:16px}
+.note{background:var(--elev);color:var(--muted);border-radius:12px;padding:13px 15px;font-size:13px;margin-bottom:16px;line-height:1.5}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="pagehead"><h1>Confirm Booking</h1></div>
+
+<div id="loading" class="loading">Loading booking…</div>
+<div id="errorBox" class="error-box" style="display:none"></div>
+
+<!-- Owner login (only shown if not already signed in) -->
+<div id="loginView" class="login" style="display:none">
+<div class="card">
+<div class="det-title">Owner sign in</div>
+<p class="who">Sign in once to confirm bookings. Your session is kept on this device.</p>
+<label class="fl" for="email">Email</label>
+<input class="fi" type="email" id="email" placeholder="owner@email.com" autocomplete="username"/>
+<label class="fl" for="pass">Password</label>
+<input class="fi" type="password" id="pass" autocomplete="current-password"/>
+<div class="login-err" id="loginErr"></div>
+<button class="btn" id="signinBtn" style="margin-top:14px">Sign in</button>
+</div>
+</div>
+
+<!-- Booking detail + confirm -->
+<div id="content" style="display:none">
+<div class="card idcard">
+<div><div class="l">Booking ID</div><div class="v" id="bid">—</div></div>
+<span class="pill pending" id="statusPill">Pending</span>
+</div>
+
+<div class="card">
+<div class="det-title">Booker</div>
+<div class="who"><strong id="bkName">—</strong></div>
+<div class="who">Contact: <span id="bkContact">—</span></div>
+<div class="who">Email: <span id="bkEmail">—</span></div>
+</div>
+
+<div class="card">
+<div class="det-title">Booking details</div>
+<div id="detList"></div>
+<hr class="det-divider"/>
+<div class="det-amt"><span class="lab">Payment method</span><span class="val" id="dPay">—</span></div>
+<div class="det-amt"><span class="lab">Total hours</span><span class="val" id="dHours">—</span></div>
+<div class="det-amt"><span class="lab">Total amount</span><span class="val" id="dAmount">—</span></div>
+</div>
+
+<div class="card">
+<div class="receipt-title">Payment receipt</div>
+<img class="receipt-img" id="receiptImg" alt="Payment receipt" style="display:none"/>
+<div class="receipt-none" id="receiptNone" style="display:none">No receipt uploaded for this booking.</div>
+</div>
+
+<div class="note" id="alreadyNote" style="display:none"></div>
+<button class="btn" id="confirmBtn">Confirm Booking</button>
+<a class="btn-ghost" href="index.html">Open Owner Dashboard</a>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let db,auth,SETTINGS={},ORDER=[],CONTACT={},combined="pending";
+const params=new URLSearchParams(location.search),BID=params.get("id")||"";
+const $=t=>document.getElementById(t);
+function pad2(t){return String(t).padStart(2,"0")}
+function hm2min(t){if(!t)return 0;const[e,n]=String(t).split(":").map(Number);return 60*(e||0)+(n||0)}
+function hourLabel12(t){let e=Math.floor(t/60),n=t%60;const o=e>=12&&e<24?"PM":"AM";let a=e%12;return 0===a&&(a=12),(0===n?a:a+":"+pad2(n))+" "+o}
+function peso(t){return"\u20B1"+Number(t||0).toLocaleString("en-PH")}
+function niceDate(t){const[e,n,o]=t.split("-").map(Number);return new Date(e,n-1,o).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
+function esc(t){return String(t||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(t){const e=$("toast");e.textContent=t,e.classList.add("show"),setTimeout(()=>e.classList.remove("show"),2400)}
+function showError(t){$("loading").style.display="none",$("content").style.display="none",$("loginView").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=t}
+
+// Init Firebase + App Check + persistent auth
+try{
+  const app=firebase.initializeApp(firebaseConfig);
+  try{APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(app).activate(APPCHECK_SITE_KEY,!0)}catch(e){console.warn("AppCheck:",e)}
+  db=firebase.firestore();auth=firebase.auth();
+  // Keep the owner signed in on this device across visits.
+  auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e=>console.warn("persistence",e));
+}catch(e){showError("Could not connect. Check the Firebase config.")}
+
+if(!BID)showError("No booking ID provided.");
+
+// Auth gate: signed in -> load booking; signed out -> show login
+auth&&auth.onAuthStateChanged(async user=>{
+  if(!BID)return;
+  if(user){
+    $("loginView").style.display="none";
+    await loadBooking();
+  }else{
+    $("loading").style.display="none";
+    $("content").style.display="none";
+    $("errorBox").style.display="none";
+    $("loginView").style.display="block";
+  }
+});
+
+$("signinBtn").onclick=async()=>{
+  const em=$("email").value.trim(),pw=$("pass").value;
+  $("loginErr").textContent="";
+  if(!em||!pw){$("loginErr").textContent="Enter your email and password.";return}
+  $("signinBtn").disabled=!0,$("signinBtn").textContent="Signing in…";
+  try{await auth.signInWithEmailAndPassword(em,pw)}
+  catch(e){
+    const map={"auth/invalid-email":"That email looks off. Check and try again.","auth/wrong-password":"Wrong password. Try again.","auth/user-not-found":"No account for that email.","auth/too-many-requests":"Too many tries. Wait a bit, then retry."};
+    $("loginErr").textContent=map[e.code]||"Could not sign in. Try again.";
+  }finally{$("signinBtn").disabled=!1,$("signinBtn").textContent="Sign in"}
+};
+
+async function loadBooking(){
+  $("loading").style.display="block";$("content").style.display="none";
+  try{
+    const cfg=await db.collection("settings").doc("config").get();
+    SETTINGS=cfg.exists?cfg.data():{};
+  }catch(e){SETTINGS={}}
+  // booking docs
+  try{
+    const snap=await db.collection("bookings").where("bookingId","==",BID).get();
+    ORDER=[];snap.forEach(d=>ORDER.push(d.data()));
+  }catch(e){return showError("Could not load booking. Check your access.")}
+  if(!ORDER.length)return showError("Booking not found. Please check the Booking ID.");
+  // contact
+  try{
+    const c=await db.collection("bookingContacts").doc(BID).get();
+    CONTACT=c.exists?c.data():{};
+  }catch(e){CONTACT={}}
+  // receipt
+  try{
+    const r=await db.collection("receipts").doc(BID).get();
+    if(r.exists&&r.data().image){$("receiptImg").src=r.data().image;$("receiptImg").style.display="block";$("receiptNone").style.display="none";}
+    else{$("receiptImg").style.display="none";$("receiptNone").style.display="block";}
+  }catch(e){$("receiptImg").style.display="none";$("receiptNone").style.display="block";}
+  render();
+}
+
+function combinedStatus(){return ORDER.some(t=>"pending"===String(t.status).toLowerCase())?"pending":ORDER.some(t=>"confirmed"===String(t.status).toLowerCase())?"confirmed":"cancelled"}
+
+function render(){
+  $("loading").style.display="none";$("content").style.display="block";
+  $("bid").textContent=BID;
+  $("bkName").textContent=CONTACT.bookerName||"—";
+  $("bkContact").textContent=CONTACT.contact||"—";
+  $("bkEmail").textContent=CONTACT.email||"—";
+
+  const slot=Number(SETTINGS.slotMinutes??60);
+  const byDate={};ORDER.forEach(r=>{(byDate[r.date]=byDate[r.date]||[]).push(r)});
+  const dates=Object.keys(byDate).sort();
+  let html="",totalSlots=0,totalAmount=0,pay="";
+  dates.forEach(date=>{
+    const rows=byDate[date],courts=[...new Set(rows.map(r=>r.court))].sort().join(", ");
+    let lo=1/0,hi=-1/0;
+    rows.forEach(r=>(r.slots||[]).forEach(sl=>{const m=hm2min(sl);m<lo&&(lo=m);m+slot>hi&&(hi=m+slot);totalSlots++}));
+    rows.forEach(r=>{totalAmount+=Number(r.amount||0);if(!pay)pay=r.paymentMethod||""});
+    html+='<div class="det-day"><div class="det-row"><span class="left">📅 <span>'+esc(niceDate(date))+'</span></span><span class="time">'+(lo<1/0?hourLabel12(lo)+" – "+hourLabel12(hi):"—")+'</span></div><div class="det-row"><span class="left">🏟️ <span>'+esc(courts)+'</span></span></div></div>';
+  });
+  $("detList").innerHTML=html;
+  const hrs=totalSlots*slot/60;
+  $("dHours").textContent=hrs+(1===hrs?" hour":" hours");
+  $("dAmount").textContent=peso(totalAmount);
+  $("dPay").textContent=pay||"—";
+
+  combined=combinedStatus();
+  const pill=$("statusPill");
+  pill.className="pill "+combined;
+  pill.textContent=combined.charAt(0).toUpperCase()+combined.slice(1);
+
+  const btn=$("confirmBtn"),note=$("alreadyNote");
+  if("confirmed"===combined){
+    btn.style.display="none";note.style.display="block";
+    note.textContent="This booking is already confirmed. The booker has been notified.";
+  }else if("cancelled"===combined){
+    btn.style.display="none";note.style.display="block";
+    note.textContent="This booking was cancelled.";
+  }else{
+    btn.style.display="block";note.style.display="none";
+    btn.disabled=!1;btn.textContent="Confirm Booking";
+  }
+}
+
+$("confirmBtn").onclick=async()=>{
+  const btn=$("confirmBtn");
+  btn.disabled=!0;btn.textContent="Confirming…";
+  try{
+    const snap=await db.collection("bookings").where("bookingId","==",BID).get();
+    const batch=db.batch();
+    snap.forEach(d=>{if("cancelled"!==String(d.data().status).toLowerCase())batch.update(d.ref,{status:"confirmed"})});
+    await batch.commit();
+    // refresh local + UI (the confirmed email is sent by the Cloud Function)
+    ORDER.forEach(r=>{if("cancelled"!==String(r.status).toLowerCase())r.status="confirmed"});
+    toast("Booking confirmed. Booker notified.");
+    render();
+  }catch(e){
+    console.error(e);
+    btn.disabled=!1;btn.textContent="Confirm Booking";
+    toast("Could not confirm. Check your access and try again.");
+  }
+};
+</script>
+</body>
+</html>
