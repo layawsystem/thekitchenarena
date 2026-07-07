@@ -311,7 +311,7 @@ return"₱"+Number(e).toLocaleString("en-PH")}function darken(e,t){
 }function ck(e,t,o){return e+"|"+t+"|"+o}async function loadData(){if(db)try{
 const e=await db.collection("settings").doc("config").get();if(!e.exists)return void showError("Settings not found.")
 ;SETTINGS=e.data();const t=await db.collection("courts").get();if(COURTS=[],t.forEach(e=>{const t=e.data()
-;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court"})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
+;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||""})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
 !COURTS.length)return void showError("No active courts found.");try{const e=await db.collection("rates").get();RATES=[],
 e.forEach(e=>{const t=e.data();let o=hm2min(t.start),n=hm2min(t.end);n<=o&&(n+=1440),RATES.push({start:o,end:n,
 rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start)}catch(e){RATES=[]}try{
@@ -382,7 +382,7 @@ pendingSet=new Set,e.forEach(e=>{const t=e.data();if("cancelled"===t.status)retu
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+n<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner",s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
+;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
 i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
 i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
