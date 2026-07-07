@@ -104,7 +104,7 @@ to{opacity:1;transform:none}
 .pill{display:inline-block;font-size:11px;font-weight:800;padding:5px 11px;border-radius:999px}
 .pill.avail{background:var(--ok-bg);color:var(--ok-tx)}
 .pill.occ{background:var(--pend-bg);color:var(--pend-tx)}
-.pill.maint{background:#232c3b;color:#8a99ad}
+.pill.maint{background:#232c3b;color:#8a99ad}.pill.na{background:var(--book-bg,#3E1A20);color:var(--cancel,#E88A92)}.court-card{cursor:pointer;transition:border-color .15s,background .15s;position:relative}.court-card:hover{border-color:var(--teal,#0B97A6);background:rgba(255,255,255,.03)}.court-card .toggle-hint{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.02em}.court-card.busy{opacity:.55;pointer-events:none}
 .recent-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
 .recent-row:last-child{border-bottom:none}
 .recent-row .rt{font-weight:700;min-width:138px}
@@ -948,15 +948,28 @@ function renderTimeChart(){const e=Number(SETTINGS.openHour??8),t=Number(SETTING
 ;a[t]=(a[t]||0)+1})});const o=[];for(let n=e;n<t;n++)o.push({label:hourLabel(60*n),value:a[n]||0})
 ;const s=o.some(e=>e.value>0);$("timeChart").innerHTML=s?barChart(o):'<div class="empty">No bookings yet today.</div>'}
 function nowMin(){const e=new Date;return 60*e.getHours()+e.getMinutes()}function renderCourtStatus(){
-const e=$("courtStatus");if(!COURTS.length)return void(e.innerHTML='<div class="empty">No courts set up yet.</div>')
-;const t=dstr(today()),n=Number(SETTINGS.slotMinutes??60),a=nowMin();e.innerHTML="",COURTS.forEach(o=>{
-let s="avail",r="Available";if("maintenance"===String(o.status).toLowerCase())s="maint",r="Maintenance";else{
-ALLB.some(e=>e.date===t&&e.court===o.name&&"confirmed"===e.status&&(e.slots||[]).some(e=>{const t=hm2min(e)
-;return a>=t&&a<t+n}))&&(s="occ",r="Occupied")}
-const i=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"Outdoor",c=document.createElement("div")
-;c.className="court-card",
-c.innerHTML='<div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="cn">'+esc(o.name)+'</div><div class="ct">('+esc(i)+')</div><span class="pill '+s+'">'+r+"</span>",
-e.appendChild(c)})}async function renderRecent(){const e=$("recentList"),t=orderGroups(ALLB.slice().sort((e,t)=>{
+const e=$("courtStatus");if(!COURTS.length)return void(e.innerHTML='<div class="empty">No courts set up yet.</div>');
+const t=dstr(today()),n=Number(SETTINGS.slotMinutes??60),a=nowMin();e.innerHTML="";COURTS.forEach(o=>{
+let s="avail",r="Available",unavail="unavailable"===String(o.status).toLowerCase();
+if(unavail){s="na",r="Not Available"}else if("maintenance"===String(o.status).toLowerCase()){s="maint",r="Maintenance"}else{
+ALLB.some(e=>e.date===t&&e.court===o.name&&"confirmed"===e.status&&(e.slots||[]).some(e=>{const t=hm2min(e);return a>=t&&a<t+n}))&&(s="occ",r="Occupied")}
+const i=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"Outdoor",c=document.createElement("div");c.className="court-card";c.dataset.cid=o.id;
+const hint=unavail?"Tap to mark available":"Tap to mark not available";
+c.innerHTML='<div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="cn">'+esc(o.name)+'</div><div class="ct">('+esc(i)+')</div><span class="pill '+s+'">'+r+'</span><div class="toggle-hint">'+hint+'</div>';
+c.onclick=()=>toggleCourtAvail(o,c);
+e.appendChild(c)})}
+async function toggleCourtAvail(court,card){
+if(!court||!court.id)return;
+const makeUnavail="unavailable"!==String(court.status).toLowerCase();
+card.classList.add("busy");
+try{
+await db.collection("courts").doc(court.id).update({status:makeUnavail?"unavailable":""});
+const idx=COURTS.findIndex(c=>c.id===court.id);if(idx>=0)COURTS[idx].status=makeUnavail?"unavailable":"";
+toast(makeUnavail?"Court marked not available.":"Court marked available.");
+renderCourtStatus();
+}catch(err){console.error(err);card.classList.remove("busy");
+toast("Could not update. Check your access.")}}
+async function renderRecent(){const e=$("recentList"),t=orderGroups(ALLB.slice().sort((e,t)=>{
 const n=e.createdAt&&e.createdAt.seconds||0;return(t.createdAt&&t.createdAt.seconds||0)-n
 }).filter(e=>"cancelled"!==e.status)).slice(0,5);t.length?(await ensureContacts(t.map(e=>e[0])),e.innerHTML="",
 t.forEach(t=>{
