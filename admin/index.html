@@ -1,0 +1,460 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Admin</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
+authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
+storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#48A768;--green-d:#3E9560;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--input-bg:#0E1626;--input-line:#2E3B52;--open-bg:#15321F;--open-tx:#48A768;--pend-bg:#3E3212;--pend-tx:#E0B93E;--conf-bg:#15321F;--conf-tx:#48A768;--ok-bg:#15321F;--ok-tx:#48A768;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+*{box-sizing:border-box;margin:0;padding:0}
+body,html{max-width:100%;overflow-x:hidden}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:16px}
+.login-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px;width:100%;max-width:380px}
+.login-card .brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.login-card .brand img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+.login-card h1{font-size:20px;color:var(--brand-l);font-weight:800}
+.login-card .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.login-card p.sub{color:var(--muted);font-size:14px;margin:10px 0 20px}
+label.fl{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input{width:100%;padding:12px 14px;border:1px solid var(--input-line);border-radius:10px;font:inherit;background:var(--input-bg);color:var(--text)}
+input:focus{outline:2px solid var(--green);border-color:var(--green)}
+.btn{width:100%;background:var(--navy);color:#fff;border:1px solid var(--btn-bd);padding:14px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--navy-d)}
+.btn:disabled{background:#232e42;cursor:not-allowed}
+.login-err{color:var(--cancel);font-size:13px;font-weight:600;margin-top:12px;min-height:18px}
+.topbar{background:var(--navy);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:12px}
+.topbar img{width:38px;height:38px;border-radius:9px;object-fit:cover}
+.topbar h1{font-size:16px;font-weight:800;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;font-weight:700}
+.topbar>div{min-width:0}
+.bell,.signout,.topbar img{flex-shrink:0}
+.topbar .spacer{margin-left:auto}
+.bell{position:relative;background:rgba(255,255,255,.14);border:none;color:#fff;width:42px;height:42px;border-radius:10px;cursor:pointer;font-size:18px;display:grid;place-items:center}
+.bell:hover{background:rgba(255,255,255,.24)}
+.bell .dot{position:absolute;top:-5px;right:-5px;background:var(--cancel);color:#fff;font-size:11px;font-weight:800;min-width:20px;height:20px;border-radius:999px;display:grid;place-items:center;padding:0 5px;border:2px solid var(--navy)}
+.signout{background:rgba(255,255,255,.14);color:#fff;border:none;padding:10px 14px;border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.signout:hover{background:rgba(255,255,255,.24)}
+.container{max-width:1040px;margin:0 auto;padding:18px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.card h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px}
+.cal-nav{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.cal-nav .today{flex:1}
+.btn-ghost{border:1px solid var(--line);background:var(--elev);border-radius:10px;padding:9px 12px;font:inherit;font-weight:600;cursor:pointer;color:var(--text)}
+.btn-ghost:hover{border-color:var(--green)}
+.cal-month{text-align:center;font-weight:700;color:var(--text);margin-bottom:8px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-grid .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0}
+.cal-day{position:relative;aspect-ratio:1;display:grid;place-items:center;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text)}
+.cal-day:hover:not(.active){background:var(--open-bg)}
+.cal-day.active{background:var(--navy);color:#fff}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px}
+.controls .grp{display:flex;flex-direction:column;gap:5px;flex:1 1 150px}
+.controls label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.controls input,.controls select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font:inherit}
+@media (max-width:520px){.controls{flex-direction:column;align-items:stretch}
+.controls .grp{width:100%}
+}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.book-2col{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
+.book-2col,.book-left,.book-right{min-width:0}
+.book-2col .stats{margin:0 0 14px}
+.book-left .card{position:sticky;top:16px}
+@media (max-width:900px){.book-2col{grid-template-columns:1fr}
+.book-left .card{position:static}
+.book-2col .stats{margin:14px 0}
+}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.stat .n{font-size:24px;font-weight:800;color:var(--text)}
+.stat .l{font-size:12px;color:var(--muted);font-weight:600}
+@media (max-width:560px){.stats{grid-template-columns:1fr 1fr}
+.stat:last-child{grid-column:1/-1}
+.cal-head{flex-direction:column;align-items:stretch}
+.btn-walk{width:100%}
+}
+.view-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.view-head h3{margin:0}
+.toggle{margin-left:auto;display:inline-flex;background:var(--elev);border-radius:10px;padding:3px}
+.toggle button{border:none;background:0 0;padding:8px 16px;border-radius:8px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+.toggle button.on{background:var(--navy);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.booking{border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.booking .row1{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.booking .court{font-weight:800;color:var(--text);font-size:16px}
+.badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
+.badge.pending{background:var(--pend-bg);color:var(--pend-tx)}
+.badge.confirmed{background:var(--ok-bg);color:var(--ok-tx)}
+.badge.cancelled{background:#232c3b;color:#8a99ad}
+.booking .amt{margin-left:auto;font-weight:800;color:var(--text)}
+.booking .times{font-size:14px;margin-bottom:6px}
+.booking .who{font-size:13px;color:var(--muted)}
+.booking .who strong{color:var(--text)}
+.booking .actions{display:flex;gap:10px;margin-top:14px}
+.act{flex:1;border:none;padding:11px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+.act-confirm{background:var(--green);color:#fff}
+.act-confirm:hover{background:var(--green-d)}
+.act-cancel{background:var(--elev);color:var(--cancel);border:1px solid #6e2a31}
+.act-cancel:hover{background:#3e1a20}
+.table-scroll{overflow-x:auto}
+table.sched{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}
+table.sched thead th{font-size:13px;font-weight:700;color:var(--text);padding:10px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--card);z-index:2}
+table.sched thead th:first-child{left:0;z-index:3;text-align:left}
+table.sched thead th:not(:first-child){min-width:118px}
+table.sched td.time-cell{font-size:13px;font-weight:700;padding:0 10px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;left:0;background:var(--card);z-index:1;width:80px}
+table.sched td.cell{border-bottom:1px solid var(--line);padding:6px;min-width:118px;vertical-align:middle}
+table.sched td.book-cell{text-align:center;padding:8px 8px;cursor:pointer;vertical-align:middle}
+table.sched td.book-cell.confirmed{background:var(--conf-bg)}
+table.sched td.book-cell.pending{background:var(--pend-bg)}
+table.sched td.book-cell .nm{font-weight:800;font-size:13px;color:var(--text);white-space:normal;line-height:1.2}
+table.sched td.book-cell .stt{font-size:10px;letter-spacing:.08em;font-weight:800;margin-top:4px}
+table.sched td.book-cell.confirmed .stt{color:var(--conf-tx)}
+table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
+.scell-open{background:var(--open-bg);color:var(--open-tx);border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.cal-head h3{margin:0}
+.btn-walk{background:var(--green);color:#fff;border:none;border-radius:10px;padding:9px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+.btn-walk:hover{background:var(--green-d)}
+.badge.cash{background:var(--ok-bg);color:var(--ok-tx)}
+.walk-modal{max-width:600px}
+.walk-modal .wsub{font-size:13px;color:var(--muted);margin:4px 0 16px}
+.wstep{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--text);margin:18px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.fld label .opt{color:var(--muted);font-weight:500}
+.fld input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--input-bg)}
+.fld input:focus{outline:2px solid var(--green);border-color:var(--green)}
+#walkGrid td.book-cell{cursor:pointer}
+.wcell{border-radius:9px;padding:12px 4px;text-align:center;font-size:12px;font-weight:700}
+.wcell.open{background:var(--open-bg);color:var(--open-tx);cursor:pointer}
+.wcell.sel{background:var(--navy);color:#fff}
+.wcell.off{background:#232c3b;color:#8a99ad;cursor:not-allowed}
+.pos{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px}
+.pos-row{display:flex;align-items:center;justify-content:space-between;font-size:15px}
+.pos-row strong{font-size:18px;color:var(--text)}
+.pos-row.change{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+.pos-row.change strong{font-size:22px;color:var(--green-d)}
+.pos-row.change.neg strong{color:var(--cancel)}
+.walk-err{color:var(--cancel);font-size:13px;font-weight:600;margin-top:12px;min-height:16px}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.loading{text-align:center;padding:50px 16px;color:var(--muted)}
+.backdrop{position:fixed;inset:0;background:rgba(14,49,64,.35);display:none;z-index:45}
+.backdrop.show{display:block}
+.notif{position:fixed;top:0;right:0;height:100%;width:380px;max-width:90vw;background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,.15);z-index:46;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column}
+.notif.show{transform:translateX(0)}
+.notif-head{padding:18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.notif-head h3{font-size:17px;color:var(--text);font-weight:800}
+.notif-head .x{margin-left:auto;background:0 0;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.notif-body{overflow-y:auto;padding:14px;flex:1}
+.nitem{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.nitem .nt{font-size:13px;font-weight:700;color:var(--text)}
+.nitem .nd{font-size:12px;color:var(--muted);margin:2px 0 8px}
+.nitem .nacts{display:flex;gap:8px}
+.nitem .nacts button{flex:1;border:none;padding:8px;border-radius:8px;font:inherit;font-weight:700;font-size:12px;cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(14,49,64,.55);display:none;place-items:center;padding:16px;z-index:50}
+.overlay.show{display:grid}
+.modal{background:var(--card);border-radius:var(--radius);padding:24px;width:100%;max-width:440px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
+.modal h3{font-size:18px;color:var(--text);margin-bottom:4px}
+.modal .mrow{font-size:14px;margin:8px 0}
+.modal .mrow span{color:var(--muted)}
+.modal-actions{display:flex;gap:10px;margin-top:14px}
+.modal-actions .btn-ghost{flex:1;padding:13px}
+.modal-actions .act{flex:1}
+.mini-btn{border:1px solid var(--line);background:var(--elev);border-radius:8px;padding:8px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;color:var(--text)}
+.mini-btn:hover{border-color:var(--green)}
+.note-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.note-label{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text-2);margin-bottom:6px}
+.note-input{width:100%;min-height:64px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;resize:vertical;background:var(--input-bg);margin-bottom:8px}
+.note-input:focus{outline:2px solid var(--green);border-color:var(--green)}
+.note-msg{font-size:12px;font-weight:700;color:var(--ok-tx);margin-left:10px}
+#receiptImg{width:100%;border-radius:10px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy-d);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}
+}
+</style> </head> <body> <div id="loginView" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand">
+<img id="loginLogo" alt="" style="display:none"/>
+<div>
+<div class="eyebrow">Admin access</div>
+<h1 id="loginBiz">Dashboard</h1>
+</div>
+</div> <p class="sub">Sign in with your name and 6-digit PIN.</p> <label class="fl" for="adminName">Admin name</label> <input type="text" id="adminName" placeholder="Your name" autocomplete="username"/> <label class="fl" for="adminPin">6-digit PIN</label> <input type="password" id="adminPin" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="current-password" style="letter-spacing:.3em"/> <div class="login-err" id="loginErr">
+</div> <button class="btn" id="signinBtn" style="margin-top:6px">Sign in</button> </div> </div> <div id="dashView" style="display:none"> <div class="topbar"> <img id="topLogo" alt="" style="display:none"/> <div>
+<div class="eyebrow">Admin Dashboard</div>
+<h1 id="topBiz">Dashboard</h1>
+</div> <div class="spacer">
+</div> <button class="bell" id="bellBtn">🔔<span class="dot" id="bellDot" style="display:none">0</span>
+</button> <button class="signout" id="signoutBtn">Sign out</button> </div> <div class="container"> <div class="book-2col"> <div class="book-left"> <div class="card"> <div class="cal-head">
+<h3>Select a date</h3>
+<button class="btn-walk" id="addWalkBtn">+ Walk-in Booking</button>
+</div> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
+</div> <div class="cal-grid" id="calGrid">
+</div> </div> </div> <div class="book-right"> <div class="stats"> <div class="stat">
+<div class="n" id="stPending">0</div>
+<div class="l">Pending</div>
+</div> <div class="stat">
+<div class="n" id="stConfirmed">0</div>
+<div class="l">Confirmed</div>
+</div> <div class="stat">
+<div class="n" id="stRevenue">₱0</div>
+<div class="l">Day total</div>
+</div> </div> <div class="card"> <div class="view-head"> <h3 id="dayTitle">Bookings</h3> <div class="toggle"> <button id="tabList" class="on">List</button> <button id="tabGrid">Grid</button> </div> </div> <div id="listView">
+</div> <div id="gridView" style="display:none"> <div class="table-scroll">
+<table class="sched">
+<thead>
+<tr id="schedHead">
+</tr>
+</thead>
+<tbody id="schedBody">
+</tbody>
+</table>
+</div> </div> </div> </div> </div> </div> </div> <div class="backdrop" id="backdrop">
+</div> <div class="notif" id="notif"> <div class="notif-head">
+<h3>Pending bookings</h3>
+<button class="x" id="notifClose">×</button>
+</div> <div class="notif-body" id="notifBody">
+</div> </div> <div class="overlay" id="detailOverlay">
+<div class="modal" id="detailModal">
+</div>
+</div> <div class="overlay" id="receiptOverlay">
+<div class="modal" style="max-width:480px">
+<h3 style="margin-bottom:14px">Payment receipt</h3>
+<img id="receiptImg" alt="receipt"/>
+<button class="btn-ghost" id="receiptClose" style="width:100%;margin-top:16px;padding:13px">Close</button>
+</div>
+</div> <div class="overlay" id="walkOverlay">
+<div class="modal walk-modal"> <h3>Walk-in Booking <span class="badge cash">Cash</span>
+</h3> <p class="wsub">Booking for <strong id="walkDate">—</strong>. To book another day, close this and pick the date on the calendar first.</p> <div class="wstep">1 · Select court &amp; time</div> <div class="table-scroll">
+<table class="sched" id="walkGrid">
+<thead>
+<tr id="walkHead">
+</tr>
+</thead>
+<tbody id="walkBody">
+</tbody>
+</table>
+</div> <div class="wstep">2 · Player details</div> <div class="fld">
+<label>Player name</label>
+<input id="walkName" placeholder="Juan Dela Cruz"/>
+</div> <div class="fld">
+<label>Mobile number</label>
+<input id="walkContact" inputmode="tel" placeholder="09xx xxx xxxx"/>
+</div> <div class="fld">
+<label>Email <span class="opt">(optional)</span>
+</label>
+<input id="walkEmail" inputmode="email" placeholder="you@email.com"/>
+</div> <div class="wstep">3 · Handled by</div> <div class="fld">
+<label>Staff name</label>
+<input id="walkStaff" placeholder="Your name"/>
+</div> <div class="wstep">4 · Cash payment</div> <div class="pos"> <div class="pos-row">
+<span>Total due</span>
+<strong id="walkTotal">₱0</strong>
+</div> <div class="fld" style="margin:10px 0 0">
+<label>Cash tendered</label>
+<input id="walkTendered" type="number" min="0" inputmode="numeric" placeholder="0"/>
+</div> <div class="pos-row change">
+<span>Change (sukli)</span>
+<strong id="walkChange">₱0</strong>
+</div> </div> <div class="walk-err" id="walkErr">
+</div> <div class="modal-actions"> <button class="btn-ghost" id="walkCancel">Cancel</button> <button class="act act-confirm" id="walkConfirm">Confirm &amp; Save</button> </div> </div>
+</div> <div id="boot" class="loading">Loading…</div> <div class="toast" id="toast">
+</div> <script>let db,auth,viewYear,viewMonth,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],ADMIN_NAME="",walkCart=new Set
+;try{const t=firebase.initializeApp(firebaseConfig,"layawAdmin");try{
+APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(t).activate(APPCHECK_SITE_KEY,!0)
+}catch(t){console.warn("AppCheck:",t)}
+db=t.firestore(),auth=t.auth(),auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{})}catch(t){
+document.getElementById("boot").textContent="Config error. Check the Firebase config at the top of this file."}
+const $=t=>document.getElementById(t);function pad2(t){return String(t).padStart(2,"0")}function dstr(t){
+return t.getFullYear()+"-"+pad2(t.getMonth()+1)+"-"+pad2(t.getDate())}function today(){const t=new Date
+;return t.setHours(0,0,0,0),t}function parseDstr(t){const[e,n,a]=t.split("-").map(Number);return new Date(e,n-1,a)}
+function hm2min(t){const[e,n]=String(t).split(":").map(Number);return 60*(e||0)+(n||0)}function hourLabel(t){
+let e=Math.floor(t/60),n=t%60;const a=e>=12&&e<24?"PM":"AM";let o=e%12;return 0===o&&(o=12),0===n?o+a:o+":"+pad2(n)+a}
+function slotsLabel(t){const e=Number(SETTINGS&&SETTINGS.slotMinutes||60);return(t||[]).slice().sort().map(t=>{
+const n=hm2min(t);return hourLabel(n)+"-"+hourLabel(n+e)}).join(", ")}function slotsRange(t){
+const e=Number(SETTINGS&&SETTINGS.slotMinutes||60),n=(t||[]).map(hm2min).sort((t,e)=>t-e);if(!n.length)return"—"
+;const a=t=>{let e=Math.floor(t/60);const n=e>=12&&e<24?"PM":"AM";let a=e%12;return 0===a&&(a=12),a+":"+pad2(t%60)+n
+},o=[];let s=n[0],i=n[0];for(let t=1;t<=n.length;t++){if(t<n.length&&n[t]===i+e){i=n[t];continue}
+const c=i+e,r=(c-s)/60,l=(Number.isInteger(r)?r:r.toFixed(1))+(1===r?" hour":" hours");o.push(a(s)+"-"+a(c)+" ("+l+")"),
+t<n.length&&(s=n[t],i=n[t])}return o.join(", ")}function peso(t){return"₱"+Number(t||0).toLocaleString("en-PH")}
+function niceDate(t){return parseDstr(t).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
+function toast(t){const e=$("toast")
+;e.textContent=t,e.classList.add("show"),setTimeout(()=>e.classList.remove("show"),2600)}function darken(t,e){
+3===(t=String(t).replace("#","")).length&&(t=t.split("").map(t=>t+t).join(""));const n=parseInt(t,16)
+;return"#"+[Math.round((n>>16&255)*e),Math.round((n>>8&255)*e),Math.round((255&n)*e)].map(t=>("0"+t.toString(16)).slice(-2)).join("")
+}function orderGroups(t){const e={},n=[];return t.forEach(t=>{const a=t.bookingId||"__"+t.id;e[a]||(e[a]=[],n.push(a)),
+e[a].push(t)}),n.map(t=>e[t])}function groupStatus(t){
+return t.some(t=>"pending"===t.status)?"pending":t.some(t=>"confirmed"===t.status)?"confirmed":"cancelled"}
+function groupKey(t){return t[0].bookingId||t[0].id}let CONTACTS={};async function ensureContacts(t){
+const e=[...new Set(t.map(t=>t.bookingId).filter(t=>t&&!(t in CONTACTS)))];e.length&&await Promise.all(e.map(async t=>{
+try{const e=await db.collection("bookingContacts").doc(t).get();CONTACTS[t]=e.exists?e.data():{}}catch(e){CONTACTS[t]={}
+}}))}function cinfo(t){return t.bookingId&&CONTACTS[t.bookingId]?CONTACTS[t.bookingId]:{}}function nameOf(t){
+return cinfo(t).bookerName||t.bookerName||"—"}function contactOf(t){return cinfo(t).contact||t.contact||"—"}
+function emailOf(t){return cinfo(t).email||t.email||""}async function loadBase(){try{
+const t=await db.collection("settings").doc("config").get();if(t.exists){SETTINGS=t.data()
+;const e=document.documentElement.style;SETTINGS.colorPrimary&&(e.setProperty("--navy",SETTINGS.colorPrimary),
+e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary,.68))),
+SETTINGS.colorAccent&&(e.setProperty("--green",SETTINGS.colorAccent),
+e.setProperty("--green-d",SETTINGS.colorAccentDark||darken(SETTINGS.colorAccent,.82)))
+;const n=SETTINGS.businessName||"Dashboard";$("loginBiz").textContent=n,$("topBiz").textContent=n,
+document.title=n+" — Admin",SETTINGS.logoUrl&&[$("loginLogo"),$("topLogo")].forEach(t=>{t.src=SETTINGS.logoUrl,
+t.style.display="block"})}const e=await db.collection("courts").get();COURTS=[],e.forEach(t=>{const e=t.data()
+;!1!==e.active&&COURTS.push({id:t.id,name:e.name||"Court"})}),COURTS.sort((t,e)=>t.name.localeCompare(e.name))}catch(t){
+console.warn(t)}}function adminSlug(t){return String(t||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"")}
+function adminEmail(t){const e=adminSlug(t);return e?e+"@courtadmin.app":""}async function startDashboard(){
+SETTINGS||await loadBase();const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),selectedDate=dstr(t),
+renderCalendar(),renderSchedHead(),watchDay(),watchPending()}function renderCalendar(){
+$("calMonth").textContent=["January","February","March","April","May","June","July","August","September","October","November","December"][viewMonth]+" "+viewYear
+;const t=$("calGrid");t.innerHTML="",["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach(e=>{
+const n=document.createElement("div");n.className="dow",n.textContent=e,t.appendChild(n)})
+;const e=new Date(viewYear,viewMonth,1).getDay(),n=new Date(viewYear,viewMonth+1,0).getDate()
+;for(let n=0;n<e;n++)t.appendChild(document.createElement("div"));for(let e=1;e<=n;e++){
+const n=dstr(new Date(viewYear,viewMonth,e)),a=document.createElement("div");a.className="cal-day",a.textContent=e,
+n===selectedDate&&a.classList.add("active"),a.onclick=()=>{selectedDate=n,renderCalendar(),watchDay()},t.appendChild(a)}
+}function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
+dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async t=>{DAY=[],t.forEach(t=>DAY.push({
+id:t.id,...t.data()})),DAY.sort((t,e)=>{const n=t.createdAt&&t.createdAt.seconds||0
+;return(e.createdAt&&e.createdAt.seconds||0)-n});const e=orderGroups(DAY.filter(t=>"cancelled"!==t.status));let n=0,a=0
+;e.forEach(t=>{const e=groupStatus(t);"pending"===e?n++:"confirmed"===e&&a++});let o=0;DAY.forEach(t=>{
+"confirmed"===t.status&&(o+=Number(t.amount||0))}),$("stPending").textContent=n,$("stConfirmed").textContent=a,
+$("stRevenue").textContent=peso(o),await ensureContacts(DAY),renderView()},t=>{console.error(t),
+$("listView").innerHTML='<div class="empty">Could not load bookings.</div>'})}function watchPending(){
+pendingUnsub&&pendingUnsub(),pendingUnsub=db.collection("bookings").where("status","==","pending").onSnapshot(async t=>{
+PENDING=[],t.forEach(t=>PENDING.push({id:t.id,...t.data()
+})),PENDING.sort((t,e)=>t.date!==e.date?t.date<e.date?-1:1:(t.startTime||"").localeCompare(e.startTime||""))
+;const e=orderGroups(PENDING).length,n=$("bellDot");e>0?(n.style.display="grid",
+n.textContent=e>99?"99+":e):n.style.display="none",await ensureContacts(PENDING),renderNotif()},t=>console.error(t))}
+function setView(t){currentView=t,$("tabList").classList.toggle("on","list"===t),
+$("tabGrid").classList.toggle("on","grid"===t),$("listView").style.display="list"===t?"block":"none",
+$("gridView").style.display="grid"===t?"block":"none",renderView()}function renderView(){
+"list"===currentView?renderList():renderGrid()}function renderList(){const t=$("listView");t.innerHTML=""
+;const e=orderGroups(DAY.filter(t=>"cancelled"!==t.status));e.length?(e.forEach(e=>{
+const n=groupStatus(e),a=[...new Set(e.map(t=>t.court))].sort(),o=e.reduce((t,e)=>t+Number(e.amount||0),0),s=e[0],i=groupKey(e),c=e.map(t=>(t.slots||[]).slice().sort().join(","))
+;let r=c.every(t=>t===c[0])?'<div class="times">'+slotsRange(s.slots)+"</div>":e.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="times"><strong>'+t.court+":</strong> "+slotsRange(t.slots)+"</div>").join(""),l=""
+;"pending"===n?l='<button class="act act-confirm" data-key="'+i+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel</button>':"confirmed"===n&&(l='<button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel booking</button>')
+;const d=document.createElement("div");d.className="booking";const u=emailOf(s)
+;d.innerHTML='<div class="row1"><span class="court">'+a.join(", ")+'</span><span class="badge '+n+'">'+n+'</span><span class="amt">'+peso(o)+"</span></div>"+r+'<div class="who"><strong>'+nameOf(s)+"</strong> · "+contactOf(s)+(u?" · "+u:"")+"</div>"+(l?'<div class="actions">'+l+"</div>":""),
+t.appendChild(d)
+}),t.querySelectorAll(".act").forEach(t=>t.onclick=()=>doAction(t.getAttribute("data-key"),t.getAttribute("data-act")))):t.innerHTML='<div class="empty">No bookings for this date.</div>'
+}function buildSlots(){
+const t=Number(SETTINGS.openHour??8),e=Number(SETTINGS.closeHour??22),n=Number(SETTINGS.slotMinutes??60),a=[]
+;for(let o=60*t;o+n<=60*e;o+=n)a.push({key:pad2(Math.floor(o/60))+":"+pad2(o%60),mins:o});return a}
+function renderSchedHead(){const t=$("schedHead");t.innerHTML="";const e=document.createElement("th")
+;e.textContent="Time",t.appendChild(e),COURTS.forEach(e=>{const n=document.createElement("th");n.textContent=e.name,
+t.appendChild(n)})}function renderGrid(){if(!SETTINGS||!COURTS.length)return void($("schedBody").innerHTML="")
+;const t=buildSlots(),e=Number(SETTINGS.slotMinutes??60),n={};DAY.forEach(t=>{
+"cancelled"!==t.status&&(t.slots||[]).forEach(e=>n[t.court+"|"+e]=t)});const a={},o={};COURTS.forEach(e=>{a[e.name]={},
+o[e.name]=new Set;let s=0;for(;s<t.length;){const i=n[e.name+"|"+t[s].key];if(!i){s++;continue}let c=s+1
+;for(;c<t.length;){const a=n[e.name+"|"+t[c].key];if(!a||a.id!==i.id)break;c++}a[e.name][s]={booking:i,len:c-s}
+;for(let t=s+1;t<c;t++)o[e.name].add(t);s=c}});const s=$("schedBody");s.innerHTML="",t.forEach((t,n)=>{
+const i=document.createElement("tr"),c=document.createElement("td");c.className="time-cell",
+c.textContent=hourLabel(t.mins)+"-"+hourLabel(t.mins+e),i.appendChild(c),COURTS.forEach(t=>{if(o[t.name].has(n))return
+;const e=a[t.name][n];if(e){const t=e.booking,n=t.status||"pending",a=document.createElement("td")
+;a.className="cell book-cell "+n,
+a.rowSpan=e.len,a.innerHTML='<div class="nm">'+nameOf(t)+'</div><div class="stt">'+n.toUpperCase()+"</div>",
+a.onclick=()=>openDetail(t),i.appendChild(a)}else{const t=document.createElement("td");t.className="cell"
+;const e=document.createElement("div");e.className="scell-open",e.textContent="Open",t.appendChild(e),i.appendChild(t)}
+}),s.appendChild(i)})}function openDetail(t){
+const e=t.bookingId?DAY.filter(e=>e.bookingId===t.bookingId&&"cancelled"!==e.status):[t],n=e.length?e:[t],a=groupStatus(n),o=[...new Set(n.map(t=>t.court))].sort().join(", "),s=n.reduce((t,e)=>t+Number(e.amount||0),0),i=n[0],c=i.bookingId||i.id,r=i.bookingId||i.id,l=n.map(t=>(t.slots||[]).slice().sort().join(",")),d=l.every(t=>t===l[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(i.slots)+"</div>":n.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="mrow"><span>'+t.court+":</span> "+slotsRange(t.slots)+"</div>").join("")
+;let u=""
+;"pending"===a?u='<button class="act act-confirm" data-key="'+c+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+c+'" data-act="cancel">Cancel</button>':"confirmed"===a&&(u='<button class="act act-cancel" data-key="'+c+'" data-act="cancel">Cancel booking</button>')
+;const m=i.bookingId&&CONTACTS[i.bookingId]&&CONTACTS[i.bookingId].note?CONTACTS[i.bookingId].note:"",h=i.handledBy||i.bookingId&&CONTACTS[i.bookingId]&&CONTACTS[i.bookingId].handledBy||""
+;$("detailModal").innerHTML="<h3>"+o+' · <span class="badge '+a+'">'+a+'</span></h3><div class="mrow"><span>Date:</span> '+niceDate(i.date)+"</div>"+d+'<div class="mrow"><span>Booker:</span> <strong>'+nameOf(i)+'</strong></div><div class="mrow"><span>Contact:</span> '+contactOf(i)+"</div>"+(emailOf(i)?'<div class="mrow"><span>Email:</span> '+emailOf(i)+"</div>":"")+(i.paymentMethod?'<div class="mrow"><span>Payment:</span> '+i.paymentMethod+"</div>":"")+(h?'<div class="mrow"><span>Handled by:</span> '+h+"</div>":"")+'<div class="mrow"><span>Total:</span> <strong>'+peso(s)+'</strong></div><div class="note-box"><label class="note-label">Note</label><textarea id="noteInput" class="note-input" placeholder="Add a private note about this booking…">'+m+'</textarea><button class="mini-btn" id="saveNoteBtn" data-id="'+(i.bookingId||"")+'">Save note</button><span class="note-msg" id="noteMsg"></span></div><div class="modal-actions"><button class="btn-ghost" id="detailClose">Close</button><button class="btn-ghost" id="viewReceiptBtn">View receipt</button></div>'+(u?'<div class="modal-actions">'+u+"</div>":""),
+$("detailOverlay").classList.add("show"),$("detailClose").onclick=()=>$("detailOverlay").classList.remove("show"),
+$("viewReceiptBtn").onclick=()=>viewReceipt(r);const p=$("saveNoteBtn");p&&(p.onclick=async()=>{
+const t=p.getAttribute("data-id");if(t){p.disabled=!0;try{await db.collection("bookingContacts").doc(t).set({
+note:$("noteInput").value.trim()},{merge:!0
+}),CONTACTS[t]||(CONTACTS[t]={}),CONTACTS[t].note=$("noteInput").value.trim(),$("noteMsg").textContent="Saved ✓",
+setTimeout(()=>{const t=$("noteMsg");t&&(t.textContent="")},2500)}catch(t){console.error(t),
+$("noteMsg").textContent="Could not save."}finally{p.disabled=!1}}else $("noteMsg").textContent="No booking id."}),
+$("detailModal").querySelectorAll(".act").forEach(t=>t.onclick=async()=>{
+await doAction(t.getAttribute("data-key"),t.getAttribute("data-act")),$("detailOverlay").classList.remove("show")})}
+async function viewReceipt(t){try{const e=await db.collection("receipts").doc(t).get()
+;e.exists&&e.data().image?($("receiptImg").src=e.data().image,
+$("receiptOverlay").classList.add("show")):toast("No receipt was uploaded for this booking.")}catch(t){console.error(t),
+toast("Could not load receipt.")}}function renderNotif(){const t=$("notifBody")
+;if(!PENDING.length)return void(t.innerHTML='<div class="empty">No pending bookings. You\'re all caught up! 🎾</div>')
+;const e=orderGroups(PENDING);t.innerHTML="",e.forEach(e=>{
+const n=e[0],a=groupKey(e),o=[...new Set(e.map(t=>t.court))].sort().join(", "),s=e.reduce((t,e)=>t+Number(e.amount||0),0),i=document.createElement("div")
+;i.className="nitem",
+i.innerHTML='<div class="nt">'+o+" · "+niceDate(n.date)+'</div><div class="nd">'+slotsRange(n.slots)+" · "+nameOf(n)+" · "+peso(s)+'</div><div class="nacts"><button class="act-confirm" data-key="'+a+'" data-act="confirm">Confirm</button><button class="act-cancel" data-key="'+a+'" data-act="cancel">Cancel</button></div>',
+t.appendChild(i)
+}),t.querySelectorAll("button").forEach(t=>t.onclick=()=>doAction(t.getAttribute("data-key"),t.getAttribute("data-act")))
+}function closeNotif(){$("notif").classList.remove("show"),$("backdrop").classList.remove("show")}
+async function doAction(t,e){if("cancel"===e&&!confirm("Cancel this booking? The slots will reopen."))return
+;const n=DAY.concat(PENDING);let a=[...new Set(n.filter(e=>(e.bookingId||e.id)===t||e.bookingId===t).map(t=>t.id))]
+;a.length||(a=[t]);try{const t=db.batch();a.forEach(n=>t.update(db.collection("bookings").doc(n),{
+status:"confirm"===e?"confirmed":"cancelled"
+})),await t.commit(),toast("confirm"===e?"Booking confirmed.":"Booking cancelled.")}catch(t){console.error(t),
+toast("Could not update. Please try again.")}}function walkSlotCost(){
+return Number(SETTINGS.ratePerHour??0)*(Number(SETTINGS.slotMinutes??60)/60)}function openWalkIn(){
+SETTINGS&&COURTS.length?(walkCart.clear(),$("walkDate").textContent=niceDate(selectedDate),$("walkName").value="",
+$("walkContact").value="",$("walkEmail").value="",$("walkStaff").value=ADMIN_NAME||"",$("walkTendered").value="",
+$("walkErr").textContent="",
+renderWalkGrid(),updateWalkTotals(),$("walkOverlay").classList.add("show")):toast("Please wait — still loading courts.")
+}function renderWalkGrid(){$("walkHead").innerHTML="<th>Time</th>"+COURTS.map(t=>"<th>"+t.name+"</th>").join("")
+;const t=$("walkBody");t.innerHTML="";const e=new Set;DAY.forEach(t=>{
+"cancelled"!==t.status&&(t.slots||[]).forEach(n=>e.add(t.court+"|"+n))})
+;const n=selectedDate===dstr(today()),a=60*(new Date).getHours()+(new Date).getMinutes(),o=Number(SETTINGS.slotMinutes??60)
+;buildSlots().forEach(s=>{const i=document.createElement("tr"),c=document.createElement("td");c.className="time-cell",
+c.textContent=hourLabel(s.mins)+"-"+hourLabel(s.mins+o),i.appendChild(c);const r=n&&s.mins+o<=a;COURTS.forEach(t=>{
+const n=document.createElement("td");n.className="cell book-cell"
+;const a=t.name+"|"+s.key,o=document.createElement("div");r||e.has(a)?(o.className="wcell off",
+o.textContent=r?"Past":"Taken"):walkCart.has(a)?(o.className="wcell sel",o.textContent="Selected",o.onclick=()=>{
+walkCart.delete(a),renderWalkGrid(),updateWalkTotals()}):(o.className="wcell open",o.textContent="Open",o.onclick=()=>{
+walkCart.add(a),renderWalkGrid(),updateWalkTotals()}),n.appendChild(o),i.appendChild(n)}),t.appendChild(i)})}
+function updateWalkTotals(){const t=walkCart.size*walkSlotCost();$("walkTotal").textContent=peso(t)
+;const e=Number($("walkTendered").value||0),n=e-t,a=$("walkChange").parentElement;e>0&&n<0?(a.classList.add("neg"),
+$("walkChange").textContent="−"+peso(Math.abs(n))):(a.classList.remove("neg"),$("walkChange").textContent=peso(n>0?n:0))
+}async function nextBookingId(){let t=SETTINGS.idPrefix
+;t||(t=(SETTINGS.businessName||"BK").split(/\s+/).map(t=>t[0]).join("").replace(/[^A-Za-z]/g,"").toUpperCase().slice(0,4)||"BK")
+;const e=db.collection("meta").doc("counters"),n=await db.runTransaction(async t=>{const n=await t.get(e)
+;let a=n.exists&&n.data().bookingSeq?n.data().bookingSeq:0;return a++,t.set(e,{bookingSeq:a},{merge:!0}),a}),a=new Date
+;return t+"-"+(pad2(a.getMonth()+1)+pad2(a.getDate())+String(a.getFullYear()).slice(-2))+"-"+String(n).padStart(4,"0")}
+auth&&auth.onAuthStateChanged(async t=>{if($("boot").style.display="none",t){let e=!1,n="";try{
+const a=await db.collection("admins").doc(t.uid).get()
+;a.exists?!0===a.data().removed||!1===a.data().active?n="This staff account has been removed or disabled. Contact the owner.":(e=!0,
+ADMIN_NAME=a.data().name||""):n="This is the owner account. Staff sign in with their name and 6-digit PIN."}catch(t){
+n="Could not verify your access. Please try again."}if(!e)return $("dashView").style.display="none",
+$("loginView").style.display="grid",void($("loginErr").textContent=n);$("loginView").style.display="none",
+$("dashView").style.display="block",startDashboard()}else $("dashView").style.display="none",
+$("loginView").style.display="grid",dayUnsub&&dayUnsub(),pendingUnsub&&pendingUnsub()}),
+$("signinBtn").onclick=async()=>{const t=$("adminName").value.trim(),e=$("adminPin").value.trim()
+;if($("loginErr").textContent="",!t||!e)return void($("loginErr").textContent="Please enter your name and PIN.")
+;if(!/^\d{6}$/.test(e))return void($("loginErr").textContent="PIN must be 6 digits.");const n=$("signinBtn")
+;n.disabled=!0,n.textContent="Signing in…";try{await auth.signInWithEmailAndPassword(adminEmail(t),e)}catch(t){const e={
+"auth/invalid-credential":"Name or PIN is incorrect.","auth/user-not-found":"No admin found with that name.",
+"auth/wrong-password":"Incorrect PIN.","auth/too-many-requests":"Too many attempts. Try again later."}
+;$("loginErr").textContent=e[t.code]||"Name or PIN is incorrect."}finally{n.disabled=!1,n.textContent="Sign in"}},
+$("adminPin").addEventListener("keydown",t=>{"Enter"===t.key&&$("signinBtn").click()}),
+$("signoutBtn").onclick=()=>auth.signOut(),$("prevMonth").onclick=()=>{viewMonth--,viewMonth<0&&(viewMonth=11,
+viewYear--),renderCalendar()},$("nextMonth").onclick=()=>{viewMonth++,viewMonth>11&&(viewMonth=0,viewYear++),
+renderCalendar()},$("todayBtn").onclick=()=>{const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),
+selectedDate=dstr(t),renderCalendar(),watchDay()},$("tabList").onclick=()=>setView("list"),
+$("tabGrid").onclick=()=>setView("grid"),$("detailOverlay").onclick=t=>{
+t.target===$("detailOverlay")&&$("detailOverlay").classList.remove("show")
+},$("receiptClose").onclick=()=>$("receiptOverlay").classList.remove("show"),$("receiptOverlay").onclick=t=>{
+t.target===$("receiptOverlay")&&$("receiptOverlay").classList.remove("show")},$("bellBtn").onclick=()=>{
+$("notif").classList.add("show"),$("backdrop").classList.add("show")},$("notifClose").onclick=closeNotif,
+$("backdrop").onclick=closeNotif,
+$("addWalkBtn").onclick=openWalkIn,$("walkCancel").onclick=()=>$("walkOverlay").classList.remove("show"),
+$("walkOverlay").onclick=t=>{t.target===$("walkOverlay")&&$("walkOverlay").classList.remove("show")},
+$("walkTendered").addEventListener("input",updateWalkTotals),$("walkConfirm").onclick=async()=>{
+$("walkErr").textContent=""
+;const t=$("walkName").value.trim(),e=$("walkContact").value.trim(),n=$("walkEmail").value.trim(),a=$("walkStaff").value.trim(),o=walkCart.size*walkSlotCost(),s=Number($("walkTendered").value||0)
+;if(0===walkCart.size)return void($("walkErr").textContent="Please select at least one slot.")
+;if(!t)return void($("walkErr").textContent="Please enter the player's name.")
+;if(!e)return void($("walkErr").textContent="Please enter the player's mobile number.")
+;if(!a)return void($("walkErr").textContent="Please enter the staff name (handled by).")
+;if(n&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n))return void($("walkErr").textContent="That email looks invalid.")
+;if(s<o)return void($("walkErr").textContent="Cash tendered is less than the total due.");const i=$("walkConfirm")
+;i.disabled=!0,i.textContent="Saving…";try{const c=selectedDate,r={};[...walkCart].forEach(t=>{
+const e=t.indexOf("|"),n=t.slice(0,e),a=t.slice(e+1);(r[n]=r[n]||[]).push(a)})
+;const l=await db.collection("bookings").where("date","==",c).get(),d=new Set;l.forEach(t=>{const e=t.data()
+;"cancelled"!==e.status&&(e.slots||[]).forEach(t=>d.add(e.court+"|"+t))})
+;for(const t of Object.keys(r))for(const e of r[t])if(d.has(t+"|"+e))return $("walkErr").textContent=t+" "+hourLabel(hm2min(e))+" was just taken. Please adjust the selection.",
+i.disabled=!1,i.textContent="Confirm & Save",renderWalkGrid(),void updateWalkTotals()
+;const u=await nextBookingId(),m=[],h=db.batch();Object.keys(r).forEach(t=>{
+const e=r[t].sort(),n=e.length*walkSlotCost(),o=db.collection("bookings").doc();m.push(o),h.set(o,{bookingId:u,date:c,
+court:t,slots:e,startTime:e[0],endTime:e[e.length-1],amount:n,paymentMethod:"Cash",status:"pending",source:"walk-in",
+handledBy:a,createdAt:firebase.firestore.FieldValue.serverTimestamp()})
+}),h.set(db.collection("bookingContacts").doc(u),{bookingId:u,bookerName:t,contact:e,email:n,handledBy:a,cashTendered:s,
+changeGiven:s-o,createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await h.commit();const p=db.batch()
+;m.forEach(t=>p.update(t,{status:"confirmed"})),await p.commit(),$("walkOverlay").classList.remove("show"),
+toast("Walk-in confirmed · "+peso(o)+" cash · change "+peso(s-o))}catch(t){console.error(t),
+$("walkErr").textContent="Could not save the booking. Please try again."}finally{i.disabled=!1,
+i.textContent="Confirm & Save"}},loadBase()</script> </body> </html>
