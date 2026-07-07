@@ -1,0 +1,144 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Booking Status</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
+authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
+storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#3B5CA0;--green-d:#205E37;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--pend-bg:#3E3212;--pend-tx:#E0B93E;--ok-bg:#15321F;--ok-tx:#48A768;--cancel-bg:#3E1A20;--cancel-tx:#E88A92;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+*{box-sizing:border-box;margin:0;padding:0}
+body,html{max-width:100%;overflow-x:hidden}
+body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px 50px}
+.pagehead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.pagehead a{color:var(--text);text-decoration:none;font-size:22px;font-weight:700;line-height:1}
+.pagehead h1{font-size:20px;font-weight:800;color:var(--brand-l);margin:0 auto;transform:translateX(-11px)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+.idcard{display:flex;align-items:center;gap:12px}
+.idcard .l{font-size:13px;color:var(--muted)}
+.idcard .v{font-size:22px;font-weight:800;color:var(--text);letter-spacing:.02em}
+.copy-btn{margin-left:auto;background:var(--elev);border:none;color:var(--text);padding:9px 16px;border-radius:9px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+.copy-btn:hover{background:#20304a}
+.status-card{text-align:center}
+.status-icon{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font-size:34px;margin:4px auto 14px}
+.si-pending{background:var(--pend-bg)}
+.si-confirmed{background:var(--ok-bg)}
+.si-cancelled{background:var(--cancel-bg)}
+.status-text{font-size:20px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.st-pending{color:var(--pend-tx)}
+.st-confirmed{color:var(--ok-tx)}
+.st-cancelled{color:var(--cancel-tx)}
+.status-sub{color:var(--text);font-size:15px;margin-top:4px}
+.timer-lab{font-size:13px;color:var(--muted);margin-top:18px}
+.timer{display:flex;justify-content:center;gap:8px;margin:6px 0 4px}
+.timer .unit{text-align:center;min-width:74px}
+.timer .num{font-size:46px;font-weight:800;color:var(--pend-tx);line-height:1;font-variant-numeric:tabular-nums}
+.timer .sep{font-size:40px;font-weight:700;color:var(--pend-tx);align-self:flex-start}
+.timer .ul{font-size:11px;letter-spacing:.12em;color:var(--muted);font-weight:700;margin-top:6px}
+.help-box{background:var(--pend-bg);color:var(--pend-tx);border-radius:12px;padding:14px 16px;font-size:13px;margin-top:18px;text-align:center;line-height:1.5}
+.det-title{font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px}
+.det-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;margin-bottom:8px}
+.det-row .left{display:flex;align-items:center;gap:8px;color:var(--text);font-weight:600}
+.det-row .time{color:var(--text);font-weight:600}
+.det-divider{border:none;border-top:1px solid var(--line);margin:12px 0}
+.det-day{padding:2px 0}
+.det-day+.det-day{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+.det-amt{display:flex;justify-content:space-between;font-size:15px;margin-top:8px}
+.det-amt .lab{color:var(--text);font-weight:600}
+.det-amt .val{font-weight:800;color:var(--text)}
+.det-amt .val.big{color:var(--text)}
+.pay-note{background:var(--elev);color:var(--muted);border-radius:12px;padding:13px 15px;font-size:13px;margin-bottom:16px;line-height:1.5;display:flex;gap:8px}
+.contact-box{background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);border-radius:12px;padding:14px 16px;font-size:14px;margin-bottom:16px;line-height:1.5}
+.contact-box strong{color:var(--text)}
+.contact-box .num{display:block;font-size:20px;font-weight:800;color:var(--text);margin-top:6px}
+.btn-ghost{display:block;width:100%;text-align:center;border:1px solid var(--line);background:var(--elev);border-radius:12px;padding:15px;font:inherit;font-weight:700;cursor:pointer;color:var(--text);text-decoration:none;margin-bottom:12px}
+.btn-ghost:hover{border-color:var(--green)}
+.error-box,.loading{text-align:center;padding:60px 16px;color:var(--muted)}
+.error-box{color:var(--cancel-tx);font-weight:600}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy-d);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}
+}
+</style> </head> <body> <div class="wrap"> <div class="pagehead"> <a href="index.html" title="Back">‹</a> <h1>Booking Status</h1> </div> <div id="loading" class="loading">Loading your booking…</div> <div id="errorBox" class="error-box" style="display:none">
+</div> <div id="content" style="display:none"> <div class="card idcard"> <div>
+<div class="l">Booking ID</div>
+<div class="v" id="bid">—</div>
+</div> <button class="copy-btn" id="copyBtn">⧉ Copy</button> </div> <div class="card status-card"> <div class="status-icon" id="statusIcon">⏳</div> <div class="status-text" id="statusText">—</div> <div class="status-sub" id="statusSub">
+</div> <div id="timerWrap"> <div class="timer-lab">Time remaining</div> <div class="timer"> <div class="unit">
+<div class="num" id="tH">00</div>
+<div class="ul">HRS</div>
+</div> <div class="sep">:</div> <div class="unit">
+<div class="num" id="tM">00</div>
+<div class="ul">MINS</div>
+</div> <div class="sep">:</div> <div class="unit">
+<div class="num" id="tS">00</div>
+<div class="ul">SECS</div>
+</div> </div> <div class="help-box" id="timerHelp">If you still haven't received a confirmation in the time above, please contact us.</div> </div> </div> <div class="card"> <div class="det-title">Booking details</div> <div id="detList">
+</div> <hr class="det-divider"/> <div class="det-amt">
+<span class="lab">Total hours</span>
+<span class="val" id="dHours">
+</span>
+</div> <div class="det-amt">
+<span class="lab">Total amount</span>
+<span class="val big" id="dAmount">
+</span>
+</div> </div> <div class="pay-note" id="payNote">🔒 <span>We'll confirm your booking shortly after verifying your payment. Your slot is not automatically released.</span>
+</div> <div class="contact-box" id="contactBox">
+</div> <button class="btn-ghost" id="refreshBtn">↻ Refresh status</button> <a class="btn-ghost" href="index.html">‹ Back to booking page</a> </div> </div> <div class="toast" id="toast">
+</div> <script>let db,SETTINGS={},ORDER=[],deadline=null,combined="pending",ticker=null,unsub=null
+;const params=new URLSearchParams(location.search),BID=params.get("id")||"",$=t=>document.getElementById(t)
+;function pad2(t){return String(t).padStart(2,"0")}function hm2min(t){if(!t)return 0
+;const[e,n]=String(t).split(":").map(Number);return 60*(e||0)+(n||0)}function hourLabel12(t){
+let e=Math.floor(t/60),n=t%60;const o=e>=12&&e<24?"PM":"AM";let a=e%12;return 0===a&&(a=12),
+(0===n?a:a+":"+pad2(n))+" "+o}function peso(t){return"₱"+Number(t||0).toLocaleString("en-PH")}function niceDate(t){
+const[e,n,o]=t.split("-").map(Number);return new Date(e,n-1,o).toLocaleDateString("en-US",{weekday:"short",
+month:"short",day:"numeric",year:"numeric"})}function toast(t){const e=$("toast");e.textContent=t,
+e.classList.add("show"),setTimeout(()=>e.classList.remove("show"),2400)}function showError(t){
+$("loading").style.display="none",$("content").style.display="none",$("errorBox").style.display="block",
+$("errorBox").textContent=t}function darken(t,e){
+3===(t=String(t).replace("#","")).length&&(t=t.split("").map(t=>t+t).join(""));const n=parseInt(t,16)
+;return"#"+[Math.round((n>>16&255)*e),Math.round((n>>8&255)*e),Math.round((255&n)*e)].map(t=>("0"+t.toString(16)).slice(-2)).join("")
+}try{const t=firebase.initializeApp(firebaseConfig);try{
+APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(t).activate(APPCHECK_SITE_KEY,!0)
+}catch(t){console.warn("AppCheck:",t)}db=firebase.firestore()}catch(t){
+showError("Could not connect. Check the Firebase config.")}async function init(){if(db)if(BID)try{
+const t=await db.collection("settings").doc("config").get();if(t.exists){SETTINGS=t.data()
+;const e=document.documentElement.style;SETTINGS.colorPrimary&&(e.setProperty("--navy",SETTINGS.colorPrimary),
+e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary,.68))),
+SETTINGS.colorAccent&&e.setProperty("--green",SETTINGS.colorAccent),
+document.title=(SETTINGS.businessName||"Booking")+" — Status"}watch()}catch(t){console.error(t),
+showError("Failed to load: "+(t.message||t))}else showError("No booking ID provided.")}function watch(){unsub&&unsub(),
+unsub=db.collection("bookings").where("bookingId","==",BID).onSnapshot(t=>{ORDER=[],t.forEach(t=>ORDER.push(t.data())),
+ORDER.length?render():showError("Booking not found. Please check your Booking ID.")},t=>{console.error(t),
+showError("Could not load booking status.")})}function combinedStatus(){
+return ORDER.some(t=>"pending"===t.status)?"pending":ORDER.some(t=>"confirmed"===t.status)?"confirmed":"cancelled"}
+function render(){$("loading").style.display="none",$("content").style.display="block",$("bid").textContent=BID,
+combined=combinedStatus()
+;const t=Number(SETTINGS.slotMinutes??60),e=ORDER.filter(t=>"cancelled"!==t.status),n=e.length?e:ORDER,o={}
+;n.forEach(t=>{(o[t.date]=o[t.date]||[]).push(t)});const a=Object.keys(o).sort();let r="",s=0,i=0;a.forEach(e=>{
+const n=o[e],a=[...new Set(n.map(t=>t.court))].sort().join(", ");let c=1/0,l=-1/0
+;n.forEach(e=>(e.slots||[]).forEach(e=>{const n=hm2min(e);n<c&&(c=n),n+t>l&&(l=n+t),s++})),
+n.forEach(t=>i+=Number(t.amount||0)),
+r+='<div class="det-day"><div class="det-row"><span class="left">📅 <span>'+niceDate(e)+'</span></span><span class="time">'+(c<1/0?hourLabel12(c)+" – "+hourLabel12(l):"—")+'</span></div><div class="det-row"><span class="left">🏟️ <span>'+a+"</span></span></div></div>"
+}),$("detList").innerHTML=r;const c=s*t/60;$("dHours").textContent=c+(1===c?" hour":" hours"),
+$("dAmount").textContent=peso(i);const l=$("statusIcon"),d=$("statusText"),u=$("statusSub")
+;l.className="status-icon "+("confirmed"===combined?"si-confirmed":"cancelled"===combined?"si-cancelled":"si-pending"),
+d.className="status-text "+("confirmed"===combined?"st-confirmed":"cancelled"===combined?"st-cancelled":"st-pending"),
+"confirmed"===combined?(l.textContent="✓",
+d.textContent="Confirmed",u.textContent="Your booking is confirmed. See you on the court!",
+$("timerWrap").style.display="none",$("payNote").style.display="none"):"cancelled"===combined?(l.textContent="✕",
+d.textContent="Cancelled",u.textContent="This booking was cancelled.",$("timerWrap").style.display="none",
+$("payNote").style.display="none"):(l.textContent="⏳",d.textContent="Pending",u.textContent="Your slot is on hold.",
+$("timerWrap").style.display="block",$("payNote").style.display="flex");const p=Number(SETTINGS.holdMinutes??30)
+;let m=Date.now()
+;const h=ORDER.map(t=>t.createdAt&&t.createdAt.toDate?t.createdAt.toDate().getTime():null).filter(Boolean)
+;h.length&&(m=Math.min(...h)),deadline=m+60*p*1e3,updateContact(),startTicker()}function startTicker(){
+ticker&&clearInterval(ticker),tick(),"pending"===combined&&(ticker=setInterval(tick,1e3))}function tick(){
+if("pending"!==combined)return void(ticker&&(clearInterval(ticker),ticker=null));let t=deadline-Date.now();t<0&&(t=0)
+;const e=Math.floor(t/1e3);$("tH").textContent=pad2(Math.floor(e/3600)),$("tM").textContent=pad2(Math.floor(e%3600/60)),
+$("tS").textContent=pad2(e%60),
+t<=0&&($("timerHelp").textContent="The hold time has passed and your booking is still pending. Please contact us to follow up.",
+updateContact(!0),ticker&&(clearInterval(ticker),ticker=null))}function updateContact(t){
+const e=$("contactBox"),n=t||"pending"===combined&&deadline&&Date.now()>=deadline
+;"pending"===combined&&n&&SETTINGS.contactNumber?(e.style.display="block",
+e.innerHTML='<strong>Need help?</strong> Contact us to follow up on your booking.<span class="num">📞 '+SETTINGS.contactNumber+"</span>"):"pending"===combined?(e.style.display="block",
+e.innerHTML="<strong>Need help?</strong> Your contact number will be shown when the timer reaches zero."):e.style.display="none"
+}$("copyBtn").onclick=()=>{
+navigator.clipboard.writeText(BID).then(()=>toast("Booking ID copied!")).catch(()=>toast("Copy failed"))},
+$("refreshBtn").onclick=()=>{toast("Status refreshed."),render()},init()</script> </body> </html>
