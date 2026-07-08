@@ -454,7 +454,7 @@ async function slotLockId(date,court,slot){return (date+"_"+court+"_"+slot).repl
    deterministic lock doc. The transaction reads all locks, fails if any is still held (not expired),
    otherwise writes them + the reserved booking docs. This guarantees 0% double-booking. */
 async function reserveSlots(){
-const byDate={};[...cart].forEach(k=>{const[court,date,slot]=k.split("|");((byDate[date]=byDate[date]||{})[court]=byDate[date][court]||[]).push(slot)})
+const byDate={};[...cart].forEach(k=>{const[date,court,slot]=k.split("|");((byDate[date]=byDate[date]||{})[court]=byDate[date][court]||[]).push(slot)})
 ;const bid=await nextBookingId();reservedBookingId=bid;reservedIds=[];reservedLockIds=[]
 ;const holdMs=6e4*holdMins(),nowMs=Date.now()
 ;const lockKeys=[];for(const date of Object.keys(byDate))for(const court of Object.keys(byDate[date]))for(const slot of byDate[date][court])lockKeys.push({id:await slotLockId(date,court,slot),date:date,court:court,slot:slot})
