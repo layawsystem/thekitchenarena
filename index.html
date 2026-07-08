@@ -411,7 +411,7 @@ reason:"doesn't apply to your selected date or time"}
 ;return r<0&&(r=0),r>a&&(r=a),{discount:r}}function currentDiscount(){
 return appliedPromo&&computePromoDiscount(appliedPromo).discount||0}function netTotal(){
 return Math.max(0,cartTotal()-currentDiscount())}function setVoucherMsg(e,t){const o=$("voucherMsg")
-;o&&(o.textContent=e||"",o.style.color=t?"var(--green-d)":"var(--cancel)")}function updateSummary(){
+;o&&(o.textContent=e||"",o.style.color=t?"var(--open-tx)":"var(--cancel)")}function updateSummary(){
 const e=$("sumList"),t=$("sumEmpty");e.innerHTML="";let o=0;if(0===cart.size)t.style.display="block";else{
 t.style.display="none";const n=Number(SETTINGS.slotMinutes??60),a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|")
 ;(a[t]=a[t]||[]).push({date:t,court:o,hhmm:n,key:e})}),Object.keys(a).sort().forEach(t=>{
