@@ -381,7 +381,7 @@ e.appendChild(o)})}function watchAvailability(){db&&(availUnsub&&(availUnsub(),a
 availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{bookedSet=new Set,
 pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
 ;if("reserved"===t.status){const hu=t.holdUntil&&t.holdUntil.toMillis?t.holdUntil.toMillis():0
-;if(hu&&hu<now)return;if(reservedBookingId&&t.bookingId===reservedBookingId)return
+;if(!hu||hu<now)return;if(reservedBookingId&&t.bookingId===reservedBookingId)return
 ;(t.slots||[]).forEach(e=>pendingSet.add(t.court+"|"+e));return}
 ;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),renderGrid()
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
@@ -411,7 +411,7 @@ reason:"doesn't apply to your selected date or time"}
 ;return r<0&&(r=0),r>a&&(r=a),{discount:r}}function currentDiscount(){
 return appliedPromo&&computePromoDiscount(appliedPromo).discount||0}function netTotal(){
 return Math.max(0,cartTotal()-currentDiscount())}function setVoucherMsg(e,t){const o=$("voucherMsg")
-;o&&(o.textContent=e||"",o.style.color=t?"var(--open-tx)":"var(--cancel)")}function updateSummary(){
+;o&&(o.textContent=e||"",o.style.color=t?"var(--green-d)":"var(--cancel)")}function updateSummary(){
 const e=$("sumList"),t=$("sumEmpty");e.innerHTML="";let o=0;if(0===cart.size)t.style.display="block";else{
 t.style.display="none";const n=Number(SETTINGS.slotMinutes??60),a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|")
 ;(a[t]=a[t]||[]).push({date:t,court:o,hhmm:n,key:e})}),Object.keys(a).sort().forEach(t=>{
@@ -440,7 +440,7 @@ clearHoldTimer(),releaseReservation(),cart.clear(),chosenPayment=null,receiptDat
 ;e&&(e.textContent="Your "+holdMins()+"-minute reservation window has expired, so your selected slots have been released. Please pick your slots again."),
 $("expireOverlay").classList.add("show")}async function goCheckout(){if(0===cart.size||reserving)return;reserving=!0
 ;const cbtn=$("mbContinue"),dbtn=$("continueBtn");cbtn&&(cbtn.disabled=!0);dbtn&&(dbtn.disabled=!0)
-;try{await reserveSlots()}catch(err){reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
+;try{if(reservedBookingId)await releaseReservation();await reserveSlots()}catch(err){reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
 ;if(err&&err.__taken)return toast(err.message);console.error(err);return toast("Could not hold your slots. Please try again.")}
 ;reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
 ;$("app").style.display="none",$("checkoutView").style.display="block",$("mobileBar").style.display="none",
@@ -472,11 +472,14 @@ const lockRefs=lockKeys.map(k=>db.collection("slotLocks").doc(k.id))
 status:"reserved",holdUntil:hu,createdAt:firebase.firestore.FieldValue.serverTimestamp()})})})
 })}
 /* Release the current reservation: delete reserved booking docs AND their slot locks. */
-async function releaseReservation(){const ids=reservedIds.slice(),lockIds=reservedLockIds.slice()
+async function releaseReservation(){const bid=reservedBookingId,lockIds=reservedLockIds.slice()
 ;reservedIds=[];reservedLockIds=[];reservedBookingId=null
-;if(!ids.length&&!lockIds.length)return
-;try{const b=db.batch();ids.forEach(id=>b.delete(db.collection("bookings").doc(id)))
-;lockIds.forEach(id=>b.delete(db.collection("slotLocks").doc(id)));await b.commit()}
+;try{const b=db.batch();let any=!1
+/* Delete by querying our own reserved docs (robust even if in-memory IDs were lost). */
+;if(bid){const snap=await db.collection("bookings").where("bookingId","==",bid).get()
+;snap.forEach(doc=>{if("reserved"===String(doc.data().status).toLowerCase()){b.delete(doc.ref);any=!0}})}
+;lockIds.forEach(id=>{b.delete(db.collection("slotLocks").doc(id));any=!0})
+;if(any)await b.commit()}
 catch(e){console.warn("release failed",e)}}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
 name:SETTINGS.gcashName,number:SETTINGS.gcashNumber,qr:SETTINGS.gcashQrUrl},{key:"Maya",label:"Maya",
 name:SETTINGS.mayaName,number:SETTINGS.mayaNumber,qr:SETTINGS.mayaQrUrl},{key:"Bank",label:"Bank Transfer",
@@ -518,7 +521,7 @@ $("emailInput").value="",appliedPromo=null,$("voucherInput")&&($("voucherInput")
 $("receiptPreview").style.display="none";const e=$("uploadBox").querySelector(".big")
 ;e&&(e.textContent="☁️ Tap to upload image"),renderGrid(),updateSummary(),renderCalendar(),window.scrollTo({top:0,
 behavior:"smooth"})},$("continueBtn").onclick=goCheckout,$("mbContinue").onclick=goCheckout,
-$("backToSlots").onclick=()=>{clearHoldTimer(),releaseReservation(),$("checkoutView").style.display="none",$("app").style.display="block",
+$("backToSlots").onclick=async()=>{clearHoldTimer();await releaseReservation();$("checkoutView").style.display="none",$("app").style.display="block",
 window.innerWidth<=1e3&&($("mobileBar").style.display="flex")},$("uploadBox").onclick=()=>$("receiptInput").click(),
 $("receiptInput").onchange=e=>{const t=e.target.files[0];if(!t)return
 ;if(t.size>5242880)return void toast("Image too large (max 5MB).");const o=new FileReader;o.onload=e=>{const t=new Image
