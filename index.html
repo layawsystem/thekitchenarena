@@ -294,7 +294,11 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e).activate(APPCHECK_SITE_KEY,!0)
 }catch(e){console.warn("AppCheck:",e)}db=firebase.firestore()}catch(e){
 showError("Could not connect. Check the Firebase config at the top of this file.")}
-let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0
+let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,reserving=!1
+/* ── EASY-EDIT SETTING ── minutes of grace before a time slot is marked "Past".
+   A slot stays Open until (current time − this many minutes) passes its end.
+   Example at 15: the 8:00 slot stays Open until 8:15, then shows Past at 8:16. */
+;const PAST_ALLOWANCE_MIN=15
 ;const $=e=>document.getElementById(e);function showError(e){$("loading").style.display="none",
 $("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}function toast(e){
 const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
@@ -375,12 +379,15 @@ function renderGridHead(){const e=$("gridHead");e.innerHTML="";const t=document.
 ;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const o=document.createElement("th");o.textContent=t.name,
 e.appendChild(o)})}function watchAvailability(){db&&(availUnsub&&(availUnsub(),availUnsub=null),
 availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{bookedSet=new Set,
-pendingSet=new Set,e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
+pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
+;if("reserved"===t.status){const hu=t.holdUntil&&t.holdUntil.toMillis?t.holdUntil.toMillis():0
+;if(hu&&hu<now)return;if(reservedBookingId&&t.bookingId===reservedBookingId)return
+;(t.slots||[]).forEach(e=>pendingSet.add(t.court+"|"+e));return}
 ;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),renderGrid()
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
 ;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
-i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+n<=o;COURTS.forEach(e=>{const t=document.createElement("td")
+i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+n<=o-PAST_ALLOWANCE_MIN;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
 ;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
 i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
@@ -429,11 +436,48 @@ holdTimer=setInterval(updateTimer,1e3)}function clearHoldTimer(){holdTimer&&(cle
 function updateTimer(){const e=Math.max(0,Math.round((holdDeadline-Date.now())/1e3)),t=$("timerCount")
 ;t&&(t.textContent=pad2(Math.floor(e/60))+":"+pad2(e%60));const o=$("timerBar")
 ;o&&(e<=60?o.classList.add("urgent"):o.classList.remove("urgent")),e<=0&&expireHold()}function expireHold(){
-clearHoldTimer(),cart.clear(),chosenPayment=null,receiptData=null;const e=$("expireMsg")
+clearHoldTimer(),releaseReservation(),cart.clear(),chosenPayment=null,receiptData=null;const e=$("expireMsg")
 ;e&&(e.textContent="Your "+holdMins()+"-minute reservation window has expired, so your selected slots have been released. Please pick your slots again."),
-$("expireOverlay").classList.add("show")}function goCheckout(){0!==cart.size&&($("app").style.display="none",
-$("checkoutView").style.display="block",$("mobileBar").style.display="none",renderPayMethods(),startHoldTimer(),
-window.scrollTo({top:0,behavior:"smooth"}))}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
+$("expireOverlay").classList.add("show")}async function goCheckout(){if(0===cart.size||reserving)return;reserving=!0
+;const cbtn=$("mbContinue"),dbtn=$("continueBtn");cbtn&&(cbtn.disabled=!0);dbtn&&(dbtn.disabled=!0)
+;try{await reserveSlots()}catch(err){reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
+;if(err&&err.__taken)return toast(err.message);console.error(err);return toast("Could not hold your slots. Please try again.")}
+;reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
+;$("app").style.display="none",$("checkoutView").style.display="block",$("mobileBar").style.display="none",
+renderPayMethods(),startHoldTimer(),window.scrollTo({top:0,behavior:"smooth"})}
+/* Atomically reserve the cart's slots. Writes one "reserved" booking doc per court/date
+   with a holdUntil = now + hold minutes. The transaction re-reads every affected date and
+   rejects if any chosen slot is already taken (confirmed / pending / un-expired reserved). */
+async function slotLockId(date,court,slot){return (date+"_"+court+"_"+slot).replace(/[^A-Za-z0-9_-]/g,"-")}
+/* Atomically reserve every slot in the cart using per-slot lock docs (slotLocks/{date_court_slot}).
+   A client transaction can only get() specific doc refs (not queries), so each slot maps to a
+   deterministic lock doc. The transaction reads all locks, fails if any is still held (not expired),
+   otherwise writes them + the reserved booking docs. This guarantees 0% double-booking. */
+async function reserveSlots(){
+const byDate={};[...cart].forEach(k=>{const[court,date,slot]=k.split("|");((byDate[date]=byDate[date]||{})[court]=byDate[date][court]||[]).push(slot)})
+;const bid=await nextBookingId();reservedBookingId=bid;reservedIds=[];reservedLockIds=[]
+;const holdMs=6e4*holdMins(),nowMs=Date.now()
+;const lockKeys=[];for(const date of Object.keys(byDate))for(const court of Object.keys(byDate[date]))for(const slot of byDate[date][court])lockKeys.push({id:await slotLockId(date,court,slot),date:date,court:court,slot:slot})
+;await db.runTransaction(async tx=>{
+const lockRefs=lockKeys.map(k=>db.collection("slotLocks").doc(k.id))
+;const locks=await Promise.all(lockRefs.map(r=>tx.get(r)))
+;locks.forEach((snap,idx)=>{if(snap.exists){const d=snap.data();const hu=d.holdUntil&&d.holdUntil.toMillis?d.holdUntil.toMillis():0
+;const mine=d.bookingId===bid;const expired=hu&&hu<nowMs;if(!mine&&!expired){const k=lockKeys[idx]
+;const e=new Error("Sorry, "+k.court+" "+hourLabel(hm2min(k.slot))+" on "+niceDateShort(k.date)+" was just taken. Please pick again.");e.__taken=!0;throw e}}})
+;const hu=firebase.firestore.Timestamp.fromMillis(nowMs+holdMs)
+;lockKeys.forEach((k,idx)=>{tx.set(lockRefs[idx],{bookingId:bid,date:k.date,court:k.court,slot:k.slot,holdUntil:hu});reservedLockIds.push(k.id)})
+;Object.keys(byDate).forEach(date=>{Object.keys(byDate[date]).forEach(court=>{const slots=byDate[date][court].slice().sort()
+;const ref=db.collection("bookings").doc();reservedIds.push(ref.id)
+;tx.set(ref,{bookingId:bid,date:date,court:court,slots:slots,startTime:slots[0],endTime:slots[slots.length-1],
+status:"reserved",holdUntil:hu,createdAt:firebase.firestore.FieldValue.serverTimestamp()})})})
+})}
+/* Release the current reservation: delete reserved booking docs AND their slot locks. */
+async function releaseReservation(){const ids=reservedIds.slice(),lockIds=reservedLockIds.slice()
+;reservedIds=[];reservedLockIds=[];reservedBookingId=null
+;if(!ids.length&&!lockIds.length)return
+;try{const b=db.batch();ids.forEach(id=>b.delete(db.collection("bookings").doc(id)))
+;lockIds.forEach(id=>b.delete(db.collection("slotLocks").doc(id)));await b.commit()}
+catch(e){console.warn("release failed",e)}}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
 name:SETTINGS.gcashName,number:SETTINGS.gcashNumber,qr:SETTINGS.gcashQrUrl},{key:"Maya",label:"Maya",
 name:SETTINGS.mayaName,number:SETTINGS.mayaNumber,qr:SETTINGS.mayaQrUrl},{key:"Bank",label:"Bank Transfer",
 name:SETTINGS.bankName,number:SETTINGS.bankNumber,qr:SETTINGS.bankQrUrl
@@ -474,7 +518,7 @@ $("emailInput").value="",appliedPromo=null,$("voucherInput")&&($("voucherInput")
 $("receiptPreview").style.display="none";const e=$("uploadBox").querySelector(".big")
 ;e&&(e.textContent="☁️ Tap to upload image"),renderGrid(),updateSummary(),renderCalendar(),window.scrollTo({top:0,
 behavior:"smooth"})},$("continueBtn").onclick=goCheckout,$("mbContinue").onclick=goCheckout,
-$("backToSlots").onclick=()=>{clearHoldTimer(),$("checkoutView").style.display="none",$("app").style.display="block",
+$("backToSlots").onclick=()=>{clearHoldTimer(),releaseReservation(),$("checkoutView").style.display="none",$("app").style.display="block",
 window.innerWidth<=1e3&&($("mobileBar").style.display="flex")},$("uploadBox").onclick=()=>$("receiptInput").click(),
 $("receiptInput").onchange=e=>{const t=e.target.files[0];if(!t)return
 ;if(t.size>5242880)return void toast("Image too large (max 5MB).");const o=new FileReader;o.onload=e=>{const t=new Image
@@ -489,20 +533,24 @@ const e=$("nameInput").value.trim(),t=$("contactInput").value.trim(),o=$("emailI
 ;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o))return void toast("Please enter a valid email address.")
 ;if(paymentOptions().length&&!chosenPayment)return void toast("Please select a payment method.")
 ;if(paymentOptions().length&&!receiptData)return void toast("Please upload your payment receipt.")
-;const n=$("submitBtn");n.disabled=!0,n.textContent="Submitting…";try{const a={};[...cart].forEach(e=>{
-const[t,o,n]=e.split("|");((a[t]=a[t]||{})[o]=a[t][o]||[]).push(n)});for(const e of Object.keys(a)){
-const t=await db.collection("bookings").where("date","==",e).get(),o=new Set;t.forEach(e=>{const t=e.data()
-;"cancelled"!==t.status&&(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))})
-;for(const t of Object.keys(a[e]))for(const r of a[e][t])if(o.has(t+"|"+r))return toast("Sorry, "+t+" "+hourLabel(hm2min(r))+" on "+niceDateShort(e)+" was just taken."),
-n.disabled=!1,void(n.textContent="Submit Booking")}const r=await nextBookingId(),i=db.batch(),s={};let l=0
+;const n=$("submitBtn");n.disabled=!0,n.textContent="Submitting…";try{
+/* The slots are already held by our reservation (goCheckout). Finalize it:
+   flip each reserved doc to "pending" with its amount, then write the contact
+   doc — which is what triggers the notification emails. No re-check needed. */
+if(!reservedIds.length||!reservedBookingId){n.disabled=!1,n.textContent="Submit Booking";return toast("Your hold expired. Please pick your slots again.")}
+const a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|");((a[t]=a[t]||{})[o]=a[t][o]||[]).push(n)})
+;const r=reservedBookingId,i=db.batch(),s={};let l=0
 ;Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{const o=a[e][t].reduce((e,t)=>e+slotCost(hm2min(t)),0)
 ;s[e+"|"+t]=o,l+=o})});const c=appliedPromo&&computePromoDiscount(appliedPromo).discount||0,d=c>0&&l>0?(l-c)/l:1
-;if(Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{
-const o=a[e][t].sort(),n=Math.round(s[e+"|"+t]*d),l=db.collection("bookings").doc();i.set(l,{bookingId:r,date:e,court:t,
-slots:o,startTime:o[0],endTime:o[o.length-1],amount:n,paymentMethod:chosenPayment||"",status:"pending",
-createdAt:firebase.firestore.FieldValue.serverTimestamp()})})}),i.set(db.collection("bookingContacts").doc(r),{
+/* Re-read our own reserved docs so we can update them by court/date with the right amount. */
+;const rsnap=await db.collection("bookings").where("bookingId","==",r).get()
+;if(rsnap.empty){n.disabled=!1,n.textContent="Submit Booking";return toast("Your hold expired. Please pick your slots again.")}
+;rsnap.forEach(doc=>{const t=doc.data();const amt=Math.round((s[t.date+"|"+t.court]||0)*d)
+;i.update(doc.ref,{amount:amt,paymentMethod:chosenPayment||"",status:"pending",holdUntil:firebase.firestore.FieldValue.delete()})})
+;reservedLockIds.forEach(id=>i.delete(db.collection("slotLocks").doc(id)))
+;if(i.set(db.collection("bookingContacts").doc(r),{
 bookingId:r,bookerName:e,contact:t,email:o,promoCode:appliedPromo?String(appliedPromo.code||""):"",discount:c,
-createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await i.commit(),receiptData)try{
+createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await i.commit(),reservedIds=[],reservedLockIds=[],reservedBookingId=null,receiptData)try{
 await db.collection("receipts").doc(r).set({bookingId:r,image:receiptData,
 createdAt:firebase.firestore.FieldValue.serverTimestamp()})}catch(e){console.warn("receipt save failed",e)}
 if(appliedPromo&&appliedPromo.id)try{await db.collection("promos").doc(appliedPromo.id).update({
@@ -511,7 +559,7 @@ $("checkoutView").style.display="none",$("successView").style.display="block",cl
 appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),$("successId").textContent=r,
 $("viewStatusBtn").onclick=()=>{window.location.href="status.html?id="+encodeURIComponent(r)},window.scrollTo({top:0,
 behavior:"smooth"})}catch(e){console.error(e),toast("Something went wrong. Please try again."),n.disabled=!1,
-n.textContent="Submit Booking"}},$("anotherBtn").onclick=()=>{clearHoldTimer(),cart.clear(),chosenPayment=null,
+n.textContent="Submit Booking"}},$("anotherBtn").onclick=()=>{clearHoldTimer(),reservedIds=[],reservedLockIds=[],reservedBookingId=null,cart.clear(),chosenPayment=null,
 receiptData=null,appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),
 $("nameInput").value="",$("contactInput").value="",$("emailInput").value="",$("receiptPreview").style.display="none",
 $("uploadBox").querySelector(".big").textContent="☁️ Tap to upload image",$("successView").style.display="none",
