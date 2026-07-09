@@ -296,8 +296,8 @@ APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e)
 showError("Could not connect. Check the Firebase config at the top of this file.")}
 let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,reserving=!1
 /* ── EASY-EDIT SETTING ── minutes of grace before a time slot is marked "Past".
-   A slot stays Open until (current time − this many minutes) passes its end.
-   Example at 15: the 8:00 slot stays Open until 8:15, then shows Past at 8:16. */
+   A slot stays open for this many minutes AFTER its start time, then turns Past.
+   Example at 15: the 8:00–9:00 slot stays Open until 8:15, then shows Past at 8:16. */
 ;const PAST_ALLOWANCE_MIN=15
 ;const $=e=>document.getElementById(e);function showError(e){window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",
 $("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}function toast(e){
@@ -388,7 +388,7 @@ pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cance
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
 ;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
-i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+n<=o-PAST_ALLOWANCE_MIN;COURTS.forEach(e=>{const t=document.createElement("td")
+i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
 ;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
 i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
