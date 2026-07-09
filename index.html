@@ -203,7 +203,7 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <h1 id="bizName">Loading…</h1>
 </div> </div> <p class="subline" id="bizTagline">
 </p> <div id="heroWrap" class="hero-wrap" style="display:none">
-</div> <div id="loading" class="loading">Connecting to the booking system…</div> <div id="errorBox" class="error-box" style="display:none">
+</div> <div id="loading" class="loading">Connecting to the booking system…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6">Taking longer than usual. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) for the best experience.<br><br><button id="retryLoad" style="margin-top:8px;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div> <div id="errorBox" class="error-box" style="display:none">
 </div> <div id="app" style="display:none"> <div class="grid-layout"> <div> <div class="card"> <h3>Select a date</h3> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
 </div> <div class="cal-grid" id="calGrid">
 </div> <p class="cal-note" id="calNote">
@@ -299,7 +299,7 @@ let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=n
    A slot stays Open until (current time − this many minutes) passes its end.
    Example at 15: the 8:00 slot stays Open until 8:15, then shows Past at 8:16. */
 ;const PAST_ALLOWANCE_MIN=15
-;const $=e=>document.getElementById(e);function showError(e){$("loading").style.display="none",
+;const $=e=>document.getElementById(e);function showError(e){window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",
 $("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}function toast(e){
 const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
 function pad2(e){return String(e).padStart(2,"0")}function dstr(e){
@@ -313,7 +313,8 @@ return"₱"+Number(e).toLocaleString("en-PH")}function darken(e,t){
 3===(e=String(e).replace("#","")).length&&(e=e.split("").map(e=>e+e).join(""));const o=parseInt(e,16)
 ;return"#"+[Math.round((o>>16&255)*t),Math.round((o>>8&255)*t),Math.round((255&o)*t)].map(e=>("0"+e.toString(16)).slice(-2)).join("")
 }function ck(e,t,o){return e+"|"+t+"|"+o}async function loadData(){if(db)try{
-const e=await db.collection("settings").doc("config").get();if(!e.exists)return void showError("Settings not found.")
+const _to=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);
+const e=await _to(db.collection("settings").doc("config").get(),12e3);if(!e.exists)return void showError("Settings not found.")
 ;SETTINGS=e.data();const t=await db.collection("courts").get();if(COURTS=[],t.forEach(e=>{const t=e.data()
 ;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||""})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
 !COURTS.length)return void showError("No active courts found.");try{const e=await db.collection("rates").get();RATES=[],
@@ -322,8 +323,8 @@ rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start)}catch(e){RATES=[]}try
 const e=await db.collection("promos").get();PROMOS=[],e.forEach(e=>PROMOS.push({id:e.id,...e.data()}))}catch(e){
 PROMOS=[]}applyTheme(),renderBrand(),startHero(),renderFooterLinks();const o=today();viewYear=o.getFullYear(),
 viewMonth=o.getMonth(),selectedDate=dstr(o),renderCalendar(),renderGridHead(),watchAvailability(),updateSummary(),
-$("loading").style.display="none",$("app").style.display="block"}catch(e){console.error(e),
-showError("Failed to load data: "+(e.message||e))}}function applyTheme(){
+window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",$("app").style.display="block"}catch(e){console.error(e),
+showError("timeout"===e.message?"Couldn't connect. If you opened this from Messenger or Facebook, tap ••• and choose “Open in browser”, then try again.":"Failed to load data: "+(e.message||e))}}function applyTheme(){
 const e=document.documentElement.style,t=SETTINGS.colorPrimary||"#0D2863",o=SETTINGS.colorAccent||"#0D2863"
 ;e.setProperty("--navy",t),e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||"#0A1E4C"),e.setProperty("--green",o),
 e.setProperty("--green-d",SETTINGS.colorAccentDark||"#0A1E4C"),
@@ -568,4 +569,4 @@ $("nameInput").value="",$("contactInput").value="",$("emailInput").value="",$("r
 $("uploadBox").querySelector(".big").textContent="☁️ Tap to upload image",$("successView").style.display="none",
 $("app").style.display="block",window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),renderGrid(),
 updateSummary(),renderCalendar(),window.scrollTo({top:0,behavior:"smooth"})},setInterval(()=>{
-SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),loadData()</script> </body> </html>
+SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),(function(){var hintTimer=setTimeout(function(){var h=document.getElementById("loadHint");if(h&&document.getElementById("loading")&&"none"!==document.getElementById("loading").style.display)h.style.display="block"},6e3);var rb=document.getElementById("retryLoad");rb&&(rb.onclick=function(){location.reload()});window.__clearLoadHint=function(){clearTimeout(hintTimer)}})(),loadData()</script> </body> </html>
