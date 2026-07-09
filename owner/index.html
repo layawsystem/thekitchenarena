@@ -217,6 +217,23 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .nitem .nacts{display:flex;gap:8px}
 .nitem .nacts button{flex:1;border:none;padding:8px;border-radius:8px;font:inherit;font-weight:700;font-size:12px;cursor:pointer}
 .overlay{position:fixed;inset:0;background:rgba(14,40,48,.55);display:none;place-items:center;padding:16px;z-index:50}
+.cav-section{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.cav-label{font-size:13px;font-weight:800;color:var(--text);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.cav-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cav-toggle-row span{font-weight:700;color:var(--text)}
+.cav-hint{font-size:12px;color:var(--muted);margin-top:8px}
+.cav-mini{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.fld-input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--elev);color:var(--text);font:inherit}
+.cav-slots{display:flex;flex-wrap:wrap;gap:7px}
+.cav-slot{padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:var(--elev);color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;user-select:none}
+.cav-slot.on{background:var(--green);color:#fff;border-color:var(--green)}
+.cav-slot.taken{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.cav-empty{font-size:13px;color:var(--muted)}
+.cav-blocklist{display:flex;flex-direction:column;gap:8px}
+.cav-block-item{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--elev)}
+.cav-block-item .bd{font-size:13px;color:var(--text)}
+.cav-block-item .bd strong{color:var(--text)}
+.cav-block-item .bx{background:var(--book-bg,#3E1A20);color:var(--cancel,#E88A92);border:none;border-radius:7px;padding:5px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0}
 .overlay.show{display:grid}
 .modal{background:var(--card);border-radius:var(--radius);padding:24px;width:100%;max-width:460px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
 .modal h3{font-size:18px;color:var(--text);margin-bottom:4px}
@@ -760,6 +777,33 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div> <h3 id="supTitle" style="text-align:center">Premium feature</h3> <p class="sub" id="supText" style="text-align:center">
 </p> <div id="supContact">
 </div> <button class="btn-ghost" id="supClose" style="width:100%;margin-top:12px;padding:13px">Maybe later</button> </div>
+</div>
+<div class="overlay" id="courtOverlay">
+<div class="modal" style="max-width:480px;max-height:88vh;overflow-y:auto">
+<h3 id="courtModalTitle" style="margin-bottom:4px">Court</h3>
+<p class="sub" style="margin-bottom:16px">Manage this court's availability. Each control is separate — use only what you need.</p>
+<div class="cav-section">
+<div class="cav-label">Overall availability</div>
+<div class="cav-toggle-row">
+<span id="cavStatusText">Available</span>
+<button id="cavToggleBtn" class="btn" style="padding:9px 16px">Mark Not Available</button>
+</div>
+<div class="cav-hint">Turns the whole court off (all dates, all times).</div>
+</div>
+<div class="cav-section">
+<div class="cav-label">Block specific date &amp; times</div>
+<label class="cav-mini">Date</label>
+<input type="date" id="cavDate" class="fld-input"/>
+<label class="cav-mini" style="margin-top:8px">Time slots to block</label>
+<div id="cavSlots" class="cav-slots"><div class="cav-empty">Pick a date first.</div></div>
+<button id="cavAddBlock" class="btn" style="width:100%;margin-top:10px;padding:11px" disabled>Block selected slots</button>
+</div>
+<div class="cav-section">
+<div class="cav-label">Current blocks</div>
+<div id="cavBlockList" class="cav-blocklist"><div class="cav-empty">No blocks set.</div></div>
+</div>
+<button class="btn-ghost" id="courtModalClose" style="width:100%;margin-top:6px;padding:13px">Done</button>
+</div>
 </div> <div class="overlay" id="promoOverlay">
 <div class="modal" style="max-width:560px"> <h3>New Promo Code</h3> <p class="sub">Create a discount code your players can enter on the booking page.</p> <div class="fld">
 <label>Code</label>
@@ -847,7 +891,7 @@ t.setProperty("--green","#0D2863"),t.setProperty("--green-d","#0A1E4C")
 $("footBiz").textContent=n,document.title=n+" — Owner",SETTINGS.tagline&&($("brandSub").textContent=SETTINGS.tagline),
 $("userAvatar").textContent=(n.trim()[0]||"O").toUpperCase(),(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;$("loginLogo").src=_lu,$("loginLogo").style.display="block";[$("brandLogo"),$("footLogo"),$("userAvatar")].forEach(function(e){if(!e)return;e.innerHTML="";var t=document.createElement("img");t.src=_lu;t.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:inherit;";e.appendChild(t)})})()}const t=await db.collection("courts").get();COURTS=[],t.forEach(e=>{const t=e.data()
 ;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",type:t.type||"",
-status:t.status||(t.maintenance?"maintenance":"")})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name))}catch(e){
+status:t.status||(t.maintenance?"maintenance":""),blocks:Array.isArray(t.blocks)?t.blocks:[]})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name))}catch(e){
 console.warn(e)}
 $("appFoot").textContent="© "+(new Date).getFullYear()+" "+(SETTINGS&&SETTINGS.businessName||"Your Club")+" · Powered by Layaw System",
 $("datePill").textContent=(new Date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"
@@ -958,21 +1002,58 @@ let s="avail",r="Available",unavail="unavailable"===String(o.status).toLowerCase
 if(unavail){s="na",r="Not Available"}else if("maintenance"===String(o.status).toLowerCase()){s="maint",r="Maintenance"}else{
 ALLB.some(e=>e.date===t&&e.court===o.name&&"confirmed"===e.status&&(e.slots||[]).some(e=>{const t=hm2min(e);return a>=t&&a<t+n}))&&(s="occ",r="Occupied")}
 const i=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"Outdoor",c=document.createElement("div");c.className="court-card";c.dataset.cid=o.id;
-const hint=unavail?"Tap to mark available":"Tap to mark not available";
+const hint=unavail?"Tap to manage availability":"Tap to manage availability";
 c.innerHTML='<div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="cn">'+esc(o.name)+'</div><div class="ct">('+esc(i)+')</div><span class="pill '+s+'">'+r+'</span><div class="toggle-hint">'+hint+'</div>';
-c.onclick=()=>toggleCourtAvail(o,c);
+c.onclick=()=>openCourtModal(o);
 e.appendChild(c)})}
-async function toggleCourtAvail(court,card){
-if(!court||!court.id)return;
-const makeUnavail="unavailable"!==String(court.status).toLowerCase();
-card.classList.add("busy");
-try{
-await db.collection("courts").doc(court.id).update({status:makeUnavail?"unavailable":""});
-const idx=COURTS.findIndex(c=>c.id===court.id);if(idx>=0)COURTS[idx].status=makeUnavail?"unavailable":"";
-toast(makeUnavail?"Court marked not available.":"Court marked available.");
-renderCourtStatus();
-}catch(err){console.error(err);card.classList.remove("busy");
-toast("Could not update. Check your access.")}}
+let CAV_COURT=null;
+function openCourtModal(court){CAV_COURT=court;
+$("courtModalTitle").textContent=court.name+(court.type?" ("+court.type+")":"");
+renderCavStatus();$("cavDate").value="";renderCavSlots();renderCavBlocks();
+$("courtOverlay").classList.add("show")}
+function closeCourtModal(){$("courtOverlay").classList.remove("show");CAV_COURT=null}
+function renderCavStatus(){const un="unavailable"===String(CAV_COURT.status||"").toLowerCase();
+$("cavStatusText").textContent=un?"Not Available":"Available";
+$("cavStatusText").style.color=un?"var(--cancel)":"var(--ok-tx)";
+$("cavToggleBtn").textContent=un?"Mark Available":"Mark Not Available"}
+function courtBlocks(){return Array.isArray(CAV_COURT.blocks)?CAV_COURT.blocks:[]}
+function renderCavSlots(){const wrap=$("cavSlots"),d=$("cavDate").value;
+if(!d){wrap.innerHTML='<div class="cav-empty">Pick a date first.</div>';$("cavAddBlock").disabled=!0;return}
+const blocked=new Set();courtBlocks().forEach(b=>{if(b.date===d)(b.slots||[]).forEach(sl=>blocked.add(sl))});
+wrap.innerHTML="";buildSlots().forEach(sl=>{const el=document.createElement("div");
+const isBlocked=blocked.has(sl.key);el.className="cav-slot"+(isBlocked?" taken":"");
+el.textContent=hourLabel(sl.mins);el.dataset.k=sl.key;
+if(!isBlocked)el.onclick=()=>{el.classList.toggle("on");syncAddBtn()};
+wrap.appendChild(el)});syncAddBtn()}
+function syncAddBtn(){const any=$("cavSlots").querySelectorAll(".cav-slot.on").length>0;$("cavAddBlock").disabled=!($("cavDate").value&&any)}
+function renderCavBlocks(){const wrap=$("cavBlockList"),bl=courtBlocks();
+if(!bl.length){wrap.innerHTML='<div class="cav-empty">No blocks set.</div>';return}
+wrap.innerHTML="";bl.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>{
+const item=document.createElement("div");item.className="cav-block-item";
+const slots=(b.slots||[]).slice().sort().map(sl=>hourLabel(hm2min(sl))).join(", ");
+item.innerHTML='<div class="bd"><strong>'+esc(niceD(b.date))+'</strong><br>'+esc(slots)+'</div>';
+const x=document.createElement("button");x.className="bx";x.textContent="Remove";
+x.onclick=()=>removeBlock(b.date);item.appendChild(x);wrap.appendChild(item)})}
+function niceD(d){const[y,m,da]=d.split("-").map(Number);return new Date(y,m-1,da).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
+async function saveCourtField(patch){if(!CAV_COURT||!CAV_COURT.id)return!1;
+try{await db.collection("courts").doc(CAV_COURT.id).update(patch);
+const idx=COURTS.findIndex(c=>c.id===CAV_COURT.id);
+if(idx>=0){Object.assign(COURTS[idx],patch);CAV_COURT=COURTS[idx]}
+renderCourtStatus();return!0}catch(e){console.error(e);toast("Could not update. Check your access.");return!1}}
+async function cavToggleOverall(){const un="unavailable"===String(CAV_COURT.status||"").toLowerCase();
+const ok=await saveCourtField({status:un?"":"unavailable"});
+if(ok){renderCavStatus();toast(un?"Court marked available.":"Court marked not available.")}}
+async function cavAddBlock(){const d=$("cavDate").value;if(!d)return;
+const picked=[...$("cavSlots").querySelectorAll(".cav-slot.on")].map(el=>el.dataset.k);
+if(!picked.length)return;
+const bl=courtBlocks().slice();const existing=bl.find(b=>b.date===d);
+if(existing){existing.slots=[...new Set([...(existing.slots||[]),...picked])].sort()}
+else bl.push({date:d,slots:picked.slice().sort()});
+const ok=await saveCourtField({blocks:bl});
+if(ok){renderCavSlots();renderCavBlocks();toast("Slots blocked for "+niceD(d)+".")}}
+async function removeBlock(date){const bl=courtBlocks().filter(b=>b.date!==date);
+const ok=await saveCourtField({blocks:bl});
+if(ok){renderCavSlots();renderCavBlocks();toast("Block removed.")}}
 async function renderRecent(){const e=$("recentList"),t=orderGroups(ALLB.slice().sort((e,t)=>{
 const n=e.createdAt&&e.createdAt.seconds||0;return(t.createdAt&&t.createdAt.seconds||0)-n
 }).filter(e=>"cancelled"!==e.status)).slice(0,5);t.length?(await ensureContacts(t.map(e=>e[0])),e.innerHTML="",
@@ -1141,6 +1222,11 @@ $("receiptClose").onclick=()=>$("receiptOverlay").classList.remove("show"),$("re
 e.target===$("receiptOverlay")&&$("receiptOverlay").classList.remove("show")},$("bellBtn").onclick=()=>{
 $("notif").classList.add("show"),$("backdrop").classList.add("show")},$("notifClose").onclick=closeNotif,
 $("backdrop").onclick=closeNotif,$("supClose").onclick=()=>$("supportOverlay").classList.remove("show"),
+$("courtModalClose").onclick=()=>closeCourtModal(),
+$("courtOverlay").onclick=e=>{e.target===$("courtOverlay")&&closeCourtModal()},
+$("cavToggleBtn").onclick=()=>cavToggleOverall(),
+$("cavAddBlock").onclick=()=>cavAddBlock(),
+$("cavDate").onchange=()=>renderCavSlots(),
 $("supportOverlay").onclick=e=>{e.target===$("supportOverlay")&&$("supportOverlay").classList.remove("show")},
 $("addAdminBtn").onclick=async()=>{const e=$("newAdminName").value.trim(),t=$("newAdminPin").value.trim()
 ;if($("adminErr").textContent="",!e)return void($("adminErr").textContent="Please enter the staff name.")
