@@ -58,6 +58,7 @@ table.slots .time-cell{font-size:13px;font-weight:700;color:var(--text);padding:
 .cell-booked{background:var(--book-bg);color:var(--book-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--book-bd)}
 .cell-pending{background:var(--pend-bg);color:var(--pend-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--pend-bd)}
 .cell-past{background:var(--past-bg);color:var(--past-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--past-bd)}
+.cell-blocked{background:#3a2416;color:#E0954A;cursor:not-allowed;box-shadow:inset 0 0 0 1px #6b4420}
 .summary{position:sticky;top:18px}
 .sum-empty{color:var(--muted);font-size:14px}
 .sum-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:340px;overflow-y:auto}
@@ -242,6 +243,13 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <div class="lab">Past</div>
 <div class="sub">Unavailable</div>
 </div>
+</div> <div class="item">
+<div class="sw" style="background:#3a2416">
+</div>
+<div>
+<div class="lab">Blocked</div>
+<div class="sub">Not available</div>
+</div>
 </div> </div> </div> </div> <div class="card"> <h3>Select your slots</h3> <div class="info-bar">Tap a cell to select. You can pick slots across <strong>multiple dates</strong> — switch dates and your selections are kept.</div> <div class="table-scroll">
 <table class="slots">
 <thead>
@@ -312,11 +320,12 @@ function hourLabel(e){let t=Math.floor(e/60),o=e%60;const n=t>=12&&t<24?"PM":"AM
 return"₱"+Number(e).toLocaleString("en-PH")}function darken(e,t){
 3===(e=String(e).replace("#","")).length&&(e=e.split("").map(e=>e+e).join(""));const o=parseInt(e,16)
 ;return"#"+[Math.round((o>>16&255)*t),Math.round((o>>8&255)*t),Math.round((255&o)*t)].map(e=>("0"+e.toString(16)).slice(-2)).join("")
-}function ck(e,t,o){return e+"|"+t+"|"+o}async function loadData(){if(db)try{
+}function ck(e,t,o){return e+"|"+t+"|"+o}
+function isBlocked(court,date,slotKey){return Array.isArray(court.blocks)&&court.blocks.some(b=>b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}async function loadData(){if(db)try{
 const _to=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);
 const e=await _to(db.collection("settings").doc("config").get(),12e3);if(!e.exists)return void showError("Settings not found.")
 ;SETTINGS=e.data();const t=await db.collection("courts").get();if(COURTS=[],t.forEach(e=>{const t=e.data()
-;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||""})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
+;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||"",blocks:Array.isArray(t.blocks)?t.blocks:[]})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
 !COURTS.length)return void showError("No active courts found.");try{const e=await db.collection("rates").get();RATES=[],
 e.forEach(e=>{const t=e.data();let o=hm2min(t.start),n=hm2min(t.end);n<=o&&(n+=1440),RATES.push({start:o,end:n,
 rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start)}catch(e){RATES=[]}try{
@@ -390,7 +399,7 @@ pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cance
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
+;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-blocked",i.textContent="Blocked"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
 i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
 i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
@@ -412,7 +421,7 @@ reason:"doesn't apply to your selected date or time"}
 ;return r<0&&(r=0),r>a&&(r=a),{discount:r}}function currentDiscount(){
 return appliedPromo&&computePromoDiscount(appliedPromo).discount||0}function netTotal(){
 return Math.max(0,cartTotal()-currentDiscount())}function setVoucherMsg(e,t){const o=$("voucherMsg")
-;o&&(o.textContent=e||"",o.style.color=t?"var(--green-d)":"var(--cancel)")}function updateSummary(){
+;o&&(o.textContent=e||"",o.style.color=t?"var(--open-tx)":"var(--cancel)")}function updateSummary(){
 const e=$("sumList"),t=$("sumEmpty");e.innerHTML="";let o=0;if(0===cart.size)t.style.display="block";else{
 t.style.display="none";const n=Number(SETTINGS.slotMinutes??60),a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|")
 ;(a[t]=a[t]||[]).push({date:t,court:o,hhmm:n,key:e})}),Object.keys(a).sort().forEach(t=>{
