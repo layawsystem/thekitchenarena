@@ -1082,7 +1082,7 @@ const e=buildSlots().length,t=today().getDate(),n=(COURTS.length||1)*e*t;let a=0
 }function openSupport(e){
 $("supTitle").textContent=e,$("supText").textContent=e+" is a premium Layaw System feature that isn't enabled for your club yet."
 ;let t="";const n=SETTINGS||{},a=n.supportName||"Layaw System"
-;t=n.supportLink?'<a class="support-btn" href="'+esc(n.supportLink)+'" target="_blank" rel="noopener">Contact '+esc(a)+" to unlock</a>":n.facebookLink?'<a class="support-btn" href="'+esc(n.facebookLink)+'" target="_blank" rel="noopener">Message us on Facebook</a>':n.supportContact||n.contactNumber?'<div class="mrow" style="text-align:center"><span>Contact '+esc(a)+":</span> <strong>"+esc(n.supportContact||n.contactNumber)+"</strong></div>":'<div class="mrow" style="text-align:center">Contact your Layaw System provider to unlock this feature.</div>',
+;t=n.supportLink?'<a class="support-btn" href="'+esc(n.supportLink)+'" target="_blank" rel="noopener">Contact '+esc(a)+" to unlock</a>":'<a class="support-btn" href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Message us on Facebook</a>':n.supportContact||n.contactNumber?'<div class="mrow" style="text-align:center"><span>Contact '+esc(a)+":</span> <strong>"+esc(n.supportContact||n.contactNumber)+"</strong></div>":'<div class="mrow" style="text-align:center">Contact your Layaw System provider to unlock this feature.</div>',
 $("supContact").innerHTML=t,$("supportOverlay").classList.add("show")}function getSecondary(){if(!secondaryApp){
 secondaryApp=firebase.initializeApp(firebaseConfig,"secondary");try{
 APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(secondaryApp).activate(APPCHECK_SITE_KEY,!0)
