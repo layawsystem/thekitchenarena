@@ -1,572 +1,1306 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Book a Court</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Owner</title> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
 authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
 storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
-appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--disabled:#64748B;--brand-l:#9DBBF5;--link:#7FA7F0;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#15336B;--sel-tx:#FFFFFF;--sel-bd:#3B5CA0;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#232C3B;--past-tx:#7E8CA0;--past-bd:#333F52;--input-bg:#0E1626;--input-line:#2E3B52;--input-focus:#3B5CA0;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--btn-dis-bg:#232E42;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--chart:#2747E8;--chart-d:#1B34B0;--chart-l:#7AA0F5;--pos:#2747E8;--btn-bd:#24407F;--sidebar:#0A1524;--sidebar-2:#0E1B2E;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--input-bg:#0E1626;--input-line:#2E3B52;--pend-bg:#3E3212;--pend-tx:#E0B93E;--conf-bg:#15321F;--conf-tx:#48A768;--open-bg:#15321F;--open-tx:#48A768;--ok-bg:#15321F;--ok-tx:#48A768;--cancel:#E88A92;--purple-bg:#241C42;--purple:#A99BF5;--amber-bg:#3E3212;--amber:#E0B93E;--teal-bg:#123536;--teal:#4FC3B4;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}input,select,textarea,.note-input{color:var(--text)}input::placeholder,textarea::placeholder,.note-input::placeholder{color:var(--muted)}input[type=color]{color:var(--text)}
 *{box-sizing:border-box;margin:0;padding:0}
-body,html{max-width:100%;overflow-x:hidden}
+body,html{max-width:100%}
 body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
 img{max-width:100%}
-.wrap{max-width:1180px;margin:0 auto;padding:22px 16px 110px}
-.brand{display:flex;align-items:center;gap:14px}
-.brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}
-.brand .eyebrow{font-size:11px;letter-spacing:.18em;font-weight:700;color:var(--muted);text-transform:uppercase}
-.brand h1{font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em;line-height:1.1}
-.subline{color:var(--muted);font-size:14px;margin:10px 2px 0}
-.hero-wrap{position:relative;width:100%;height:230px;border-radius:var(--radius);overflow:hidden;margin-top:16px;box-shadow:var(--shadow);background:var(--navy-d)}
-.hero-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s ease}
-.hero-wrap img.active{opacity:1}
-.hero-dots{position:absolute;bottom:12px;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:2}
-.hero-dots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5)}
-.hero-dots span.on{background:#fff}
-.grid-layout{display:grid;grid-template-columns:300px 1fr 320px;gap:18px;margin-top:18px;align-items:start}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
-.card h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px}
-.card h3.sm{font-size:14px;margin-bottom:12px}
+.muted-sub{color:var(--muted);font-size:14px}
+.login-wrap{min-height:100vh;display:grid;place-items:center;padding:16px}
+.login-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px;width:100%;max-width:380px}
+.login-card .brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.login-card .brand img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+.login-card h1{font-size:20px;color:var(--brand-l);font-weight:800}
+.login-card .eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.login-card p.sub{color:var(--muted);font-size:14px;margin:10px 0 20px}
+label.fl{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--input-bg)}
+input:focus{outline:2px solid var(--green);border-color:var(--green)}
+.btn{width:100%;background:var(--navy);color:#fff;border:1px solid var(--btn-bd);padding:14px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:background .15s}
+.btn:hover{background:var(--navy-d)}
+.btn:disabled{background:#232e42;cursor:not-allowed}
+.login-err{color:var(--cancel);font-size:13px;font-weight:600;margin-top:12px;min-height:18px}
+.app{display:flex;min-height:100vh}
+.sidebar{width:248px;flex-shrink:0;background:linear-gradient(180deg,var(--sidebar),var(--sidebar-2));color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side-brand{display:flex;align-items:center;gap:11px;padding:20px 18px 18px}
+.side-brand .logo{width:40px;height:40px;border-radius:11px;object-fit:cover;background:var(--green);display:grid;place-items:center;flex-shrink:0}
+.side-brand .logo svg{width:22px;height:22px}
+.side-brand .bn{font-size:15px;font-weight:800;line-height:1.1;letter-spacing:.01em}
+.side-brand .bs{font-size:9px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;font-weight:700;margin-top:2px}
+.nav{padding:6px 12px;flex:1}
+.nav-label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.4);font-weight:700;padding:14px 10px 7px}
+.nav-sep{height:1px;background:rgba(255,255,255,.1);margin:8px 10px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;cursor:pointer;color:rgba(255,255,255,.78);font-weight:600;font-size:14px;margin-bottom:2px;transition:background .14s,color .14s}
+.nav-item svg{width:19px;height:19px;flex-shrink:0;opacity:.9}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-item.active{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(39,71,232,.35)}
+.nav-item.active svg{opacity:1}
+.nav-item.locked{color:rgba(255,255,255,.5)}
+.nav-item .lock{margin-left:auto;width:14px;height:14px;opacity:.65}
+.side-foot{margin:12px;padding:12px;border-radius:13px;background:rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.side-foot .logo{width:34px;height:34px;border-radius:9px;object-fit:cover;background:rgba(255,255,255,.12);display:grid;place-items:center;flex-shrink:0}
+.side-foot .logo svg{width:18px;height:18px}
+.side-foot .sf-n{font-size:13px;font-weight:700;line-height:1.15}
+.side-foot .sf-r{font-size:11px;opacity:.6}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.appbar{background:var(--card);border-bottom:1px solid var(--line);padding:12px 22px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:30}
+.hamburger{display:none;background:0 0;border:none;font-size:22px;cursor:pointer;color:var(--text);padding:4px 6px}
+.date-pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:9px 14px;font-weight:600;font-size:14px;color:var(--text);background:var(--card)}
+.date-pill svg{width:17px;height:17px;color:var(--muted)}
+.appbar .spacer{margin-left:auto}
+.icon-btn{background:var(--card);border:1px solid var(--line);color:var(--text);width:42px;height:42px;border-radius:11px;cursor:pointer;display:grid;place-items:center;position:relative}
+.icon-btn:hover{border-color:var(--green)}
+.icon-btn svg{width:19px;height:19px}
+.icon-btn .dot{position:absolute;top:-5px;right:-5px;background:var(--cancel);color:#fff;font-size:11px;font-weight:800;min-width:19px;height:19px;border-radius:999px;display:grid;place-items:center;padding:0 5px;border:2px solid #fff}
+.user-chip{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 5px;cursor:pointer;background:var(--card);position:relative}
+.user-chip:hover{border-color:var(--green)}
+.avatar{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.10);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px;overflow:hidden}
+.user-chip .un{font-weight:700;font-size:14px}
+.user-chip .cv{color:var(--muted)}
+.user-menu{position:absolute;top:52px;right:0;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px;min-width:160px;display:none;z-index:40}
+.user-menu.show{display:block}
+.user-menu button{width:100%;text-align:left;background:0 0;border:none;padding:10px 12px;border-radius:8px;font:inherit;font-weight:600;cursor:pointer;color:var(--text)}
+.user-menu button:hover{background:var(--bg)}
+.content{padding:24px 22px 10px;flex:1}
+.appfoot{padding:18px 22px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+.sec{display:none}
+.sec.show{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}
+to{opacity:1;transform:none}
+}
+.dash-greet h2{font-size:26px;font-weight:800;color:var(--text)}
+.dash-greet{margin-bottom:20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:flex;gap:14px}
+.kpi-ico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;flex-shrink:0}
+.kpi-ico svg{width:23px;height:23px}
+.kpi-ico.rev{background:var(--ok-bg);color:var(--pos)}
+.kpi-ico.bk{background:var(--purple-bg);color:var(--purple)}
+.kpi-ico.pend{background:var(--amber-bg);color:var(--amber)}
+.kpi-ico.occ{background:var(--teal-bg);color:var(--teal)}
+.kpi .kl{font-size:13px;color:var(--muted);font-weight:600}
+.kpi .kn{font-size:27px;font-weight:800;color:var(--text);line-height:1.1;margin-top:5px}
+.kpi .kd{font-size:12.5px;font-weight:600;margin-top:7px;color:var(--muted)}
+.kpi .kd .up{color:var(--pos);font-weight:800}
+.kpi .kd .down{color:var(--cancel);font-weight:800}
+.kpi .link{color:var(--link);font-weight:700;font-size:13px;cursor:pointer;margin-top:7px;display:inline-block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.card-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.card-head h3{font-size:16px;font-weight:800;color:var(--text)}
+.card-head .link{margin-left:auto;color:var(--link);font-weight:700;font-size:13px;cursor:pointer}
+.sel{margin-left:auto;border:1px solid var(--line);border-radius:9px;padding:8px 12px;font:inherit;font-weight:600;font-size:13px;background:var(--input-bg);cursor:pointer;color:var(--text)}
+.dash-row2{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:16px}
+.dash-row3{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.rev-total{font-size:24px;font-weight:800;color:var(--text);margin:-4px 0 10px}
+.legend{display:flex;gap:18px;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted);font-weight:600}
+.legend i{display:inline-block;width:22px;height:9px;border-radius:4px;margin-right:6px;vertical-align:middle}
+.court-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.court-card{border:1px solid var(--line);border-radius:13px;padding:14px}
+.court-card .ci{width:34px;height:34px;border-radius:9px;background:var(--ok-bg);color:var(--pos);display:grid;place-items:center;margin-bottom:10px}
+.court-card .ci svg{width:18px;height:18px}
+.court-card .cn{font-weight:800;font-size:14px}
+.court-card .ct{font-size:12px;color:var(--muted);margin-bottom:10px}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:5px 11px;border-radius:999px}
+.pill.avail{background:var(--ok-bg);color:var(--ok-tx)}
+.pill.occ{background:var(--pend-bg);color:var(--pend-tx)}
+.pill.maint{background:#232c3b;color:#8a99ad}.pill.na{background:var(--book-bg,#3E1A20);color:var(--cancel,#E88A92)}.court-card{cursor:pointer;transition:border-color .15s,background .15s;position:relative}.court-card:hover{border-color:var(--teal,#0B97A6);background:rgba(255,255,255,.03)}.court-card .toggle-hint{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.02em}.court-card.busy{opacity:.55;pointer-events:none}
+.recent-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.recent-row:last-child{border-bottom:none}
+.recent-row .rt{font-weight:700;min-width:138px}
+.recent-row .rc{color:var(--muted);min-width:78px}
+.recent-row .rn{flex:1}
+.badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
+.badge.pending{background:var(--pend-bg);color:var(--pend-tx)}
+.badge.confirmed{background:var(--ok-bg);color:var(--ok-tx)}
+.badge.cancelled{background:#232c3b;color:#8a99ad}
+.badge.active{background:var(--ok-bg);color:var(--ok-tx)}
+.badge.disabled{background:#232c3b;color:#8a99ad}
+.sec-head{margin-bottom:16px}
+.sec-head h2{font-size:22px;font-weight:800}
+.sec-head p{color:var(--muted);font-size:14px}
 .cal-nav{display:flex;gap:8px;align-items:center;margin-bottom:12px}
 .cal-nav .today{flex:1}
 .btn-ghost{border:1px solid var(--line);background:var(--elev);border-radius:10px;padding:9px 12px;font:inherit;font-weight:600;cursor:pointer;color:var(--text)}
-.btn-ghost:hover{border-color:var(--brand-l)}
-.btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost:hover{border-color:var(--green)}
 .cal-month{text-align:center;font-weight:700;color:var(--text);margin-bottom:8px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
 .cal-grid .dow{text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px 0}
-.cal-day{position:relative;aspect-ratio:1;display:grid;place-items:center;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--text)}
-.cal-day:hover:not(.disabled):not(.active){background:var(--open-bg)}
-.cal-day.disabled{color:var(--disabled);cursor:not-allowed}
+.cal-day{position:relative;aspect-ratio:1;display:grid;place-items:center;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text)}
+.cal-day:hover:not(.active){background:var(--open-bg)}
 .cal-day.active{background:var(--navy);color:#fff}
-.cal-day.has-cart::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--green)}
-.cal-day.active.has-cart::after{background:#fff}
-.cal-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
-.cal-note strong{color:var(--text)}
-.legend{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.legend .item{display:flex;gap:10px;align-items:flex-start}
-.legend .sw{width:22px;height:22px;border-radius:6px;flex:none;margin-top:1px}
-.legend .lab{font-size:13px;font-weight:700}
-.legend .sub{font-size:11px;color:var(--muted)}
-.info-bar{background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:500;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.book-2col{display:grid;grid-template-columns:336px 1fr;gap:16px;align-items:start}
+.book-2col,.book-left,.book-right{min-width:0}
+.book-2col .stats{margin:0 0 14px}
+.book-left .card{position:sticky;top:82px}
+@media (max-width:980px){.book-2col{grid-template-columns:1fr}
+.book-left .card{position:static}
+.book-2col .stats{margin:14px 0}
+}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.stat .n{font-size:24px;font-weight:800;color:var(--text)}
+.stat .l{font-size:12px;color:var(--muted);font-weight:600}
+.view-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.view-head h3{margin:0;font-size:16px;font-weight:800;color:var(--text)}
+.toggle{margin-left:auto;display:inline-flex;background:var(--elev);border-radius:10px;padding:3px}
+.toggle button{border:none;background:0 0;padding:8px 16px;border-radius:8px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+.toggle button.on{background:var(--navy);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.booking{border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.booking .row1{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.booking .court{font-weight:800;color:var(--text);font-size:16px}
+.booking .amt{margin-left:auto;font-weight:800;color:var(--text)}
+.booking .times{font-size:14px;margin-bottom:6px}
+.booking .who{font-size:13px;color:var(--muted)}
+.booking .who strong{color:var(--text)}
+.booking .actions{display:flex;gap:10px;margin-top:14px}
+.act{flex:1;border:none;padding:11px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+.act-confirm{background:var(--green);color:#fff}
+.act-confirm:hover{background:var(--green-d)}
+.act-cancel{background:var(--elev);color:var(--cancel);border:1px solid #6e2a31}
+.act-cancel:hover{background:#3e1a20}
 .table-scroll{overflow-x:auto}
-table.slots{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}
-table.slots thead th{font-size:13px;font-weight:700;color:var(--text);padding:10px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--card);z-index:2}
-table.slots thead th:first-child{text-align:left;left:0;z-index:3}
-table.slots thead th:not(:first-child){min-width:104px}
-table.slots td.cell{border-bottom:1px solid var(--line);padding:6px;min-width:104px}
-table.slots .time-cell{font-size:13px;font-weight:700;color:var(--text);padding:0 10px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;left:0;background:var(--card);z-index:2;width:80px}
-.cell-inner{border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700;white-space:nowrap}
-.cell-open{background:var(--open-bg);color:var(--open-tx);cursor:pointer;box-shadow:inset 0 0 0 1px var(--open-bd)}
-.cell-open:hover{outline:2px solid var(--green);outline-offset:-2px}
-.cell-selected{background:var(--sel-bg);color:var(--sel-tx);cursor:pointer;box-shadow:inset 0 0 0 1.5px var(--sel-bd)}
-.cell-booked{background:var(--book-bg);color:var(--book-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--book-bd)}
-.cell-pending{background:var(--pend-bg);color:var(--pend-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--pend-bd)}
-.cell-past{background:var(--past-bg);color:var(--past-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--past-bd)}
-.summary{position:sticky;top:18px}
-.sum-empty{color:var(--muted);font-size:14px}
-.sum-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:340px;overflow-y:auto}
-.sum-date{font-size:12px;font-weight:800;color:var(--text);margin:10px 0 2px}
-.sum-date:first-child{margin-top:0}
-.sum-item{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
-.sum-item .meta{display:flex;flex-direction:column}
-.sum-item .price{font-weight:700;color:var(--text);white-space:nowrap}
-.sum-item .x{color:var(--muted);cursor:pointer;font-weight:700}
-.sum-total{display:flex;justify-content:space-between;align-items:center;margin:14px 0}
-.sum-total .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.sum-total .tot-wrap{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
-.sum-total .orig{font-size:13px;font-weight:700;color:var(--muted);text-decoration:line-through}
-.voucher{margin:-4px 0 14px}
-.voucher-in{display:flex;gap:8px}
-.voucher-in input{flex:1;min-width:0;padding:11px 12px;border:1px solid var(--input-line);border-radius:10px;font:inherit;text-transform:uppercase;background:var(--input-bg);color:var(--text)}
-.voucher-in input:focus{outline:2px solid var(--input-focus);border-color:var(--input-focus)}
-.btn-apply{flex-shrink:0;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:0 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
-.btn-apply:hover{background:var(--navy-d)}
-.voucher-msg{font-size:12.5px;font-weight:600;margin-top:8px;min-height:16px}
-.sum-total .val{font-size:26px;font-weight:800;color:var(--text)}
-.btn{width:100%;background:var(--green);color:#fff;border:1px solid var(--btn-bd);padding:15px;border-radius:12px;font:inherit;font-weight:700;font-size:16px;cursor:pointer;transition:background .15s ease}
-.btn:hover{background:var(--green-d)}
-.btn:disabled{background:var(--btn-dis-bg);color:var(--disabled);cursor:not-allowed}
-.btn-navy{background:var(--navy)}
-.btn-navy:hover{background:var(--navy-d)}
-.sum-note{font-size:12px;color:var(--muted);margin-top:10px}
-.footer{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);text-align:center}
-.footer-addr{display:flex;justify-content:center;align-items:center;margin-bottom:8px}
-.footer-addr a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13.5px;font-weight:600;text-decoration:none}
-.footer-addr a:hover{color:var(--brand-l);text-decoration:underline}
-.footer-addr a svg{width:15px;height:15px;flex:none}
-.footer-social{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 4px}
-.footer-social a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13.5px;font-weight:600;text-decoration:none}
-.footer-social a:hover{color:var(--brand-l);text-decoration:underline}
-.footer-social a svg{width:15px;height:15px;flex:none}
-.footer-social .dot{color:var(--muted);font-weight:700;padding:0 4px}
-.footer-meta{margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;font-size:13px}
-.footer-meta a,.footer-meta button.flink{color:var(--muted);font-weight:600;text-decoration:none;background:0 0;border:none;font:inherit;cursor:pointer;padding:0}
-.footer-meta a:hover,.footer-meta button.flink:hover{color:var(--brand-l);text-decoration:underline}
-.footer-meta .dot{color:var(--line);padding:0 6px}
-.modal-doc{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:640px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow);text-align:left;overflow:hidden}
-.modal-doc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line);flex:none}
-.modal-doc-head h3{font-size:18px;font-weight:800;color:var(--text)}
-.doc-x{background:var(--elev);border:none;color:var(--muted);width:34px;height:34px;border-radius:9px;font-size:15px;cursor:pointer;flex:none}
-.doc-x:hover{color:var(--text)}
-.modal-doc-body{padding:20px 22px;overflow-y:auto;color:var(--text-2);font-size:13.5px;line-height:1.65}
-.modal-doc-body h4{color:var(--text);font-size:15px;font-weight:800;margin:18px 0 8px}
-.modal-doc-body h4:first-child{margin-top:0}
-.modal-doc-body p{margin-bottom:10px}
-.modal-doc-body ul{margin:0 0 10px 18px}
-.modal-doc-body li{margin-bottom:5px}
-.modal-doc-body .upd{color:var(--muted);font-size:12px;margin:-2px 0 14px}
-.modal-doc-body a{color:var(--link);word-break:break-word}
-.mobile-bar{display:none}
-@media (max-width:1000px){.grid-layout{grid-template-columns:1fr}
-.hero-wrap{height:190px}
-.summary .btn{display:none}
-.mobile-bar{display:flex;position:fixed;left:0;right:0;bottom:0;background:#1f2227;color:#fff;padding:12px 16px;gap:18px;align-items:center;z-index:40;box-shadow:0 -4px 20px rgba(0,0,0,.18)}
-.mobile-bar .mb-lab{font-size:10px;letter-spacing:.1em;opacity:.8;font-weight:700}
-.mobile-bar .mb-val{font-size:18px;font-weight:800}
-.mobile-bar .mb-btn{margin-left:auto;width:auto;background:#fff;color:var(--navy);padding:13px 22px;font-size:15px}
-.mobile-bar .mb-btn:disabled{background:rgba(255,255,255,.4);color:rgba(255,255,255,.7)}
-}
-@media (min-width:1001px){.grid-layout>div{position:sticky;top:18px;align-self:start}
-.table-scroll{max-height:calc(100vh - 240px);overflow-y:auto}
-}
-.checkout{max-width:620px;margin:0 auto}
-.checkout .card{margin-bottom:16px}
-label.fl{display:block;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--text)}
-.field-gap{margin-bottom:16px}
-input[type=email],input[type=tel],input[type=text]{width:100%;padding:12px 14px;border:1px solid var(--input-line);border-radius:10px;font:inherit;background:var(--input-bg);color:var(--text)}
-input:focus{outline:2px solid var(--input-focus);border-color:var(--input-focus)}
-.pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-@media (max-width:480px){.pay-methods{grid-template-columns:1fr}
-}
-.pay-opt{border:1.5px solid var(--line);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;font-weight:700;font-size:13px;background:var(--elev);color:var(--text)}
-.pay-opt.on{border-color:var(--sel-bd);background:var(--info-bg);color:var(--text)}
-.pay-detail{text-align:center;margin-top:18px}
-.pay-detail .scan{font-size:13px;color:var(--muted);margin-bottom:10px}
-.pay-detail img{width:200px;max-width:70%;border-radius:12px}
-.pay-acct{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:left}
-.pay-acct .nm{font-size:13px;color:var(--muted)}
-.pay-acct .no{font-size:17px;font-weight:800;color:var(--text)}
-.copy-btn{background:var(--elev);border:none;color:var(--text);padding:9px 16px;border-radius:9px;font:inherit;font-weight:700;cursor:pointer}
-.copy-btn:hover{background:#20304a}
-.exact{text-align:center;font-size:13px;color:var(--pend-tx);margin-top:12px}
-.upload{border:2px dashed var(--line);border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer}
-.upload:hover{border-color:var(--brand-l)}
-.upload .big{font-weight:700;color:var(--text)}
-.upload .small{font-size:12px;color:var(--muted);margin-top:4px}
-.upload img.preview{max-width:200px;border-radius:10px;margin-top:6px}
-.hold-note{background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px}
-.hold-note strong{color:var(--pend-tx)}
-.timer-bar{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:16px;box-shadow:0 8px 24px rgba(21,69,95,.22)}
-.timer-bar .tb-ico{font-size:22px;line-height:1}
-.timer-bar .tb-txt{font-size:13px;font-weight:600;opacity:.92}
-.timer-bar .tb-txt strong{display:block;font-size:12px;font-weight:700;opacity:.8;letter-spacing:.02em}
-.timer-bar .tb-count{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:800;font-size:26px;letter-spacing:.02em;background:rgba(255,255,255,.14);padding:6px 14px;border-radius:10px;min-width:96px;text-align:center}
-.timer-bar.urgent{background:#b5342a;box-shadow:0 8px 24px rgba(181,52,42,.35);animation:tbpulse 1s ease-in-out infinite}
-@keyframes tbpulse{0%,100%{transform:scale(1)}
-50%{transform:scale(1.012)}
-}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;place-items:center;padding:20px;z-index:80}
-.modal-overlay.show{display:grid}
-.modal-box{background:var(--elev);border:1px solid var(--line);border-radius:18px;padding:28px 24px;max-width:400px;width:100%;text-align:center;box-shadow:var(--shadow)}
-.modal-box .m-ico{width:64px;height:64px;border-radius:50%;background:var(--book-bg);color:var(--book-tx);display:grid;place-items:center;font-size:30px;margin:0 auto 16px}
-.modal-box h3{font-size:19px;color:var(--text);margin-bottom:8px}
-.modal-box p{color:var(--muted);font-size:14px;margin-bottom:20px}
-.success{max-width:520px;margin:40px auto;text-align:center}
-.success .check{width:84px;height:84px;border-radius:50%;background:var(--open-bg);color:var(--open-tx);display:grid;place-items:center;font-size:42px;margin:0 auto 18px}
-.success h2{color:var(--text);font-size:26px;margin-bottom:14px}
-.success .idlabel{font-size:13px;color:var(--muted)}
-.success .idbox{display:inline-block;background:var(--elev);color:var(--text);font-weight:800;font-size:20px;padding:10px 22px;border-radius:12px;margin:6px 0 16px;letter-spacing:.04em}
-.success p.msg{color:var(--muted);font-size:14px;margin-bottom:22px}
-.success .btn{margin-bottom:12px}
-.error-box,.loading{text-align:center;padding:60px 16px;color:var(--muted)}
-.error-box{color:var(--book-tx);font-weight:600}
-.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--navy-d);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:60}
+table.sched{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}
+table.sched thead th{font-size:13px;font-weight:700;color:var(--text);padding:10px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;position:sticky;top:0;background:var(--card);z-index:2}
+table.sched thead th:first-child{left:0;z-index:3;text-align:left}
+table.sched thead th:not(:first-child){min-width:118px}
+table.sched td.time-cell{font-size:13px;font-weight:700;padding:0 10px;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;left:0;background:var(--card);z-index:1;width:80px}
+table.sched td.cell{border-bottom:1px solid var(--line);padding:6px;min-width:118px;vertical-align:middle}
+table.sched td.book-cell{text-align:center;padding:8px 8px;cursor:pointer;vertical-align:middle}
+table.sched td.book-cell.confirmed{background:var(--conf-bg)}
+table.sched td.book-cell.pending{background:var(--pend-bg)}
+table.sched td.book-cell .nm{font-weight:800;font-size:13px;color:var(--text);white-space:normal;line-height:1.2}
+table.sched td.book-cell .stt{font-size:10px;letter-spacing:.08em;font-weight:800;margin-top:4px}
+table.sched td.book-cell.confirmed .stt{color:var(--conf-tx)}
+table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
+.scell-open{background:var(--open-bg);color:var(--open-tx);border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
+.search{width:100%;max-width:340px}
+.cust-row{display:flex;align-items:center;gap:13px;padding:13px 14px;border:1px solid var(--line);border-radius:13px;margin-bottom:9px;cursor:pointer;transition:border-color .14s}
+.cust-row:hover{border-color:var(--green)}
+.cust-row .cinfo{flex:1;min-width:0}
+.cust-row .cnm{font-weight:700}
+.cust-row .csub{font-size:12.5px;color:var(--muted)}
+.cust-row .cspent{font-weight:800;color:var(--text);text-align:right}
+.cust-row .cspent small{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
+.tag.vip{background:#3e3212;color:#e0b93e}
+.tag.freq{background:var(--purple-bg);color:var(--purple)}
+.rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.barline{display:flex;align-items:center;gap:10px;margin:9px 0;font-size:13px}
+.barline .bl-l{min-width:74px;font-weight:600}
+.barline .bl-track{flex:1;height:9px;background:var(--bg);border-radius:6px;overflow:hidden}
+.barline .bl-fill{height:100%;background:var(--chart);border-radius:6px}
+.barline .bl-v{min-width:54px;text-align:right;font-weight:700;color:var(--text)}
+.big-stat{font-size:34px;font-weight:800;color:var(--text)}
+.big-sub{font-size:13px;color:var(--muted)}
+.soon-wrap{display:grid;place-items:center;text-align:center;padding:40px 16px}
+.soon-card{max-width:440px}
+.soon-ico{width:74px;height:74px;border-radius:20px;background:var(--ok-bg);color:var(--pos);display:grid;place-items:center;margin:0 auto 18px}
+.soon-ico svg{width:34px;height:34px}
+.soon-card h2{font-size:22px;font-weight:800;margin-bottom:8px}
+.soon-card p{color:var(--muted);margin-bottom:8px}
+.soon-list{text-align:left;display:inline-block;margin-top:8px}
+.soon-list li{color:var(--muted);font-size:14px;margin:4px 0}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.loading{text-align:center;padding:50px 16px;color:var(--muted)}
+.backdrop{position:fixed;inset:0;background:rgba(14,40,48,.4);display:none;z-index:45}
+.backdrop.show{display:block}
+.notif{position:fixed;top:0;right:0;height:100%;width:380px;max-width:90vw;background:var(--card);box-shadow:-8px 0 30px rgba(0,0,0,.15);z-index:46;transform:translateX(100%);transition:transform .22s ease;display:flex;flex-direction:column}
+.notif.show{transform:translateX(0)}
+.notif-head{padding:18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+.notif-head h3{font-size:17px;color:var(--text);font-weight:800}
+.notif-head .x{margin-left:auto;background:0 0;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.notif-body{overflow-y:auto;padding:14px;flex:1}
+.nitem{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.nitem .nt{font-size:13px;font-weight:700;color:var(--text)}
+.nitem .nd{font-size:12px;color:var(--muted);margin:2px 0 8px}
+.nitem .nacts{display:flex;gap:8px}
+.nitem .nacts button{flex:1;border:none;padding:8px;border-radius:8px;font:inherit;font-weight:700;font-size:12px;cursor:pointer}
+.overlay{position:fixed;inset:0;background:rgba(14,40,48,.55);display:none;place-items:center;padding:16px;z-index:50}
+.overlay.show{display:grid}
+.modal{background:var(--card);border-radius:var(--radius);padding:24px;width:100%;max-width:460px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
+.modal h3{font-size:18px;color:var(--text);margin-bottom:4px}
+.modal h4{font-size:14px;color:var(--text);margin:18px 0 10px}
+.modal .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.modal .mrow{font-size:14px;margin:8px 0}
+.modal .mrow span{color:var(--muted)}
+.modal-actions{display:flex;gap:10px;margin-top:14px}
+.modal-actions .btn-ghost{flex:1;padding:13px}
+.modal-actions .act{flex:1}
+#receiptImg{width:100%;border-radius:10px}
+.support-ico{width:64px;height:64px;border-radius:17px;background:var(--ok-bg);color:var(--pos);display:grid;place-items:center;margin-bottom:14px}
+.support-ico svg{width:30px;height:30px}
+.support-btn{display:block;width:100%;text-align:center;background:var(--green);color:#fff;text-decoration:none;padding:13px;border-radius:12px;font-weight:700;margin-top:8px}
+.support-btn:hover{background:var(--green-d)}
+.admin-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.admin-row .an{font-weight:700}
+.admin-row .ar{margin-left:auto;display:flex;gap:8px;align-items:center}
+.note-box{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.note-label{display:block;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--text-2);margin-bottom:6px}
+.note-input{width:100%;min-height:64px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;resize:vertical;background:var(--input-bg);margin-bottom:8px}
+.note-input:focus{outline:2px solid var(--green);border-color:var(--green)}
+.note-msg{font-size:12px;font-weight:700;color:var(--pos);margin-left:10px}
+.mini-btn{border:1px solid var(--line);background:var(--elev);border-radius:8px;padding:7px 12px;font:inherit;font-weight:700;font-size:12px;cursor:pointer;color:var(--text)}
+.mini-btn.danger{color:var(--cancel);border-color:#6e2a31}
+.mini-btn:hover{border-color:var(--green)}
+.add-row{display:flex;gap:8px}
+.add-row input{flex:1}
+.add-row input.pin{max-width:130px}
+.form-err{color:var(--cancel);font-size:13px;font-weight:600;margin-top:8px;min-height:16px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy-d);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
 .toast.show{opacity:1}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}
+.app-backdrop{display:none}
+@media (max-width:980px){.kpi-grid{grid-template-columns:1fr 1fr}
+.dash-row2,.dash-row3,.rep-grid{grid-template-columns:1fr}
 }
-body,html{max-width:100%;overflow-x:hidden}
-.grid-layout>*{min-width:0}
-.table-scroll{max-width:100%}
-img{max-width:100%}
-@media (max-width:1000px){.hero-wrap{height:190px}
+@media (max-width:860px){.sidebar{position:fixed;left:0;top:0;height:100%;z-index:70;transform:translateX(-100%);transition:transform .22s ease;box-shadow:8px 0 30px rgba(0,0,0,.2)}
+.sidebar.open{transform:translateX(0)}
+.app-backdrop{display:block;position:fixed;inset:0;background:rgba(14,40,48,.4);z-index:65;opacity:0;pointer-events:none;transition:opacity .2s}
+.app-backdrop.show{opacity:1;pointer-events:auto}
+.hamburger{display:block}
+.content{padding:18px 14px 10px}
+.appbar{padding:10px 14px}
+.user-chip .cv,.user-chip .un{display:none}
+.court-grid{grid-template-columns:1fr}
+.date-pill{font-size:13px;padding:8px 11px}
+.dash-greet h2{font-size:22px}
 }
-body,html{max-width:100%;overflow-x:hidden}
-.grid-layout>*{min-width:0}
-.table-scroll{max-width:100%}
-img{max-width:100%}
-@media (max-width:1000px){.hero-wrap{height:190px}
+@media (max-width:520px){.kpi-grid{grid-template-columns:1fr}
+.recent-row .rt{min-width:0}
 }
-table.slots thead th{position:sticky;top:0;background:var(--card);z-index:2}
-table.slots thead th:first-child{left:0;z-index:3}
-table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
-@media (min-width:1001px){.grid-layout>div{position:sticky;top:18px;align-self:start}
-.table-scroll{max-height:calc(100vh - 240px);overflow-y:auto}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+.fld.full{grid-column:1/-1}
+.fld label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.fld input,.fld select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--input-bg)}
+.fld input[type=color]{padding:4px;height:44px;cursor:pointer}
+.color-row{display:flex;gap:10px;align-items:center}
+.color-row input[type=color]{width:54px;flex-shrink:0}
+.pay-method{border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:12px}
+.pay-method .pm-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.pay-method .pm-head label{font-weight:800;color:var(--text)}
+.switch{position:relative;display:inline-block;width:42px;height:24px}
+.switch input{opacity:0;width:0;height:0}
+.switch .sl{position:absolute;inset:0;background:#3a4658;border-radius:999px;transition:.18s;cursor:pointer}
+.switch .sl:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s}
+.switch input:checked+.sl{background:var(--green)}
+.switch input:checked+.sl:before{transform:translateX(18px)}
+.save-bar{display:flex;align-items:center;gap:14px;margin-top:18px}
+.save-bar .msg{font-size:13px;font-weight:600;color:var(--pos)}
+.settings-stack{display:flex;flex-direction:column;gap:16px}
+.promo-row,.rate-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.promo-row .pr-main,.rate-row .rr-main{flex:1;min-width:0}
+.rate-row .rr-t{font-weight:700}
+.promo-row .pr-code{font-weight:800;color:var(--text)}
+.promo-row .pr-sub{font-size:12.5px;color:var(--muted)}
+.promo-row .pr-act{display:flex;gap:8px;align-items:center}
+.switch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;font-weight:600;font-size:14px}
+.wstep2{font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--text);margin:18px 0 10px}
+.wstep2 .opt2{color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0}
+.day-picker{display:flex;flex-wrap:wrap;gap:8px}
+.day-btn{border:1px solid var(--line);background:var(--input-bg);border-radius:999px;padding:8px 14px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;color:var(--muted)}
+.day-btn.on{background:var(--green);color:#fff;border-color:var(--green)}
+.win-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.win-row input{flex:1;min-width:0;padding:10px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;background:var(--input-bg)}
+.win-row .rm{flex-shrink:0;border:1px solid #6e2a31;color:var(--cancel);background:var(--input-bg);border-radius:9px;padding:9px 12px;font:inherit;font-weight:700;cursor:pointer}
+.court-edit{display:grid;grid-template-columns:1.4fr 1fr 1fr auto auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.court-edit input,.court-edit select{padding:9px 10px;border:1px solid var(--line);border-radius:9px;font:inherit;background:var(--input-bg);width:100%}
+.court-edit .ce-act{display:flex;gap:8px;align-items:center}
+@media (max-width:720px){.court-edit{grid-template-columns:1fr 1fr}
+.form-grid{grid-template-columns:1fr}
 }
-</style> </head> <body> <div class="wrap"> <div class="brand"> <img id="logo" alt="" style="display:none"/> <div>
-<div class="eyebrow">Pickleball</div>
-<h1 id="bizName">Loading…</h1>
-</div> </div> <p class="subline" id="bizTagline">
-</p> <div id="heroWrap" class="hero-wrap" style="display:none">
-</div> <div id="loading" class="loading">Connecting to the booking system…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6">Taking longer than usual. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) for the best experience.<br><br><button id="retryLoad" style="margin-top:8px;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div> <div id="errorBox" class="error-box" style="display:none">
-</div> <div id="app" style="display:none"> <div class="grid-layout"> <div> <div class="card"> <h3>Select a date</h3> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
+.txn-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.txn-table th{text-align:left;font-weight:700;color:var(--muted);padding:9px 8px;border-bottom:1px solid var(--line);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.txn-table td{padding:11px 8px;border-bottom:1px solid var(--line)}
+.txn-table td.amt{font-weight:800;color:var(--text);text-align:right}
+.txn-table .method{font-size:11px;font-weight:700;background:var(--bg);padding:3px 9px;border-radius:999px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}
+}
+@media print{:root{--bg:#fff;--card:#fff;--elev:#fff;--text:#000;--text-2:#111;--muted:#333;--line:#ccc;--sidebar:#fff;--sidebar-2:#fff;--input-bg:#fff;--input-line:#999}body,html{background:#fff!important;color:#000!important}*{color:#000!important;box-shadow:none!important;text-shadow:none!important}.card,.kpi,.pos-row,.container,.content{background:#fff!important;border-color:#ccc!important}.rev-total,.kpi .kd .up,.pos-row.change strong,.up{color:#04284D!important}svg [fill],svg[fill]{fill:#04284D!important}svg [stroke]{stroke:#04284D!important}.sidebar,.hamburger,.icon-btn,.bell,.signout,.user-menu,.save-bar button,.act{display:none!important}}</style> </head> <body> <div id="loginView" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand">
+<img id="loginLogo" alt="" style="display:none"/>
+<div>
+<div class="eyebrow">Owner access</div>
+<h1 id="loginBiz">Owner Dashboard</h1>
+</div>
+</div> <p class="sub">Sign in with your owner email and password.</p> <label class="fl" for="email">Email</label> <input type="email" id="email" placeholder="owner@email.com" autocomplete="username"/> <label class="fl" for="password">Password</label> <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"/> <div class="login-err" id="loginErr">
+</div> <button class="btn" id="signinBtn" style="margin-top:6px">Sign in</button> </div> </div> <div id="pwGate" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand" style="margin-bottom:6px">
+<div>
+<div class="eyebrow">Owner access</div>
+<h1>Set your password</h1>
+</div>
+</div> <p class="sub">For your security, please set a new password before you continue.</p> <label class="fl" for="newPw">New password</label> <input type="password" id="newPw" placeholder="At least 8 characters" autocomplete="new-password"/> <label class="fl" for="newPw2">Confirm new password</label> <input type="password" id="newPw2" placeholder="Re-enter new password" autocomplete="new-password"/> <div class="login-err" id="pwErr">
+</div> <button class="btn" id="pwSaveBtn" style="margin-top:6px">Save password &amp; continue</button> <button class="btn-ghost" id="pwSignout" style="width:100%;margin-top:10px;text-align:center">Sign out</button> </div> </div> <div id="dashView" style="display:none"> <div class="app"> <aside class="sidebar" id="sidebar"> <div class="side-brand"> <span class="logo" id="brandLogo">
+<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+<circle cx="12" cy="12" r="9"/>
+<circle cx="9" cy="9" r="1.3" fill="#fff" stroke="none"/>
+<circle cx="14" cy="10" r="1.3" fill="#fff" stroke="none"/>
+<circle cx="11" cy="14" r="1.3" fill="#fff" stroke="none"/>
+</svg>
+</span> <div>
+<div class="bn" id="topBiz">The Kitchen Arena</div>
+<div class="bs" id="brandSub">The Kitchen Arena</div>
+</div> </div> <nav class="nav" id="navMenu"> <div class="nav-item active" data-sec="dashboard">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 11l9-8 9 8"/>
+<path d="M5 10v10h14V10"/>
+</svg> Dashboard</div> <div class="nav-item" data-sec="bookings">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M16 2v4M8 2v4M3 10h18"/>
+</svg> Bookings</div> <div class="nav-item" data-sec="pricing">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M20 12l-8.5 8.5a2 2 0 0 1-2.8 0L3 15V4h11z"/>
+<circle cx="7.5" cy="7.5" r="1.5"/>
+</svg> Pricing</div> <div class="nav-item" data-sec="payments">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="2" y="5" width="20" height="14" rx="2"/>
+<path d="M2 10h20"/>
+</svg> Payments</div> <div class="nav-sep">
+</div> <div class="nav-item" data-sec="reports">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 19V5M4 19h16"/>
+<path d="M8 16l3-4 3 2 4-6"/>
+</svg> Reports</div> <div class="nav-item" data-sec="settings">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="3"/>
+<path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>
+</svg> Settings</div> <div class="nav-label">Premium</div> <div class="nav-item locked" data-support="Memberships">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 8l9-5 9 5-9 5-9-5z"/>
+<path d="M3 12l9 5 9-5"/>
+</svg> Memberships <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<rect x="5" y="11" width="14" height="9" rx="2"/>
+<path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+</svg>
+</div> <div class="nav-item locked" data-support="Open Play">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/>
+<path d="M12 3v18M3 12h18"/>
+</svg> Open Play <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<rect x="5" y="11" width="14" height="9" rx="2"/>
+<path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+</svg>
+</div> <div class="nav-item locked" data-support="Live Queue">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 7h16M4 12h16M4 17h10"/>
+</svg> Live Queue <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<rect x="5" y="11" width="14" height="9" rx="2"/>
+<path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+</svg>
+</div> <div class="nav-item locked" data-support="Advanced Analytics">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 19V5M4 19h16"/>
+<path d="M8 16l3-4 3 2 4-6"/>
+</svg> Advanced Analytics <svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<rect x="5" y="11" width="14" height="9" rx="2"/>
+<path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+</svg>
+</div> </nav> <div class="side-foot"> <span class="logo" id="footLogo">
+<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+<rect x="3" y="3" width="18" height="18" rx="2"/>
+<path d="M3 9h18M9 3v18"/>
+</svg>
+</span> <div>
+<div class="sf-n" id="footBiz">The Kitchen Arena</div>
+<div class="sf-r">Owner</div>
+</div> </div> </aside> <div class="app-backdrop" id="appBackdrop">
+</div> <main class="main"> <header class="appbar"> <button class="hamburger" id="hamburger">☰</button> <span class="date-pill">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M16 2v4M8 2v4M3 10h18"/>
+</svg>
+<span id="datePill">Today</span>
+</span> <div class="spacer">
+</div> <button class="icon-btn" id="bellBtn">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+<path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+</svg>
+<span class="dot" id="bellDot" style="display:none">0</span>
+</button> <div class="user-chip" id="userChip">
+<span class="avatar" id="userAvatar" style="overflow:hidden;padding:0">O</span>
+<span class="un" id="topBizName">The Kitchen Arena</span>
+<span class="cv">▾</span> <div class="user-menu" id="userMenu">
+<button id="signoutBtn">Sign out</button>
+</div> </div> </header> <div class="content"> <section id="sec-dashboard" class="sec show"> <div class="dash-greet">
+<h2 id="greetText">Welcome back! 👋</h2>
+<p class="muted-sub">Here's your club's overview for today.</p>
+</div> <div class="kpi-grid"> <div class="kpi">
+<div class="kpi-ico rev">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="2" y="6" width="20" height="13" rx="2"/>
+<path d="M16 12h.01M2 10h20"/>
+</svg>
+</div>
+<div class="kpi-body">
+<div class="kl">Today's Revenue</div>
+<div class="kn" id="kTodayRev">₱0</div>
+<div class="kd" id="kTodayRevD">
+</div>
+</div>
+</div> <div class="kpi">
+<div class="kpi-ico bk">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="4" width="18" height="18" rx="2"/>
+<path d="M16 2v4M8 2v4M3 10h18"/>
+</svg>
+</div>
+<div class="kpi-body">
+<div class="kl">Today's Bookings</div>
+<div class="kn" id="kTodayBk">0</div>
+<div class="kd" id="kTodayBkD">
+</div>
+</div>
+</div> <div class="kpi">
+<div class="kpi-ico pend">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/>
+<path d="M12 7v5l3 2"/>
+</svg>
+</div>
+<div class="kpi-body">
+<div class="kl">Pending Bookings</div>
+<div class="kn" id="kPending">0</div>
+<span class="link" id="kPendingLink">View all</span>
+</div>
+</div> <div class="kpi">
+<div class="kpi-ico occ">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 3v9l6 4"/>
+<circle cx="12" cy="12" r="9"/>
+</svg>
+</div>
+<div class="kpi-body">
+<div class="kl">Occupancy Rate</div>
+<div class="kn" id="kOcc">0%</div>
+<div class="kd" id="kOccD">
+</div>
+</div>
+</div> </div> <div class="dash-row2"> <div class="card"> <div class="card-head">
+<h3>Revenue (This Month)</h3> <select class="sel" id="revMonthSel">
+<option value="0">This Month</option>
+<option value="1">Last Month</option>
+</select> </div> <div class="rev-total" id="revTotal">₱0</div> <div id="revChart">
+</div> </div> <div class="card"> <div class="card-head">
+<h3>Bookings by Time (Today)</h3>
+</div> <div id="timeChart">
+</div> <div class="legend">
+<span>
+<i style="background:#1B2740">
+</i>Low</span>
+<span>
+<i style="background:var(--green)">
+</i>Medium</span>
+<span>
+<i style="background:var(--green-d)">
+</i>High</span>
+</div> </div> </div> <div class="dash-row3"> <div class="card">
+<div class="card-head">
+<h3>Court Status</h3>
+</div>
+<div class="court-grid" id="courtStatus">
+<div class="empty">Loading…</div>
+</div>
+</div> <div class="card">
+<div class="card-head">
+<h3>Recent Bookings</h3>
+<span class="link" data-go="bookings">View all</span>
+</div>
+<div id="recentList">
+<div class="empty">Loading…</div>
+</div>
+</div> </div> </section> <section id="sec-bookings" class="sec"> <div class="book-2col"> <div class="book-left"> <div class="card"> <h3 style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:14px">Select a date</h3> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
 </div> <div class="cal-grid" id="calGrid">
-</div> <p class="cal-note" id="calNote">
-</p> </div> <div class="card" style="margin-top:16px"> <h3 class="sm">Slot legend</h3> <div class="legend"> <div class="item">
-<div class="sw" style="background:var(--open-bg)">
-</div>
-<div>
-<div class="lab">Open</div>
-<div class="sub">Available</div>
-</div>
-</div> <div class="item">
-<div class="sw" style="background:var(--sel-bg)">
-</div>
-<div>
-<div class="lab">Selected</div>
-<div class="sub">You selected</div>
-</div>
-</div> <div class="item">
-<div class="sw" style="background:var(--book-bg)">
-</div>
-<div>
-<div class="lab">Booked</div>
-<div class="sub">Not available</div>
-</div>
-</div> <div class="item">
-<div class="sw" style="background:var(--pend-bg)">
-</div>
-<div>
-<div class="lab">Pending</div>
-<div class="sub">On hold</div>
-</div>
-</div> <div class="item">
-<div class="sw" style="background:var(--past-bg)">
-</div>
-<div>
-<div class="lab">Past</div>
-<div class="sub">Unavailable</div>
-</div>
-</div> </div> </div> </div> <div class="card"> <h3>Select your slots</h3> <div class="info-bar">Tap a cell to select. You can pick slots across <strong>multiple dates</strong> — switch dates and your selections are kept.</div> <div class="table-scroll">
-<table class="slots">
+</div> </div> </div> <div class="book-right"> <div class="stats"> <div class="stat">
+<div class="n" id="stPending">0</div>
+<div class="l">Pending</div>
+</div> <div class="stat">
+<div class="n" id="stConfirmed">0</div>
+<div class="l">Confirmed</div>
+</div> <div class="stat">
+<div class="n" id="stRevenue">₱0</div>
+<div class="l">Day total</div>
+</div> </div> <div class="card"> <div class="view-head"> <h3 id="dayTitle">Bookings</h3> <div class="toggle">
+<button id="tabList" class="on">List</button>
+<button id="tabGrid">Grid</button>
+</div> </div> <div id="listView">
+</div> <div id="gridView" style="display:none">
+<div class="table-scroll">
+<table class="sched">
 <thead>
-<tr id="gridHead">
+<tr id="schedHead">
 </tr>
 </thead>
-<tbody id="gridBody">
+<tbody id="schedBody">
 </tbody>
 </table>
-</div> </div> <div class="card summary"> <h3>Reservation Summary</h3> <div id="sumEmpty" class="sum-empty">No slots selected yet. Pick a date, then tap open slots.</div> <div id="sumList" class="sum-list">
-</div> <div class="sum-total">
-<span class="lab">Estimated total</span>
-<span class="tot-wrap">
-<span class="orig" id="sumOrig" style="display:none">
+</div>
+</div> </div> </div> </div> </section> <section id="sec-reports" class="sec"> <div class="sec-head">
+<h2>Reports</h2>
+<p>Key performance numbers from the last 90 days.</p>
+</div> <div class="rep-grid" id="repGrid">
+<div class="empty">Loading…</div>
+</div> </section> <section id="sec-pricing" class="sec"> <div class="sec-head">
+<h2>Pricing</h2>
+<p>Set your operating hours, time-based rates, booking rules, and promo codes.</p>
+</div> <div class="settings-stack"> <div class="card"> <div class="card-head">
+<h3>Operating Hours</h3>
+</div> <div class="form-grid"> <div class="fld">
+<label>Opening hour (0–23)</label>
+<input type="number" id="set_openHour" min="0" max="23"/>
+</div> <div class="fld">
+<label>Closing hour (1–24)</label>
+<input type="number" id="set_closeHour" min="1" max="24"/>
+</div> <div class="fld">
+<label>Slot length (minutes)</label>
+<input type="number" id="set_slotMinutes" min="15" step="15"/>
+</div> </div> </div> <div class="card"> <div class="card-head">
+<h3>Booking Rules</h3>
+</div> <div class="form-grid"> <div class="fld">
+<label>Advance booking window (days, max 30)</label>
+<input type="number" id="set_advanceDays" min="0" max="30"/>
+</div> <div class="fld">
+<label>Booking ID prefix</label>
+<input id="set_idPrefix" placeholder="NGPC"/>
+</div> <div class="fld">
+<label>Slot hold time — booking page (min) <span style="color:var(--muted);font-weight:500">· time to complete payment</span>
+</label>
+<input type="number" id="set_checkoutMinutes" min="1" placeholder="5"/>
+</div> <div class="fld">
+<label>Pending status timer — status page (min) <span style="color:var(--muted);font-weight:500">· countdown before contact shows</span>
+</label>
+<input type="number" id="set_holdMinutes" min="1" placeholder="30"/>
+</div> </div> </div> <div class="save-bar"> <button class="act act-confirm" id="savePricingBtn" style="max-width:220px">Save hours &amp; rules</button> <span class="msg" id="pricingMsg">
+</span> </div> <div class="card"> <div class="card-head">
+<h3>Time-based Pricing</h3>
+</div> <p class="muted-sub" style="margin-bottom:12px">Set the hourly rate for each time band (e.g. off-peak vs peak). Cover your full opening hours — any hour without a band is charged ₱0.</p> <div id="ratesList">
+<div class="empty">Loading…</div>
+</div> <h4 style="font-size:14px;color:var(--text);margin:16px 0 10px">Add a rate band</h4> <div class="form-grid"> <div class="fld">
+<label>From</label>
+<input type="time" id="newRateStart" step="900"/>
+</div> <div class="fld">
+<label>To</label>
+<input type="time" id="newRateEnd" step="900"/>
+</div> <div class="fld">
+<label>Rate per hour (₱)</label>
+<input type="number" id="newRateAmt" min="0"/>
+</div> </div> <div class="form-err" id="rateErr">
+</div> <div style="margin-top:12px">
+<button class="act act-confirm" id="addRateBtn" style="max-width:200px">Add rate band</button>
+</div> </div> <div class="card"> <div class="card-head">
+<h3>Promo Codes</h3>
+<button class="act act-confirm" id="addPromoBtn" style="margin-left:auto;max-width:170px">+ Promo Code</button>
+</div> <div id="promosList">
+<div class="empty">Loading…</div>
+</div> </div> </div> </section> <section id="sec-settings" class="sec"> <div class="sec-head">
+<h2>Settings</h2>
+<p>Manage your payment methods, contact links, and staff.</p>
+</div> <div class="settings-stack"> <div class="card"> <div class="card-head">
+<h3>Payment Methods</h3>
+</div> <div class="pay-method"> <div class="pm-head">
+<label class="switch">
+<input type="checkbox" id="pm_gcash"/>
+<span class="sl">
 </span>
-<span class="val" id="sumTotal">₱0</span>
+</label>
+<label>GCash</label>
+</div> <div class="form-grid">
+<div class="fld">
+<label>Account name</label>
+<input id="set_gcashName"/>
+</div>
+<div class="fld">
+<label>Number</label>
+<input id="set_gcashNumber"/>
+</div>
+<div class="fld full">
+<label>QR image URL</label>
+<input id="set_gcashQrUrl" placeholder="https://i.imgur.com/..."/>
+</div>
+</div> </div> <div class="pay-method"> <div class="pm-head">
+<label class="switch">
+<input type="checkbox" id="pm_maya"/>
+<span class="sl">
 </span>
-</div> <div class="voucher"> <div class="voucher-in">
-<input id="voucherInput" placeholder="Voucher code" autocomplete="off"/>
-<button class="btn-apply" id="applyVoucherBtn">Apply voucher</button>
-</div> <div class="voucher-msg" id="voucherMsg">
-</div> </div> <button class="btn" id="continueBtn" disabled="disabled">Continue</button> <p class="sum-note">Your booking starts as pending until the club confirms it.</p> </div> </div> <div class="footer" id="footerLinks">
-</div> </div> <div id="checkoutView" class="checkout" style="display:none"> <button class="btn-ghost" id="backToSlots" style="margin-top:18px;margin-bottom:16px">‹ Back to slots</button> <div class="timer-bar" id="timerBar"> <span class="tb-ico">⏱️</span> <span class="tb-txt">
-<strong>TIME LEFT TO COMPLETE</strong>Finish your details &amp; payment before the timer ends.</span> <span class="tb-count" id="timerCount">05:00</span> </div> <div class="card"> <h3>Booker information</h3> <div class="field-gap">
-<label class="fl">Full name</label>
-<input type="text" id="nameInput" placeholder="Juan Dela Cruz"/>
-</div> <div class="field-gap">
-<label class="fl">Mobile number</label>
-<input type="tel" id="contactInput" placeholder="09XX XXX XXXX"/>
-</div> <div>
-<label class="fl">Email</label>
-<input type="email" id="emailInput" placeholder="you@email.com" inputmode="email" autocomplete="email"/>
-<div class="sum-note" style="margin-top:6px">We'll send your booking status and confirmation to this email.</div>
-</div> </div> <div class="card"> <h3>Select a payment method</h3> <p class="sum-note" style="margin:-6px 0 14px">Choose one option below.</p> <div class="pay-methods" id="payMethods">
-</div> <div class="pay-detail" id="payDetail" style="display:none">
-</div> </div> <div class="card"> <h3>Upload receipt</h3> <p class="sum-note" style="margin:-6px 0 14px">Upload your payment proof. <strong style="color:var(--cancel)">Required.</strong>
-</p> <div class="upload" id="uploadBox"> <div class="big">☁️ Tap to upload image</div> <div class="small">JPG or PNG, max 5MB</div> <img class="preview" id="receiptPreview" style="display:none"/> </div> <input type="file" id="receiptInput" accept="image/*" style="display:none"/> </div> <button class="btn btn-navy" id="submitBtn">Submit Booking</button> <div class="hold-note">🔒 Your slot is held as <strong>Pending</strong>. We'll confirm it shortly after verifying your payment.</div> <div class="footer" id="footerLinks2">
-</div> </div> <div id="successView" class="success" style="display:none"> <div class="check">✓</div> <h2>Booking received!</h2> <div class="idlabel">Booking ID</div> <div class="idbox" id="successId">—</div> <p class="msg">Your payment is being verified. You'll get a confirmation shortly. Your slot is on hold.</p> <button class="btn btn-navy" id="viewStatusBtn">View Booking Status</button> <button class="btn-ghost" id="anotherBtn" style="width:100%;padding:15px">Make another booking</button> </div> </div> <div class="mobile-bar" id="mobileBar"> <div>
-<div class="mb-lab">SLOTS</div>
-<div class="mb-val" id="mbSlots">0</div>
-</div> <div>
-<div class="mb-lab">TOTAL</div>
-<div class="mb-val" id="mbTotal">₱0</div>
-</div> <button class="btn mb-btn" id="mbContinue" disabled="disabled">Continue</button> </div> <div class="modal-overlay" id="expireOverlay"> <div class="modal-box"> <div class="m-ico">⏱️</div> <h3>Time's up</h3> <p id="expireMsg">Your 10-minute reservation window has expired, so your selected slots have been released. Please pick your slots again.</p> <button class="btn btn-navy" id="expireBtn" style="width:100%">Back to booking</button> </div> </div> <div class="modal-overlay" id="docOverlay"> <div class="modal-doc"> <div class="modal-doc-head">
-<h3 id="docTitle">—</h3>
-<button class="doc-x" id="docClose" aria-label="Close">✕</button>
-</div> <div class="modal-doc-body" id="docBody">
-</div> </div> </div> <div class="toast" id="toast">
-</div> <script>let db;try{const e=firebase.initializeApp(firebaseConfig);try{
+</label>
+<label>Maya</label>
+</div> <div class="form-grid">
+<div class="fld">
+<label>Account name</label>
+<input id="set_mayaName"/>
+</div>
+<div class="fld">
+<label>Number</label>
+<input id="set_mayaNumber"/>
+</div>
+<div class="fld full">
+<label>QR image URL</label>
+<input id="set_mayaQrUrl" placeholder="https://i.imgur.com/..."/>
+</div>
+</div> </div> <div class="pay-method"> <div class="pm-head">
+<label class="switch">
+<input type="checkbox" id="pm_bank"/>
+<span class="sl">
+</span>
+</label>
+<label>Bank Transfer</label>
+</div> <div class="form-grid">
+<div class="fld">
+<label>Account name</label>
+<input id="set_bankName"/>
+</div>
+<div class="fld">
+<label>Account number</label>
+<input id="set_bankNumber"/>
+</div>
+<div class="fld full">
+<label>QR image URL</label>
+<input id="set_bankQrUrl" placeholder="https://i.imgur.com/..."/>
+</div>
+</div> </div> </div> <div class="card"> <div class="card-head">
+<h3>Contact &amp; Links</h3>
+</div> <div class="form-grid"> <div class="fld">
+<label>Contact number <span style="color:var(--muted);font-weight:500">(revealed at countdown end)</span>
+</label>
+<input id="set_contactNumber"/>
+</div> <div class="fld">
+<label>Booking alert email <span style="color:var(--muted);font-weight:500">(where "New booking" emails go)</span>
+</label>
+<input id="set_notifyEmail" type="email" placeholder="owner@email.com"/>
+</div> <div class="fld">
+<label>Address name</label>
+<input id="set_addressName"/>
+</div> <div class="fld full">
+<label>Address</label>
+<input id="set_address"/>
+</div> <div class="fld full">
+<label>Google Maps link</label>
+<input id="set_mapsLink"/>
+</div> <div class="fld">
+<label>Facebook name</label>
+<input id="set_facebookName"/>
+</div> <div class="fld">
+<label>Facebook link</label>
+<input id="set_facebookLink"/>
+</div> <div class="fld">
+<label>Instagram name</label>
+<input id="set_instagramName"/>
+</div> <div class="fld">
+<label>Instagram link</label>
+<input id="set_instagramLink"/>
+</div> </div> <div class="save-bar"> <button class="act act-confirm" id="saveSettingsBtn" style="max-width:240px">Save payment &amp; contact</button> <span class="msg" id="settingsMsg">
+</span> </div> </div> <div class="card"> <div class="card-head">
+<h3>Staff Management</h3>
+</div> <p class="muted-sub" style="margin-bottom:14px">Staff sign in with their <strong>name</strong> and a <strong>6-digit PIN</strong> on the admin page.</p> <div id="adminsList">
+<div class="empty">Loading…</div>
+</div> <h4 style="font-size:14px;color:var(--text);margin:18px 0 10px">Add a staff member</h4> <div class="add-row"> <input type="text" id="newAdminName" placeholder="Staff name"/> <input type="tel" id="newAdminPin" class="pin" placeholder="6-digit PIN" maxlength="6" inputmode="numeric"/> </div> <div class="form-err" id="adminErr">
+</div> <div style="margin-top:12px">
+<button class="act act-confirm" id="addAdminBtn" style="max-width:200px">Add staff</button>
+</div> </div> </div> </section> <section id="sec-payments" class="sec"> <div class="sec-head">
+<h2>Payments</h2>
+<p>Sales summary and transaction records from the last 90 days.</p>
+</div> <div class="kpi-grid" id="payKpis">
+</div> <div class="dash-row3"> <div class="card">
+<div class="card-head">
+<h3>Revenue by method</h3>
+</div>
+<div id="payByMethod">
+<div class="empty">Loading…</div>
+</div>
+</div> <div class="card">
+<div class="card-head">
+<h3>This month vs last</h3>
+</div>
+<div id="payTrend">
+<div class="empty">Loading…</div>
+</div>
+</div> </div> <div class="card" style="margin-top:16px"> <div class="card-head">
+<h3>Recent transactions</h3>
+<button class="btn-ghost" id="exportCsvBtn" style="margin-left:auto">⬇ Export CSV</button>
+</div> <div class="table-scroll">
+<table class="txn-table" id="txnTable">
+<tbody>
+<tr>
+<td class="empty">Loading…</td>
+</tr>
+</tbody>
+</table>
+</div> </div> <div class="card" style="margin-top:16px"> <div class="card-head">
+<h3>Receipt storage</h3>
+</div> <p style="font-size:13px;color:var(--muted);margin:0 0 12px">Download all payment receipts as a ZIP, then remove them from the database to free up storage. Booking records are always kept; receipts for pending bookings are skipped.</p> <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"> <label style="font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px">Month (optional)<input type="month" id="rcptMonth" style="background:var(--input-bg);color:var(--text);border:1px solid var(--input-line);border-radius:8px;padding:7px 10px;font:inherit"/>
+</label> <button class="btn-ghost" id="exportReceiptsBtn" style="margin-left:auto">⬇ Export &amp; Clear Receipts</button> </div> <div id="rcptStatus" style="font-size:13px;margin-top:12px;color:var(--muted)">
+</div> </div> </section> <section id="sec-soon" class="sec"> <div class="soon-wrap">
+<div class="soon-card"> <div class="soon-ico">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"/>
+<path d="M12 7v5l3 2"/>
+</svg>
+</div> <h2 id="soonTitle">Coming soon</h2> <p id="soonDesc">
+</p> <p style="font-size:13px;margin-top:14px">We're building this for your club. 🛠️</p> </div>
+</div> </section> </div> <footer class="appfoot" id="appFoot">
+</footer> </main> </div> </div> <div class="backdrop" id="backdrop">
+</div> <div class="notif" id="notif"> <div class="notif-head">
+<h3>Pending bookings</h3>
+<button class="x" id="notifClose">×</button>
+</div> <div class="notif-body" id="notifBody">
+</div> </div> <div class="overlay" id="detailOverlay">
+<div class="modal" id="detailModal">
+</div>
+</div> <div class="overlay" id="receiptOverlay">
+<div class="modal" style="max-width:480px">
+<h3 style="margin-bottom:14px">Payment receipt</h3>
+<img id="receiptImg" alt="receipt"/>
+<button class="btn-ghost" id="receiptClose" style="width:100%;margin-top:16px;padding:13px">Close</button>
+</div>
+</div> <div class="overlay" id="supportOverlay">
+<div class="modal" style="max-width:420px;text-align:center"> <div class="support-ico" style="margin:0 auto 14px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="5" y="11" width="14" height="9" rx="2"/>
+<path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+</svg>
+</div> <h3 id="supTitle" style="text-align:center">Premium feature</h3> <p class="sub" id="supText" style="text-align:center">
+</p> <div id="supContact">
+</div> <button class="btn-ghost" id="supClose" style="width:100%;margin-top:12px;padding:13px">Maybe later</button> </div>
+</div> <div class="overlay" id="promoOverlay">
+<div class="modal" style="max-width:560px"> <h3>New Promo Code</h3> <p class="sub">Create a discount code your players can enter on the booking page.</p> <div class="fld">
+<label>Code</label>
+<input id="promoCode" placeholder="SUMMER10" style="text-transform:uppercase"/>
+</div> <div class="form-grid"> <div class="fld">
+<label>Discount type</label>
+<select id="promoType">
+<option value="percent">Percent (%)</option>
+<option value="amount">Fixed amount (₱)</option>
+</select>
+</div> <div class="fld">
+<label>Value</label>
+<input type="number" id="promoValue" min="0"/>
+</div> </div> <label class="switch-row">
+<span>Active</span>
+<label class="switch">
+<input type="checkbox" id="promoActive" checked="checked"/>
+<span class="sl">
+</span>
+</label>
+</label> <div class="form-grid"> <div class="fld">
+<label>Usage limit <span class="opt">(0 = unlimited)</span>
+</label>
+<input type="number" id="promoUsageLimit" min="0" placeholder="0"/>
+</div> <div class="fld">
+<label>Minimum hours <span class="opt">(0 = none)</span>
+</label>
+<input type="number" id="promoMinHours" min="0" step="0.5" placeholder="0"/>
+</div> </div> <div class="wstep2">Applicable days <span class="opt2">(none selected = all days)</span>
+</div> <div class="day-picker" id="promoDays">
+</div> <div class="wstep2">Applicable time windows <span class="opt2">(none = all day)</span>
+</div> <div id="promoTimes">
+</div> <button class="mini-btn" id="addTimeWin" style="margin-top:8px">+ Add time window</button> <div class="wstep2">Applicable date ranges <span class="opt2">(none = all dates)</span>
+</div> <div id="promoDates">
+</div> <button class="mini-btn" id="addDateRange" style="margin-top:8px">+ Add date range</button> <div class="form-err" id="promoErr">
+</div> <div class="modal-actions">
+<button class="btn-ghost" id="promoCancel">Cancel</button>
+<button class="act act-confirm" id="promoSave">Save promo</button>
+</div> </div>
+</div> <div id="boot" class="loading">Loading…</div> <div class="toast" id="toast">
+</div> <script>const TKA_LOGO="https://i.imgur.com/SPrzHHN.png";let db,auth,viewYear,viewMonth,secondaryApp=null,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],CONTACTS={},ALLB=[],analyticsLoaded=!1,allContactsLoaded=!1,curSection="dashboard"
+;try{const e=firebase.initializeApp(firebaseConfig,"layawOwner");try{
 APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e).activate(APPCHECK_SITE_KEY,!0)
-}catch(e){console.warn("AppCheck:",e)}db=firebase.firestore()}catch(e){
-showError("Could not connect. Check the Firebase config at the top of this file.")}
-let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,reserving=!1
-/* ── EASY-EDIT SETTING ── minutes of grace before a time slot is marked "Past".
-   A slot stays Open until (current time − this many minutes) passes its end.
-   Example at 15: the 8:00 slot stays Open until 8:15, then shows Past at 8:16. */
-;const PAST_ALLOWANCE_MIN=15
-;const $=e=>document.getElementById(e);function showError(e){window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",
-$("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}function toast(e){
-const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
-function pad2(e){return String(e).padStart(2,"0")}function dstr(e){
+}catch(e){console.warn("AppCheck:",e)}
+db=e.firestore(),auth=e.auth(),auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(()=>{})}catch(e){
+document.getElementById("boot").textContent="Config error. Check the Firebase config at the top of this file."}
+const $=e=>document.getElementById(e);function pad2(e){return String(e).padStart(2,"0")}function dstr(e){
 return e.getFullYear()+"-"+pad2(e.getMonth()+1)+"-"+pad2(e.getDate())}function today(){const e=new Date
-;return e.setHours(0,0,0,0),e}function parseDstr(e){const[t,o,n]=e.split("-").map(Number);return new Date(t,o-1,n)}
-function niceDateShort(e){return parseDstr(e).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
-function hm2min(e){if(!e)return 0;const[t,o]=String(e).split(":").map(Number);return 60*(t||0)+(o||0)}
-function hourLabel(e){let t=Math.floor(e/60),o=e%60;const n=t>=12&&t<24?"PM":"AM";let a=t%12;return 0===a&&(a=12),
-0===o?a+n:a+":"+pad2(o)+n}function slotRangeLabel(e,t){return hourLabel(e)+"-"+hourLabel(e+t)}function peso(e){
-return"₱"+Number(e).toLocaleString("en-PH")}function darken(e,t){
-3===(e=String(e).replace("#","")).length&&(e=e.split("").map(e=>e+e).join(""));const o=parseInt(e,16)
-;return"#"+[Math.round((o>>16&255)*t),Math.round((o>>8&255)*t),Math.round((255&o)*t)].map(e=>("0"+e.toString(16)).slice(-2)).join("")
-}function ck(e,t,o){return e+"|"+t+"|"+o}async function loadData(){if(db)try{
-const _to=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);
-const e=await _to(db.collection("settings").doc("config").get(),12e3);if(!e.exists)return void showError("Settings not found.")
-;SETTINGS=e.data();const t=await db.collection("courts").get();if(COURTS=[],t.forEach(e=>{const t=e.data()
-;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||""})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
-!COURTS.length)return void showError("No active courts found.");try{const e=await db.collection("rates").get();RATES=[],
-e.forEach(e=>{const t=e.data();let o=hm2min(t.start),n=hm2min(t.end);n<=o&&(n+=1440),RATES.push({start:o,end:n,
-rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start)}catch(e){RATES=[]}try{
-const e=await db.collection("promos").get();PROMOS=[],e.forEach(e=>PROMOS.push({id:e.id,...e.data()}))}catch(e){
-PROMOS=[]}applyTheme(),renderBrand(),startHero(),renderFooterLinks();const o=today();viewYear=o.getFullYear(),
-viewMonth=o.getMonth(),selectedDate=dstr(o),renderCalendar(),renderGridHead(),watchAvailability(),updateSummary(),
-window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",$("app").style.display="block"}catch(e){console.error(e),
-showError("timeout"===e.message?"Couldn't connect. If you opened this from Messenger or Facebook, tap ••• and choose “Open in browser”, then try again.":"Failed to load data: "+(e.message||e))}}function applyTheme(){
-const e=document.documentElement.style,t=SETTINGS.colorPrimary||"#0D2863",o=SETTINGS.colorAccent||"#0D2863"
-;e.setProperty("--navy",t),e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||"#0A1E4C"),e.setProperty("--green",o),
-e.setProperty("--green-d",SETTINGS.colorAccentDark||"#0A1E4C"),
-e.setProperty("--sel-bg",SETTINGS.slotSelectedBg||"#15336B")}function renderBrand(){
-if($("bizName").textContent=SETTINGS.businessName||"Court Booking",$("bizTagline").textContent=SETTINGS.tagline||"",
-document.title=(SETTINGS.businessName||"Court")+" — Booking",SETTINGS.logoUrl){const e=$("logo");e.src=SETTINGS.logoUrl,
-e.style.display="block"}}function heroImages(){
-return Array.isArray(SETTINGS.heroUrls)&&SETTINGS.heroUrls.length?SETTINGS.heroUrls.filter(Boolean):SETTINGS.heroUrl?[SETTINGS.heroUrl]:[]
-}function startHero(){const e=heroImages();if(!e.length)return;const t=$("heroWrap");if(t.style.display="block",
-t.innerHTML="",e.forEach((e,o)=>{const n=document.createElement("img");n.src=e,0===o&&n.classList.add("active"),
-t.appendChild(n)}),e.length>1){const o=document.createElement("div");o.className="hero-dots",e.forEach((e,t)=>{
-const n=document.createElement("span");0===t&&n.classList.add("on"),o.appendChild(n)}),t.appendChild(o);let n=0
-;setInterval(()=>{const e=t.querySelectorAll("img");e[n].classList.remove("active"),
-o.children[n].classList.remove("on"),n=(n+1)%e.length,e[n].classList.add("active"),o.children[n].classList.add("on")
-},4e3)}}function esc(e){return String(null==e?"":e).replace(/[&<>"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",
-'"':"&quot;"}[e]))}
-const LAYAW_FB="https://www.facebook.com/profile.php?id=61591455718209",IC_PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',IC_FB='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.88v-6.99H7.9V12h2.5V9.8c0-2.47 1.47-3.84 3.72-3.84 1.08 0 2.2.19 2.2.19v2.42h-1.24c-1.22 0-1.6.76-1.6 1.54V12h2.72l-.43 2.89h-2.29v6.99A10 10 0 0 0 22 12z"/></svg>',IC_IG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>'
-;function renderFooterLinks(){let e="";if(SETTINGS.address||SETTINGS.addressName){
-const t=SETTINGS.addressName||SETTINGS.address
-;e='<div class="footer-addr"><a href="'+esc(SETTINGS.mapsLink||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(SETTINGS.address||t))+'" target="_blank" rel="noopener">'+IC_PIN+"<span>"+esc(t)+"</span></a></div>"
-}const t=[]
-;SETTINGS.facebookLink&&t.push('<a href="'+esc(SETTINGS.facebookLink)+'" target="_blank" rel="noopener">'+IC_FB+"<span>"+esc(SETTINGS.facebookName||"Facebook")+"</span></a>"),
-SETTINGS.instagramLink&&t.push('<a href="'+esc(SETTINGS.instagramLink)+'" target="_blank" rel="noopener">'+IC_IG+"<span>"+esc(SETTINGS.instagramName||"Instagram")+"</span></a>")
-;const o=e+(t.length?'<div class="footer-social">'+t.join('<span class="dot">•</span>')+"</div>":"")+('<div class="footer-meta"><button type="button" class="flink" data-doc="privacy">Privacy</button><span class="dot">·</span><button type="button" class="flink" data-doc="terms">Terms</button><span class="dot">·</span><a href="'+LAYAW_FB+'" target="_blank" rel="noopener">Built by Layaw System</a></div>')
-;$("footerLinks").innerHTML=o,$("footerLinks2").innerHTML=o,document.querySelectorAll("[data-doc]").forEach(e=>{
-e.onclick=()=>openDoc(e.getAttribute("data-doc"))})}const DOC_PRIVACY={title:"Privacy Policy",
-html:'<p class="upd">Last updated: July 3, 2026</p>\n<h4>1. Introduction</h4>\n<p>Welcome to The Kitchen Arena. This site is a white-label court booking experience powered by the Layaw System ("Platform"), operated by Layaw System ("we," "our," or "us"). The Kitchen Arena is the venue you are booking with. For personal information processed through the Platform, Layaw System is the personal information controller. We follow the Data Privacy Act of 2012 (Republic Act No. 10173).</p>\n<p>When you submit a booking, you confirm that you have read and agree to this Privacy Policy. If you do not agree, please do not submit a booking. If you only browse without booking, we may still collect limited technical data (such as cookies or security logs).</p>\n<h4>2. When We Are Allowed to Use Your Information</h4>\n<p>We use your personal information only when the law allows, including when:</p>\n<ul><li>We need it to handle your booking (our agreement with you)</li><li>You consent — for example, when you submit a booking and agree to this Policy</li><li>We have a valid business need that respects your rights — such as preventing fraud or keeping the Platform secure</li><li>The law requires us to keep or use certain records</li></ul>\n<p>If we rely on your consent, you may withdraw it (Section 10). Some information is required to complete a booking; without it, we may not be able to confirm your reservation.</p>\n<h4>3. Information We Collect</h4>\n<p><strong>You provide:</strong></p>\n<ul><li><strong>Booking details:</strong> name, phone number, email, court choice, date and time, and booking reference</li><li><strong>Proof of payment:</strong> if the venue requires it, a receipt image you upload so the venue can verify your payment</li><li><strong>Messages to us:</strong> feedback, support requests, and other communications</li></ul>\n<p><strong>Collected automatically:</strong> usage data, device data (browser, OS, IP address), and cookies/local storage used for staff/owner sign-in, security, and preferences.</p>\n<p><strong>Payments — what we do not collect:</strong> we do not ask for your card number, e-wallet login, or bank credentials on our booking form. Paying the venue (cash, bank transfer, or QR such as GCash) happens directly with the venue. We do not process card payments. If you upload a receipt image, we store it only so the venue can confirm your payment.</p>\n<h4>4. Cookies and Outside Services We Use</h4>\n<p>We rely on trusted providers who may handle personal information only to perform their work for us:</p>\n<ul><li><strong>Google Firebase</strong> (Firestore, Authentication, App Check) — stores booking data, manages venue/staff sign-in, and verifies requests come from the real app. Data may be kept outside the Philippines.</li><li><strong>GitHub Pages</strong> — hosts the website; may log technical data such as IP addresses.</li><li><strong>Google reCAPTCHA v3</strong> — helps block bots and abuse.</li></ul>\n<h4>5. How We Use Your Information</h4>\n<ul><li>Run the booking Platform and manage your reservations</li><li>Send your booking details to the venue you chose</li><li>Send confirmations and booking-related messages</li><li>Verify a payment when you upload a receipt (status/reference only)</li><li>Improve the Platform, prevent fraud, and meet legal requirements in the Philippines</li></ul>\n<h4>6. Who We Share Information With</h4>\n<p>The venue you book with (The Kitchen Arena) receives the details needed for your reservation and should use them only to run the venue. We may also share information with service providers (Section 4), for legal requests, in a business change (with notice where the law requires), or with your permission. <strong>We do not sell your personal information.</strong></p>\n<h4>7. How We Protect Your Information</h4>\n<ul><li>Encrypted connections (HTTPS)</li><li>Access controls that keep your contact details readable only by the venue\'s authorized managers and staff</li><li>Security monitoring and vendor review</li></ul>\n<p>No online system is perfectly secure, but we work to protect your information.</p>\n<h4>8. How Long We Keep Information</h4>\n<p>We keep information only as long as we need it — while your booking is active and for support, up to seven (7) years for records the law requires (tax, accounting, compliance), and a shorter time for logs. You may ask us to delete data we hold; we will comply where the law allows.</p>\n<h4>9. If a Data Breach Occurs</h4>\n<p>If we learn of a breach that could seriously harm people, we will contain it, assess it, and notify the National Privacy Commission and affected users when the law requires. If you think your information was exposed, contact us using Section 14.</p>\n<h4>10. Your Rights (Philippines)</h4>\n<p>Under the Data Privacy Act you may have the right to be informed, access, correct, delete or block, object, withdraw consent, seek damages, and complain to the NPC. To use these rights, contact us (Section 14). You can also visit privacy.gov.ph.</p>\n<h4>11. Users Under 18</h4>\n<p>The Platform is for users 18 and older. We do not knowingly collect information from children. If you think a child gave us personal information, contact us and we will delete it.</p>\n<h4>12. Data Stored Outside the Philippines</h4>\n<p>Some providers (such as Google Firebase) store or process data in other countries. When we send data abroad, we follow the Data Privacy Act and share only what is needed to run the Platform.</p>\n<h4>13. Changes to This Policy</h4>\n<p>We may update this Policy. The new version will appear here with a new "Last updated" date. For important changes, we may also show a notice on the Platform.</p>\n<h4>14. Contact Us</h4>\n<p><strong>Layaw System</strong> (platform operator)<br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>The Kitchen Arena</strong> (venue)<br>Email: <a href="mailto:arbiejaynunag1210@gmail.com">arbiejaynunag1210@gmail.com</a><br>Location: Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga</p>\n<h4>15. Governing Law</h4>\n<p>This Privacy Policy follows the laws of the Republic of the Philippines, including the Data Privacy Act of 2012 (RA 10173) and rules from the National Privacy Commission.</p>'
-},DOC_TERMS={title:"Terms of Service",
-html:'<p class="upd">Last updated: July 3, 2026</p>\n<h4>1. Acceptance of Terms</h4>\n<p>By accessing or using this booking site ("Platform"), you agree to these Terms of Service ("Terms"). If you do not agree, please do not use the Platform. The Platform is provided by Layaw System ("we," "us," or "our"). The Kitchen Arena is the venue operator for courts you book on this site.</p>\n<h4>2. Description of Service</h4>\n<p>The Platform lets you browse courts and time slots, book slots online, pay the venue directly via GCash or bank transfer and upload proof of payment, and receive booking confirmations once the venue confirms. The Platform facilitates bookings; it does not process card payments or hold funds.</p>\n<h4>3. Bookings and Accounts</h4>\n<p>To reserve a court, you provide your name, contact number, and email, and agree to give accurate information. You do not need an account to book. You must be at least 18 years old. Venue owners and staff access management tools through secured accounts and are responsible for keeping their credentials confidential.</p>\n<h4>4. Booking and Payment Terms</h4>\n<ul><li>A new booking starts as <strong>pending</strong> until the venue confirms it</li><li>Payment is made directly to the venue via GCash, bank transfer, or on-site cash — not through an online card processor on this Platform</li><li>When required, you upload a receipt so the venue can verify payment</li><li>Prices are shown in Philippine Pesos (PHP); the venue sets its own rates</li><li>Once reviewed, you receive a confirmation with a reference number you can check on the status page</li><li>Cancellations and refunds are determined by the venue</li><li>A pending booking that is not paid or confirmed within the venue\'s holding period may expire and be released to others</li></ul>\n<h4>5. Venue Terms</h4>\n<p>The Kitchen Arena is responsible for accurate court information, keeping availability and pricing current, honoring confirmed bookings, maintaining safe courts, handling customer service, complying with laws, and not discriminating against players.</p>\n<h4>6. User Conduct</h4>\n<p>You agree not to use the Platform for illegal purposes, impersonate others, upload malware, attempt unauthorized access, scrape data, interfere with operations, post false content or fake proof of payment, or harass venue staff or other users.</p>\n<h4>7. Intellectual Property</h4>\n<p>The Platform, including its software and design, is the property of Layaw System or its licensors. You may not copy, modify, distribute, sell, or lease any part without our written permission. The venue keeps ownership of photos and content it uploads but grants Layaw System a non-exclusive license to display them to operate the booking service.</p>\n<h4>8. Disclaimers and Limitation of Liability</h4>\n<p>The Platform is provided "AS IS" and "AS AVAILABLE" without warranties of any kind. We do not guarantee it will be uninterrupted, secure, or error-free, that listings are accurate, or that bookings will be honored by the venue. To the maximum extent permitted by law, Layaw System is not liable for any indirect, incidental, special, consequential, or punitive damages, or loss of profits, data, or goodwill, arising from your use of or inability to use the Platform, unauthorized access, disputes with the venue, or interruptions.</p>\n<h4>9. Indemnification</h4>\n<p>You agree to indemnify and hold harmless Layaw System and its operators from claims, liabilities, damages, and expenses (including reasonable legal fees) arising from your use of the Platform, your violation of these Terms or third-party rights, or content you submit.</p>\n<h4>10. Termination</h4>\n<p>We may suspend or terminate access to the Platform at any time, with or without notice, including if we believe you have violated these Terms. Upon termination, your right to use the Platform ceases.</p>\n<h4>11. Dispute Resolution</h4>\n<p>These Terms are governed by the laws of the Republic of the Philippines. Disputes shall be resolved in the appropriate courts of the Philippines. Before filing any legal action, we encourage you to contact us to seek an informal resolution.</p>\n<h4>12. Changes to Terms</h4>\n<p>We may modify these Terms at any time and will post the updated Terms with a new "Last updated" date. Continued use after changes constitutes acceptance.</p>\n<h4>13. Severability</h4>\n<p>If any provision is found unenforceable, it will be limited or removed to the minimum extent necessary, and the remaining provisions stay in effect.</p>\n<h4>14. Entire Agreement</h4>\n<p>These Terms, together with our Privacy Policy, are the entire agreement between you and Layaw System regarding the Platform and supersede prior agreements.</p>\n<h4>15. Contact Information</h4>\n<p><strong>Layaw System</strong><br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>The Kitchen Arena</strong><br>Email: <a href="mailto:arbiejaynunag1210@gmail.com">arbiejaynunag1210@gmail.com</a><br>Location: Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga</p>'
-};function openDoc(e){const t="terms"===e?DOC_TERMS:DOC_PRIVACY;$("docTitle").textContent=t.title,
-$("docBody").innerHTML=t.html,$("docBody").scrollTop=0,$("docOverlay").classList.add("show")}function closeDoc(){
-$("docOverlay").classList.remove("show")}function advanceDays(){return Math.min(Number(SETTINGS.advanceDays??30),30)}
-function maxDate(){const e=today();return e.setDate(e.getDate()+advanceDays()),e}function dateHasCart(e){
-for(const t of cart)if(t.slice(0,10)===e)return!0;return!1}function renderCalendar(){
+;return e.setHours(0,0,0,0),e}function addDays(e,t){const n=new Date(e);return n.setDate(n.getDate()+t),n}
+function parseDstr(e){const[t,n,a]=e.split("-").map(Number);return new Date(t,n-1,a)}function hm2min(e){
+const[t,n]=String(e).split(":").map(Number);return 60*(t||0)+(n||0)}function hourLabel(e){let t=Math.floor(e/60),n=e%60
+;const a=t>=12&&t<24?"PM":"AM";let o=t%12;return 0===o&&(o=12),0===n?o+a:o+":"+pad2(n)+a}function slotsLabel(e){
+const t=Number(SETTINGS&&SETTINGS.slotMinutes||60);return(e||[]).slice().sort().map(e=>{const n=hm2min(e)
+;return hourLabel(n)+"-"+hourLabel(n+t)}).join(", ")}function slotsRange(e){
+const t=Number(SETTINGS&&SETTINGS.slotMinutes||60),n=(e||[]).map(hm2min).sort((e,t)=>e-t);if(!n.length)return"—"
+;const a=e=>{let t=Math.floor(e/60);const n=t>=12&&t<24?"PM":"AM";let a=t%12;return 0===a&&(a=12),a+":"+pad2(e%60)+n
+},o=[];let s=n[0],r=n[0];for(let e=1;e<=n.length;e++){if(e<n.length&&n[e]===r+t){r=n[e];continue}
+const i=r+t,c=(i-s)/60,d=(Number.isInteger(c)?c:c.toFixed(1))+(1===c?" hour":" hours");o.push(a(s)+"-"+a(i)+" ("+d+")"),
+e<n.length&&(s=n[e],r=n[e])}return o.join(", ")}function peso(e){return"₱"+Number(e||0).toLocaleString("en-PH")}
+function fmtK(e){return(e=Number(e||0))>=1e3?"₱"+Math.round(e/1e3)+"K":"₱"+Math.round(e)}function niceDate(e){
+return parseDstr(e).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}function toast(e){
+const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
+function darken(e,t){3===(e=String(e).replace("#","")).length&&(e=e.split("").map(e=>e+e).join(""))
+;const n=parseInt(e,16)
+;return"#"+[Math.round((n>>16&255)*t),Math.round((n>>8&255)*t),Math.round((255&n)*t)].map(e=>("0"+e.toString(16)).slice(-2)).join("")
+}function esc(e){return String(null==e?"":e).replace(/[&<>"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[e]))
+}function orderGroups(e){const t={},n=[];return e.forEach(e=>{const a=e.bookingId||"__"+e.id;t[a]||(t[a]=[],n.push(a)),
+t[a].push(e)}),n.map(e=>t[e])}function groupStatus(e){
+return e.some(e=>"pending"===e.status)?"pending":e.some(e=>"confirmed"===e.status)?"confirmed":"cancelled"}
+function groupKey(e){return e[0].bookingId||e[0].id}async function ensureContacts(e){
+const t=[...new Set(e.map(e=>e.bookingId).filter(e=>e&&!(e in CONTACTS)))];t.length&&await Promise.all(t.map(async e=>{
+try{const t=await db.collection("bookingContacts").doc(e).get();CONTACTS[e]=t.exists?t.data():{}}catch(t){CONTACTS[e]={}
+}}))}function cinfo(e){return e.bookingId&&CONTACTS[e.bookingId]?CONTACTS[e.bookingId]:{}}function nameOf(e){
+return cinfo(e).bookerName||e.bookerName||"—"}function contactOf(e){return cinfo(e).contact||e.contact||"—"}
+function emailOf(e){return cinfo(e).email||e.email||""}function adminSlug(e){
+return String(e||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"")}function adminEmail(e){const t=adminSlug(e)
+;return t?t+"@courtadmin.app":""}async function loadBase(){try{
+const e=await db.collection("settings").doc("config").get();if(e.exists){SETTINGS=e.data()
+;const t=document.documentElement.style;SETTINGS.colorPrimary&&(t.setProperty("--navy",SETTINGS.colorPrimary),
+t.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary,.68)),
+t.setProperty("--sidebar",darken(SETTINGS.colorPrimary,.36)),
+t.setProperty("--sidebar-2",darken(SETTINGS.colorPrimary,.5))),
+t.setProperty("--green","#0D2863"),t.setProperty("--green-d","#0A1E4C")
+;const n=SETTINGS.businessName||"Dashboard";$("loginBiz").textContent=n,$("topBiz").textContent=n,(document.getElementById("topBizName")&&(document.getElementById("topBizName").textContent=n)),
+$("footBiz").textContent=n,document.title=n+" — Owner",SETTINGS.tagline&&($("brandSub").textContent=SETTINGS.tagline),
+$("userAvatar").textContent=(n.trim()[0]||"O").toUpperCase(),(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;$("loginLogo").src=_lu,$("loginLogo").style.display="block";[$("brandLogo"),$("footLogo"),$("userAvatar")].forEach(function(e){if(!e)return;e.innerHTML="";var t=document.createElement("img");t.src=_lu;t.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:inherit;";e.appendChild(t)})})()}const t=await db.collection("courts").get();COURTS=[],t.forEach(e=>{const t=e.data()
+;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",type:t.type||"",
+status:t.status||(t.maintenance?"maintenance":"")})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name))}catch(e){
+console.warn(e)}
+$("appFoot").textContent="© "+(new Date).getFullYear()+" "+(SETTINGS&&SETTINGS.businessName||"Your Club")+" · Powered by Layaw System",
+$("datePill").textContent=(new Date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"
+})+" ("+(new Date).toLocaleDateString("en-US",{weekday:"short"})+")"}async function startDashboard(){
+SETTINGS||await loadBase();const e=today();viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),openSection("dashboard")}function setActiveNav(e){
+document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")),e&&e.classList.add("active")}
+function closeSidebar(){$("sidebar").classList.remove("open"),$("appBackdrop").classList.remove("show")}
+auth&&auth.onAuthStateChanged(async e=>{if($("boot").style.display="none",e){let t=!1;try{
+t=(await db.collection("admins").doc(e.uid).get()).exists}catch(e){t=!1}if(t)return $("dashView").style.display="none",
+$("pwGate").style.display="none",
+$("loginView").style.display="grid",void($("loginErr").textContent="This is a staff account. Please sign in with the owner account.")
+;let n=!1;if(!("maintenance@layawsystem.com"===(e.email||"").toLowerCase()))try{
+const e=await db.collection("settings").doc("config").get();n=!(e.exists&&!0===e.data().ownerPasswordSet)}catch(e){n=!1}
+if(n)return $("loginView").style.display="none",$("dashView").style.display="none",$("newPw").value="",
+$("newPw2").value="",$("pwErr").textContent="",void($("pwGate").style.display="grid")
+;$("loginView").style.display="none",$("pwGate").style.display="none",$("dashView").style.display="block",
+startDashboard()}else $("dashView").style.display="none",$("pwGate").style.display="none",
+$("loginView").style.display="grid",dayUnsub&&dayUnsub(),pendingUnsub&&pendingUnsub()}),
+$("signinBtn").onclick=async()=>{const e=$("email").value.trim(),t=$("password").value;if($("loginErr").textContent="",
+!e||!t)return void($("loginErr").textContent="Please enter your email and password.");const n=$("signinBtn")
+;n.disabled=!0,n.textContent="Signing in…";try{await auth.signInWithEmailAndPassword(e,t)}catch(e){const t={
+"auth/invalid-email":"That email looks invalid.","auth/user-not-found":"No account found.",
+"auth/wrong-password":"Incorrect password.","auth/invalid-credential":"Email or password is incorrect.",
+"auth/too-many-requests":"Too many attempts. Try again later."}
+;$("loginErr").textContent=t[e.code]||"Could not sign in."}finally{n.disabled=!1,n.textContent="Sign in"}},
+$("password").addEventListener("keydown",e=>{"Enter"===e.key&&$("signinBtn").click()}),
+$("signoutBtn").onclick=()=>auth.signOut(),$("pwSaveBtn").onclick=async()=>{const e=$("newPw").value,t=$("newPw2").value
+;if($("pwErr").textContent="",e.length<8)return void($("pwErr").textContent="Password must be at least 8 characters.")
+;if(e!==t)return void($("pwErr").textContent="Passwords do not match.");const n=auth.currentUser
+;if(!n)return void($("pwErr").textContent="Session expired. Please sign in again.");const a=$("pwSaveBtn")
+;a.disabled=!0,a.textContent="Saving…";try{await n.updatePassword(e),await db.collection("settings").doc("config").set({
+ownerPasswordSet:!0},{merge:!0}),$("pwGate").style.display="none",$("dashView").style.display="block",startDashboard()
+}catch(e){const t={"auth/weak-password":"Password is too weak. Please use at least 8 characters.",
+"auth/requires-recent-login":"For security, please sign out and sign in again, then set your password."}
+;$("pwErr").textContent=t[e.code]||"Could not update password: "+(e.message||e.code||"")}finally{a.disabled=!1,
+a.textContent="Save password & continue"}},$("pwSignout").onclick=()=>auth.signOut(),
+$("newPw2").addEventListener("keydown",e=>{"Enter"===e.key&&$("pwSaveBtn").click()});const PAGE_TITLE={
+dashboard:"Dashboard",bookings:"Bookings",customers:"Customers",reports:"Reports",settings:"Settings"}
+;async function openSection(e){curSection=e,document.querySelectorAll(".sec").forEach(e=>e.classList.remove("show"))
+;const t=$("sec-"+e)
+;t&&t.classList.add("show"),"dashboard"===e?renderDashboard():"reports"===e?renderReports():"pricing"===e?(fillSettings(),
+renderRates(),renderPromos()):"payments"===e?renderPayments():"settings"===e&&(loadAdmins(),fillSettings())}
+function showSoon(e,t){curSection="soon",document.querySelectorAll(".sec").forEach(e=>e.classList.remove("show")),
+$("sec-soon").classList.add("show"),$("soonTitle").textContent=e+" — coming soon",$("soonDesc").textContent=t}
+async function ensureAnalytics(e){if(!analyticsLoaded||e)try{
+const e=dstr(addDays(today(),-90)),t=await db.collection("bookings").where("date",">=",e).get();ALLB=[],
+t.forEach(e=>ALLB.push({id:e.id,...e.data()})),analyticsLoaded=!0}catch(e){console.error(e)}}
+async function ensureAllContacts(e){
+allContactsLoaded&&!e||(await ensureContacts(ALLB.filter(e=>"cancelled"!==e.status)),allContactsLoaded=!0)}
+function inMonth(e,t){
+const n=new Date(today().getFullYear(),today().getMonth()-t,1),a=n.getFullYear()+"-"+pad2(n.getMonth()+1)
+;return(e.date||"").startsWith(a)}function confRev(e){let t=0;return e.forEach(e=>{
+"confirmed"===e.status&&(t+=Number(e.amount||0))}),t}function dayRev(e){let t=0;return ALLB.forEach(n=>{
+"confirmed"===n.status&&n.date===e&&(t+=Number(n.amount||0))}),t}function dayOrders(e){
+return orderGroups(ALLB.filter(t=>t.date===e&&"cancelled"!==t.status)).length}function slotsCount(e){let t=0
+;return ALLB.forEach(n=>{n.date===e&&"cancelled"!==n.status&&(t+=(n.slots||[]).length)}),t}function buildSlots(){
+const e=Number(SETTINGS.openHour??8),t=Number(SETTINGS.closeHour??22),n=Number(SETTINGS.slotMinutes??60),a=[]
+;for(let o=60*e;o+n<=60*t;o+=n)a.push({key:pad2(Math.floor(o/60))+":"+pad2(o%60),mins:o});return a}
+function occupancy(e){const t=(COURTS.length||1)*buildSlots().length
+;return t?Math.min(100,Math.round(slotsCount(e)/t*100)):0}function deltaHtml(e,t){
+if(t<=0)return e>0?'<span class="up">▲ new</span> vs yesterday':"<span>—</span>";const n=Math.round((e-t)/t*100)
+;return 0===n?"<span>0%</span> vs yesterday":n>0?'<span class="up">▲ '+n+"%</span> vs yesterday":'<span class="down">▼ '+Math.abs(n)+"%</span> vs yesterday"
+}function niceCeil(e){if(e<=0)return 1;const t=Math.pow(10,Math.floor(Math.log10(e))),n=e/t;let a
+;return a=n<=1?1:n<=2?2:n<=5?5:10,a*t}function smoothPath(e){if(!e.length)return""
+;if(e.length<2)return"M"+e[0].x+","+e[0].y;let t="M"+e[0].x.toFixed(1)+","+e[0].y.toFixed(1)
+;for(let n=0;n<e.length-1;n++){
+const a=e[n-1]||e[n],o=e[n],s=e[n+1],r=e[n+2]||s,i=o.x+(s.x-a.x)/6,c=o.y+(s.y-a.y)/6,d=s.x-(r.x-o.x)/6,l=s.y-(r.y-o.y)/6
+;t+="C"+i.toFixed(1)+","+c.toFixed(1)+" "+d.toFixed(1)+","+l.toFixed(1)+" "+s.x.toFixed(1)+","+s.y.toFixed(1)}return t}
+function lineChart(e){
+const t=e.length||1,n=niceCeil(Math.max(1,...e.map(e=>e.value))),a=e=>52+(t<=1?326:e/(t-1)*652),o=e=>14+194*(1-e/n)
+;let s="",r="";for(let e=0;e<=4;e++){const t=n*e/4,a=o(t)
+;s+='<line x1="52" y1="'+a.toFixed(1)+'" x2="704" y2="'+a.toFixed(1)+'" stroke="var(--line)"/>',
+r+='<text x="44" y="'+(a+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+fmtK(t)+"</text>"}
+const i=smoothPath(e.map((e,t)=>({x:a(t),y:o(e.value)}))),c=i+" L"+a(t-1).toFixed(1)+",208 L"+a(0).toFixed(1)+",208 Z"
+;let d="",l="";const u=[];for(let e=0;e<t;e+=Math.max(1,Math.ceil(t/5)))u.push(e)
+;return u[u.length-1]!==t-1&&u.push(t-1),u.forEach(t=>{
+d+='<text x="'+a(t).toFixed(1)+'" y="230" text-anchor="middle" font-size="11" fill="var(--muted)">'+e[t].label+"</text>",
+l+='<circle cx="'+a(t).toFixed(1)+'" cy="'+o(e[t].value).toFixed(1)+'" r="3.5" fill="var(--chart)"/>'}),
+'<svg viewBox="0 0 720 240" width="100%" style="display:block">'+s+r+'<path d="'+c+'" fill="var(--chart)" opacity="0.16"/><path d="'+i+'" fill="none" stroke="var(--chart)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>'+l+d+"</svg>"
+}function barChart(e){const t=46,n=e.length||1,a=Math.max(1,...e.map(e=>e.value)),o=662/n,s=Math.min(30,.5*o)
+;let r="",i="";e.forEach((e,c)=>{const d=t+c*o+(o-s)/2,l=e.value/a*194,u=208-l;var m
+;r+='<rect x="'+d.toFixed(1)+'" y="'+u.toFixed(1)+'" width="'+s.toFixed(1)+'" height="'+Math.max(2,l).toFixed(1)+'" rx="5" fill="'+(((m=e.value)>=.66*a?"var(--chart-d)":m>=.33*a?"var(--chart)":"var(--chart-l)")+'"><title>')+e.label+": "+e.value+" booking(s)</title></rect>",
+(n<=12||c%2==0)&&(i+='<text x="'+(t+c*o+o/2).toFixed(1)+'" y="230" text-anchor="middle" font-size="10" fill="var(--muted)">'+e.label+"</text>")
+})
+;return'<svg viewBox="0 0 720 240" width="100%" style="display:block">'+('<text x="40" y="24" text-anchor="end" font-size="11" fill="var(--muted)">High</text><text x="40" y="'+111..toFixed(1)+'" text-anchor="end" font-size="11" fill="var(--muted)">Med</text><text x="40" y="206" text-anchor="end" font-size="11" fill="var(--muted)">Low</text>')+r+i+"</svg>"
+}async function renderDashboard(){
+const e=(new Date).getHours(),t=e<12?"Good morning":e<18?"Good afternoon":"Good evening"
+;$("greetText").textContent=t+", Owner! 👋",await ensureAnalytics();const n=dstr(today()),a=dstr(addDays(today(),-1))
+;$("kTodayRev").textContent=peso(dayRev(n)),$("kTodayRevD").innerHTML=deltaHtml(dayRev(n),dayRev(a)),
+$("kTodayBk").textContent=dayOrders(n),$("kTodayBkD").innerHTML=deltaHtml(dayOrders(n),dayOrders(a)),
+$("kPending").textContent=orderGroups(PENDING).length,$("kOcc").textContent=occupancy(n)+"%"
+;const o=occupancy(n)-occupancy(a)
+;$("kOccD").innerHTML=o>0?'<span class="up">▲ '+o+"%</span> vs yesterday":o<0?'<span class="down">▼ '+Math.abs(o)+"%</span> vs yesterday":"<span>—</span> vs yesterday",
+renderRevenueChart(),renderTimeChart(),renderCourtStatus(),renderRecent()}function renderRevenueChart(){
+const e=Number($("revMonthSel").value||0),t=new Date(today().getFullYear(),today().getMonth()-e,1),n=t.getFullYear(),a=t.getMonth(),o=new Date(n,a+1,0).getDate(),s=0===e?today().getDate():o,r=[]
+;for(let e=1;e<=s;e++){const t=n+"-"+pad2(a+1)+"-"+pad2(e);r.push({label:String(e),value:dayRev(t)})}let i=0
+;r.forEach(e=>i+=e.value),
+$("revTotal").textContent=peso(i),$("revChart").innerHTML=r.length?lineChart(r):'<div class="empty">No data yet.</div>'}
+function renderTimeChart(){const e=Number(SETTINGS.openHour??8),t=Number(SETTINGS.closeHour??22),n=dstr(today()),a={}
+;ALLB.forEach(e=>{e.date===n&&"cancelled"!==e.status&&(e.slots||[]).forEach(e=>{const t=Math.floor(hm2min(e)/60)
+;a[t]=(a[t]||0)+1})});const o=[];for(let n=e;n<t;n++)o.push({label:hourLabel(60*n),value:a[n]||0})
+;const s=o.some(e=>e.value>0);$("timeChart").innerHTML=s?barChart(o):'<div class="empty">No bookings yet today.</div>'}
+function nowMin(){const e=new Date;return 60*e.getHours()+e.getMinutes()}function renderCourtStatus(){
+const e=$("courtStatus");if(!COURTS.length)return void(e.innerHTML='<div class="empty">No courts set up yet.</div>');
+const t=dstr(today()),n=Number(SETTINGS.slotMinutes??60),a=nowMin();e.innerHTML="";COURTS.forEach(o=>{
+let s="avail",r="Available",unavail="unavailable"===String(o.status).toLowerCase();
+if(unavail){s="na",r="Not Available"}else if("maintenance"===String(o.status).toLowerCase()){s="maint",r="Maintenance"}else{
+ALLB.some(e=>e.date===t&&e.court===o.name&&"confirmed"===e.status&&(e.slots||[]).some(e=>{const t=hm2min(e);return a>=t&&a<t+n}))&&(s="occ",r="Occupied")}
+const i=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"Outdoor",c=document.createElement("div");c.className="court-card";c.dataset.cid=o.id;
+const hint=unavail?"Tap to mark available":"Tap to mark not available";
+c.innerHTML='<div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="cn">'+esc(o.name)+'</div><div class="ct">('+esc(i)+')</div><span class="pill '+s+'">'+r+'</span><div class="toggle-hint">'+hint+'</div>';
+c.onclick=()=>toggleCourtAvail(o,c);
+e.appendChild(c)})}
+async function toggleCourtAvail(court,card){
+if(!court||!court.id)return;
+const makeUnavail="unavailable"!==String(court.status).toLowerCase();
+card.classList.add("busy");
+try{
+await db.collection("courts").doc(court.id).update({status:makeUnavail?"unavailable":""});
+const idx=COURTS.findIndex(c=>c.id===court.id);if(idx>=0)COURTS[idx].status=makeUnavail?"unavailable":"";
+toast(makeUnavail?"Court marked not available.":"Court marked available.");
+renderCourtStatus();
+}catch(err){console.error(err);card.classList.remove("busy");
+toast("Could not update. Check your access.")}}
+async function renderRecent(){const e=$("recentList"),t=orderGroups(ALLB.slice().sort((e,t)=>{
+const n=e.createdAt&&e.createdAt.seconds||0;return(t.createdAt&&t.createdAt.seconds||0)-n
+}).filter(e=>"cancelled"!==e.status)).slice(0,5);t.length?(await ensureContacts(t.map(e=>e[0])),e.innerHTML="",
+t.forEach(t=>{
+const n=t[0],a=groupStatus(t),o=[...new Set(t.map(e=>e.court))].sort().join(", "),s=(n.slots||[]).slice().sort(),r=s.length?hourLabel(hm2min(s[0]))+" - "+hourLabel(hm2min(s[s.length-1])+Number(SETTINGS.slotMinutes??60)):"",i=document.createElement("div")
+;i.className="recent-row",
+i.innerHTML='<span class="rt">'+r+'</span><span class="rc">'+esc(o)+'</span><span class="rn">'+esc(nameOf(n))+'</span><span class="badge '+a+'">'+a+"</span>",
+e.appendChild(i)})):e.innerHTML='<div class="empty">No bookings yet.</div>'}function renderCalendar(){
 $("calMonth").textContent=["January","February","March","April","May","June","July","August","September","October","November","December"][viewMonth]+" "+viewYear
 ;const e=$("calGrid");e.innerHTML="",["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach(t=>{
-const o=document.createElement("div");o.className="dow",o.textContent=t,e.appendChild(o)})
-;const t=new Date(viewYear,viewMonth,1).getDay(),o=new Date(viewYear,viewMonth+1,0).getDate(),n=today(),a=maxDate()
-;for(let o=0;o<t;o++)e.appendChild(document.createElement("div"));for(let t=1;t<=o;t++){
-const o=new Date(viewYear,viewMonth,t),r=dstr(o),i=document.createElement("div");i.className="cal-day",i.textContent=t,
-o<n||o>a?i.classList.add("disabled"):(r===selectedDate&&i.classList.add("active"),
-dateHasCart(r)&&i.classList.add("has-cart"),i.onclick=()=>{selectedDate=r,renderCalendar(),watchAvailability(),
-renderGrid()}),e.appendChild(i)}
-$("prevMonth").disabled=new Date(viewYear,viewMonth,1)<=new Date(n.getFullYear(),n.getMonth(),1),
-$("nextMonth").disabled=new Date(viewYear,viewMonth+1,1)>a,
-$("calNote").innerHTML="Bookings available until <strong>"+maxDate().toLocaleDateString("en-US",{month:"short",
-day:"numeric",year:"numeric"})+"</strong> ("+advanceDays()+" days from today)."}function buildSlots(){
-const e=Number(SETTINGS.openHour??8),t=Number(SETTINGS.closeHour??22),o=Number(SETTINGS.slotMinutes??60),n=[]
-;for(let a=60*e;a+o<=60*t;a+=o)n.push({mins:a,key:pad2(Math.floor(a/60))+":"+pad2(a%60),label:slotRangeLabel(a,o)})
-;return n}function rateForSlot(e){if(RATES.length){const t=RATES.find(t=>e>=t.start&&e<t.end);if(t)return t.rate}
-return Number(SETTINGS.ratePerHour??0)}function slotCost(e){return Number(SETTINGS.slotMinutes??60)/60*rateForSlot(e)}
-function renderGridHead(){const e=$("gridHead");e.innerHTML="";const t=document.createElement("th")
-;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const o=document.createElement("th");o.textContent=t.name,
-e.appendChild(o)})}function watchAvailability(){db&&(availUnsub&&(availUnsub(),availUnsub=null),
-availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{bookedSet=new Set,
-pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
-;if("reserved"===t.status){const hu=t.holdUntil&&t.holdUntil.toMillis?t.holdUntil.toMillis():0
-;if(!hu||hu<now)return;if(reservedBookingId&&t.bookingId===reservedBookingId)return
-;(t.slots||[]).forEach(e=>pendingSet.add(t.court+"|"+e));return}
-;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),renderGrid()
-},e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
-;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
-;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
-i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+n<=o-PAST_ALLOWANCE_MIN;COURTS.forEach(e=>{const t=document.createElement("td")
-;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
-i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
-i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
-i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
-cart.delete(n),afterCartChange()}):(i.className+=" cell-open",i.textContent="Open",i.onclick=()=>{cart.add(n),
-afterCartChange()}),t.appendChild(i),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
-updateSummary(),renderCalendar()}function cartTotal(){let e=0;return cart.forEach(t=>{
-e+=slotCost(hm2min(t.split("|")[2]))}),e}function promoQualifies(e,t,o){const n=parseDstr(t).getDay()
-;if(Array.isArray(e.days)&&e.days.length&&!e.days.includes(n))return!1
-;if(Array.isArray(e.dateRanges)&&e.dateRanges.length&&!e.dateRanges.some(e=>t>=e.start&&t<=e.end))return!1
-;if(Array.isArray(e.timeWindows)&&e.timeWindows.length){const t=hm2min(o)
-;if(!e.timeWindows.some(e=>t>=Number(e.start)&&t<Number(e.end)))return!1}return!0}function computePromoDiscount(e){
-const t=Number(e.usageLimit||0);if(t>0&&Number(e.usageCount||0)>=t)return{discount:0,
-reason:"has reached its usage limit"};const o=Number(e.minHours||0);if(o>0){
-if(cart.size*(Number(SETTINGS.slotMinutes??60)/60)<o)return{discount:0,
-reason:"requires a booking of at least "+o+" hour"+(1===o?"":"s")}}let n=0,a=0;if(cart.forEach(t=>{
-const[o,r,i]=t.split("|"),s=slotCost(hm2min(i));a+=s,promoQualifies(e,o,i)&&(n+=s)}),n<=0)return{discount:0,
-reason:"doesn't apply to your selected date or time"}
-;let r="amount"===e.discountType?Math.min(Number(e.discountValue||0),a):Math.round(n*Number(e.discountValue||0)/100)
-;return r<0&&(r=0),r>a&&(r=a),{discount:r}}function currentDiscount(){
-return appliedPromo&&computePromoDiscount(appliedPromo).discount||0}function netTotal(){
-return Math.max(0,cartTotal()-currentDiscount())}function setVoucherMsg(e,t){const o=$("voucherMsg")
-;o&&(o.textContent=e||"",o.style.color=t?"var(--green-d)":"var(--cancel)")}function updateSummary(){
-const e=$("sumList"),t=$("sumEmpty");e.innerHTML="";let o=0;if(0===cart.size)t.style.display="block";else{
-t.style.display="none";const n=Number(SETTINGS.slotMinutes??60),a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|")
-;(a[t]=a[t]||[]).push({date:t,court:o,hhmm:n,key:e})}),Object.keys(a).sort().forEach(t=>{
-const r=document.createElement("div");r.className="sum-date",r.textContent=niceDateShort(t),e.appendChild(r),
-a[t].sort((e,t)=>e.court.localeCompare(t.court)||hm2min(e.hhmm)-hm2min(t.hhmm)).forEach(t=>{
-const a=hm2min(t.hhmm),r=slotCost(a);o+=r;const i=document.createElement("div");i.className="sum-item"
-;const s=document.createElement("div")
-;s.className="meta",s.innerHTML="<span>"+t.court+"</span><span style='color:var(--muted);font-size:12px'>"+slotRangeLabel(a,n)+"</span>"
-;const l=document.createElement("div");l.style.cssText="display:flex;gap:10px;align-items:center"
-;const c=document.createElement("span");c.className="price",c.textContent=peso(r);const d=document.createElement("span")
-;d.className="x",d.textContent="✕",d.onclick=()=>{cart.delete(t.key),afterCartChange()},l.appendChild(c),
-l.appendChild(d),i.appendChild(s),i.appendChild(l),e.appendChild(i)})})}let n=0;if(appliedPromo){
-const e=computePromoDiscount(appliedPromo);e.discount>0?n=e.discount:(appliedPromo=null,
-$("voucherInput").value.trim()&&setVoucherMsg("Voucher no longer applies to your selected slots.",!1))}
-const a=Math.max(0,o-n),r=$("sumOrig");n>0?(r.style.display="block",r.textContent=peso(o),
-$("sumTotal").textContent=peso(a)):(r.style.display="none",$("sumTotal").textContent=peso(o)),
-$("continueBtn").disabled=0===cart.size,$("mbSlots").textContent=cart.size,$("mbTotal").textContent=peso(a),
-$("mbContinue").disabled=0===cart.size}function holdMins(){const e=Number(SETTINGS&&SETTINGS.checkoutMinutes)
-;return e&&e>0?e:5}function startHoldTimer(){clearHoldTimer(),holdDeadline=Date.now()+6e4*holdMins()
-;const e=$("timerBar");e&&(e.style.display="flex",e.classList.remove("urgent")),updateTimer(),
-holdTimer=setInterval(updateTimer,1e3)}function clearHoldTimer(){holdTimer&&(clearInterval(holdTimer),holdTimer=null)}
-function updateTimer(){const e=Math.max(0,Math.round((holdDeadline-Date.now())/1e3)),t=$("timerCount")
-;t&&(t.textContent=pad2(Math.floor(e/60))+":"+pad2(e%60));const o=$("timerBar")
-;o&&(e<=60?o.classList.add("urgent"):o.classList.remove("urgent")),e<=0&&expireHold()}function expireHold(){
-clearHoldTimer(),releaseReservation(),cart.clear(),chosenPayment=null,receiptData=null;const e=$("expireMsg")
-;e&&(e.textContent="Your "+holdMins()+"-minute reservation window has expired, so your selected slots have been released. Please pick your slots again."),
-$("expireOverlay").classList.add("show")}async function goCheckout(){if(0===cart.size||reserving)return;reserving=!0
-;const cbtn=$("mbContinue"),dbtn=$("continueBtn");cbtn&&(cbtn.disabled=!0);dbtn&&(dbtn.disabled=!0)
-;try{if(reservedBookingId)await releaseReservation();await reserveSlots()}catch(err){reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
-;if(err&&err.__taken)return toast(err.message);console.error(err);return toast("Could not hold your slots. Please try again.")}
-;reserving=!1;cbtn&&(cbtn.disabled=!1);dbtn&&(dbtn.disabled=!1)
-;$("app").style.display="none",$("checkoutView").style.display="block",$("mobileBar").style.display="none",
-renderPayMethods(),startHoldTimer(),window.scrollTo({top:0,behavior:"smooth"})}
-/* Atomically reserve the cart's slots. Writes one "reserved" booking doc per court/date
-   with a holdUntil = now + hold minutes. The transaction re-reads every affected date and
-   rejects if any chosen slot is already taken (confirmed / pending / un-expired reserved). */
-async function slotLockId(date,court,slot){return (date+"_"+court+"_"+slot).replace(/[^A-Za-z0-9_-]/g,"-")}
-/* Atomically reserve every slot in the cart using per-slot lock docs (slotLocks/{date_court_slot}).
-   A client transaction can only get() specific doc refs (not queries), so each slot maps to a
-   deterministic lock doc. The transaction reads all locks, fails if any is still held (not expired),
-   otherwise writes them + the reserved booking docs. This guarantees 0% double-booking. */
-async function reserveSlots(){
-const byDate={};[...cart].forEach(k=>{const[date,court,slot]=k.split("|");((byDate[date]=byDate[date]||{})[court]=byDate[date][court]||[]).push(slot)})
-;const bid=await nextBookingId();reservedBookingId=bid;reservedIds=[];reservedLockIds=[]
-;const holdMs=6e4*holdMins(),nowMs=Date.now()
-;const lockKeys=[];for(const date of Object.keys(byDate))for(const court of Object.keys(byDate[date]))for(const slot of byDate[date][court])lockKeys.push({id:await slotLockId(date,court,slot),date:date,court:court,slot:slot})
-;await db.runTransaction(async tx=>{
-const lockRefs=lockKeys.map(k=>db.collection("slotLocks").doc(k.id))
-;const locks=await Promise.all(lockRefs.map(r=>tx.get(r)))
-;locks.forEach((snap,idx)=>{if(snap.exists){const d=snap.data();const hu=d.holdUntil&&d.holdUntil.toMillis?d.holdUntil.toMillis():0
-;const mine=d.bookingId===bid;const expired=hu&&hu<nowMs;if(!mine&&!expired){const k=lockKeys[idx]
-;const e=new Error("Sorry, "+k.court+" "+hourLabel(hm2min(k.slot))+" on "+niceDateShort(k.date)+" was just taken. Please pick again.");e.__taken=!0;throw e}}})
-;const hu=firebase.firestore.Timestamp.fromMillis(nowMs+holdMs)
-;lockKeys.forEach((k,idx)=>{tx.set(lockRefs[idx],{bookingId:bid,date:k.date,court:k.court,slot:k.slot,holdUntil:hu});reservedLockIds.push(k.id)})
-;Object.keys(byDate).forEach(date=>{Object.keys(byDate[date]).forEach(court=>{const slots=byDate[date][court].slice().sort()
-;const ref=db.collection("bookings").doc();reservedIds.push(ref.id)
-;tx.set(ref,{bookingId:bid,date:date,court:court,slots:slots,startTime:slots[0],endTime:slots[slots.length-1],
-status:"reserved",holdUntil:hu,createdAt:firebase.firestore.FieldValue.serverTimestamp()})})})
-})}
-/* Release the current reservation: delete reserved booking docs AND their slot locks. */
-async function releaseReservation(){const bid=reservedBookingId,lockIds=reservedLockIds.slice()
-;reservedIds=[];reservedLockIds=[];reservedBookingId=null
-;try{const b=db.batch();let any=!1
-/* Delete by querying our own reserved docs (robust even if in-memory IDs were lost). */
-;if(bid){const snap=await db.collection("bookings").where("bookingId","==",bid).get()
-;snap.forEach(doc=>{if("reserved"===String(doc.data().status).toLowerCase()){b.delete(doc.ref);any=!0}})}
-;lockIds.forEach(id=>{b.delete(db.collection("slotLocks").doc(id));any=!0})
-;if(any)await b.commit()}
-catch(e){console.warn("release failed",e)}}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
-name:SETTINGS.gcashName,number:SETTINGS.gcashNumber,qr:SETTINGS.gcashQrUrl},{key:"Maya",label:"Maya",
-name:SETTINGS.mayaName,number:SETTINGS.mayaNumber,qr:SETTINGS.mayaQrUrl},{key:"Bank",label:"Bank Transfer",
-name:SETTINGS.bankName,number:SETTINGS.bankNumber,qr:SETTINGS.bankQrUrl
-}],t=Array.isArray(SETTINGS.paymentMethods)?SETTINGS.paymentMethods:null
-;return e.filter(e=>t?t.includes(e.key):e.number||e.qr)}function renderPayMethods(){
-const e=paymentOptions(),t=$("payMethods");t.innerHTML="",chosenPayment=null,$("payDetail").style.display="none",
-e.length?e.forEach(e=>{const o=document.createElement("div");o.className="pay-opt",o.textContent=e.label,o.onclick=()=>{
-chosenPayment=e.key,[...t.children].forEach(e=>e.classList.remove("on")),o.classList.add("on"),showPayDetail(e)},
-t.appendChild(o)}):t.innerHTML='<p class="sum-note">No payment methods configured.</p>'}function showPayDetail(e){
-const t=$("payDetail");t.style.display="block";let o=""
-;if(e.qr&&(o+='<div class="scan">Scan to pay with '+e.label+'</div><img src="'+e.qr+'" alt="'+e.label+' QR" />'),
-(e.name||e.number)&&(o+='<div class="pay-acct"><div><div class="nm">'+(e.name||"")+'</div><div class="no" id="payNo">'+(e.number||"")+"</div></div>",
-e.number&&(o+='<button class="copy-btn" id="copyNo">Copy</button>'),o+="</div>"),
-o+='<div class="exact">Please send the exact amount: <strong style="color:var(--text);font-size:17px;">'+peso(netTotal())+"</strong></div>",
-t.innerHTML=o,e.number){const t=$("copyNo");t&&(t.onclick=()=>{
-navigator.clipboard.writeText(e.number).then(()=>toast("Number copied!")).catch(()=>toast("Copy failed"))})}}
-async function nextBookingId(){let e=SETTINGS.idPrefix
-;e||(e=(SETTINGS.businessName||"BK").split(/\s+/).map(e=>e[0]).join("").replace(/[^A-Za-z]/g,"").toUpperCase().slice(0,4)||"BK")
-;const t=db.collection("meta").doc("counters"),o=await db.runTransaction(async e=>{const o=await e.get(t)
-;let n=o.exists&&o.data().bookingSeq?o.data().bookingSeq:0;return n++,e.set(t,{bookingSeq:n},{merge:!0}),n}),n=new Date
-;return e+"-"+(pad2(n.getMonth()+1)+pad2(n.getDate())+String(n.getFullYear()).slice(-2))+"-"+String(o).padStart(4,"0")}
-$("docClose").onclick=closeDoc,$("docOverlay").onclick=e=>{e.target===$("docOverlay")&&closeDoc()},
-document.addEventListener("keydown",e=>{"Escape"===e.key&&closeDoc()}),$("prevMonth").onclick=()=>{viewMonth--,
-viewMonth<0&&(viewMonth=11,viewYear--),renderCalendar()},$("nextMonth").onclick=()=>{viewMonth++,
-viewMonth>11&&(viewMonth=0,viewYear++),renderCalendar()},$("todayBtn").onclick=()=>{const e=today()
-;viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),renderCalendar(),watchAvailability(),renderGrid()
-},$("applyVoucherBtn").onclick=()=>{const e=$("voucherInput").value.trim().toUpperCase()
-;if(!e)return void setVoucherMsg("Enter a voucher code.",!1)
-;if(0===cart.size)return void setVoucherMsg("Select your slots first.",!1)
-;const t=PROMOS.find(t=>String(t.code||"").toUpperCase()===e&&!1!==t.active);if(!t)return appliedPromo=null,
-setVoucherMsg("Invalid or inactive voucher code.",!1),void updateSummary();const o=computePromoDiscount(t)
-;if(!o.discount)return appliedPromo=null,setVoucherMsg("This voucher "+(o.reason||"can't be applied")+".",!1),
-void updateSummary();appliedPromo=t,setVoucherMsg('Voucher "'+e+'" applied — you save '+peso(o.discount)+".",!0),
-updateSummary()},$("expireBtn").onclick=()=>{$("expireOverlay").classList.remove("show"),
-$("checkoutView").style.display="none",$("successView").style.display="none",$("app").style.display="block",
-window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),$("nameInput").value="",$("contactInput").value="",
-$("emailInput").value="",appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),
-$("receiptPreview").style.display="none";const e=$("uploadBox").querySelector(".big")
-;e&&(e.textContent="☁️ Tap to upload image"),renderGrid(),updateSummary(),renderCalendar(),window.scrollTo({top:0,
-behavior:"smooth"})},$("continueBtn").onclick=goCheckout,$("mbContinue").onclick=goCheckout,
-$("backToSlots").onclick=async()=>{clearHoldTimer();await releaseReservation();$("checkoutView").style.display="none",$("app").style.display="block",
-window.innerWidth<=1e3&&($("mobileBar").style.display="flex")},$("uploadBox").onclick=()=>$("receiptInput").click(),
-$("receiptInput").onchange=e=>{const t=e.target.files[0];if(!t)return
-;if(t.size>5242880)return void toast("Image too large (max 5MB).");const o=new FileReader;o.onload=e=>{const t=new Image
-;t.onload=()=>{const e=1e3;let o=t.width,n=t.height;o>e&&(n=Math.round(n*e/o),o=e)
-;const a=document.createElement("canvas");a.width=o,a.height=n,a.getContext("2d").drawImage(t,0,0,o,n),
-receiptData=a.toDataURL("image/jpeg",.6);const r=$("receiptPreview");r.src=receiptData,r.style.display="inline-block",
-$("uploadBox").querySelector(".big").textContent="✓ Receipt added (tap to change)"},t.src=e.target.result},
-o.readAsDataURL(t)},$("submitBtn").onclick=async()=>{
-const e=$("nameInput").value.trim(),t=$("contactInput").value.trim(),o=$("emailInput").value.trim()
-;if(!e)return void toast("Please enter your name.");if(!t)return void toast("Please enter your mobile number.")
-;if(!o)return void toast("Please enter your email address.")
-;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o))return void toast("Please enter a valid email address.")
-;if(paymentOptions().length&&!chosenPayment)return void toast("Please select a payment method.")
-;if(paymentOptions().length&&!receiptData)return void toast("Please upload your payment receipt.")
-;const n=$("submitBtn");n.disabled=!0,n.textContent="Submitting…";try{
-/* The slots are already held by our reservation (goCheckout). Finalize it:
-   flip each reserved doc to "pending" with its amount, then write the contact
-   doc — which is what triggers the notification emails. No re-check needed. */
-if(!reservedIds.length||!reservedBookingId){n.disabled=!1,n.textContent="Submit Booking";return toast("Your hold expired. Please pick your slots again.")}
-const a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|");((a[t]=a[t]||{})[o]=a[t][o]||[]).push(n)})
-;const r=reservedBookingId,i=db.batch(),s={};let l=0
-;Object.keys(a).forEach(e=>{Object.keys(a[e]).forEach(t=>{const o=a[e][t].reduce((e,t)=>e+slotCost(hm2min(t)),0)
-;s[e+"|"+t]=o,l+=o})});const c=appliedPromo&&computePromoDiscount(appliedPromo).discount||0,d=c>0&&l>0?(l-c)/l:1
-/* Re-read our own reserved docs so we can update them by court/date with the right amount. */
-;const rsnap=await db.collection("bookings").where("bookingId","==",r).get()
-;if(rsnap.empty){n.disabled=!1,n.textContent="Submit Booking";return toast("Your hold expired. Please pick your slots again.")}
-;rsnap.forEach(doc=>{const t=doc.data();const amt=Math.round((s[t.date+"|"+t.court]||0)*d)
-;i.update(doc.ref,{amount:amt,paymentMethod:chosenPayment||"",status:"pending",holdUntil:firebase.firestore.FieldValue.delete()})})
-;reservedLockIds.forEach(id=>i.delete(db.collection("slotLocks").doc(id)))
-;if(i.set(db.collection("bookingContacts").doc(r),{
-bookingId:r,bookerName:e,contact:t,email:o,promoCode:appliedPromo?String(appliedPromo.code||""):"",discount:c,
-createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await i.commit(),reservedIds=[],reservedLockIds=[],reservedBookingId=null,receiptData)try{
-await db.collection("receipts").doc(r).set({bookingId:r,image:receiptData,
-createdAt:firebase.firestore.FieldValue.serverTimestamp()})}catch(e){console.warn("receipt save failed",e)}
-if(appliedPromo&&appliedPromo.id)try{await db.collection("promos").doc(appliedPromo.id).update({
-usageCount:firebase.firestore.FieldValue.increment(1)})}catch(e){console.warn("promo usage:",e)}
-$("checkoutView").style.display="none",$("successView").style.display="block",clearHoldTimer(),cart.clear(),
-appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),$("successId").textContent=r,
-$("viewStatusBtn").onclick=()=>{window.location.href="status.html?id="+encodeURIComponent(r)},window.scrollTo({top:0,
-behavior:"smooth"})}catch(e){console.error(e),toast("Something went wrong. Please try again."),n.disabled=!1,
-n.textContent="Submit Booking"}},$("anotherBtn").onclick=()=>{clearHoldTimer(),reservedIds=[],reservedLockIds=[],reservedBookingId=null,cart.clear(),chosenPayment=null,
-receiptData=null,appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),
-$("nameInput").value="",$("contactInput").value="",$("emailInput").value="",$("receiptPreview").style.display="none",
-$("uploadBox").querySelector(".big").textContent="☁️ Tap to upload image",$("successView").style.display="none",
-$("app").style.display="block",window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),renderGrid(),
-updateSummary(),renderCalendar(),window.scrollTo({top:0,behavior:"smooth"})},setInterval(()=>{
-SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),(function(){var hintTimer=setTimeout(function(){var h=document.getElementById("loadHint");if(h&&document.getElementById("loading")&&"none"!==document.getElementById("loading").style.display)h.style.display="block"},6e3);var rb=document.getElementById("retryLoad");rb&&(rb.onclick=function(){location.reload()});window.__clearLoadHint=function(){clearTimeout(hintTimer)}})(),loadData()</script> </body> </html>
+const n=document.createElement("div");n.className="dow",n.textContent=t,e.appendChild(n)})
+;const t=new Date(viewYear,viewMonth,1).getDay(),n=new Date(viewYear,viewMonth+1,0).getDate()
+;for(let n=0;n<t;n++)e.appendChild(document.createElement("div"));for(let t=1;t<=n;t++){
+const n=dstr(new Date(viewYear,viewMonth,t)),a=document.createElement("div");a.className="cal-day",a.textContent=t,
+n===selectedDate&&a.classList.add("active"),a.onclick=()=>{selectedDate=n,renderCalendar(),watchDay()},e.appendChild(a)}
+}function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
+dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async e=>{DAY=[],e.forEach(e=>DAY.push({
+id:e.id,...e.data()})),DAY.sort((e,t)=>{const n=e.createdAt&&e.createdAt.seconds||0
+;return(t.createdAt&&t.createdAt.seconds||0)-n});const t=orderGroups(DAY.filter(e=>"cancelled"!==e.status));let n=0,a=0
+;t.forEach(e=>{const t=groupStatus(e);"pending"===t?n++:"confirmed"===t&&a++});let o=0;DAY.forEach(e=>{
+"confirmed"===e.status&&(o+=Number(e.amount||0))}),$("stPending").textContent=n,$("stConfirmed").textContent=a,
+$("stRevenue").textContent=peso(o),await ensureContacts(DAY),renderView()},e=>{console.error(e),
+$("listView").innerHTML='<div class="empty">Could not load bookings.</div>'})}function watchPending(){
+pendingUnsub&&pendingUnsub(),pendingUnsub=db.collection("bookings").where("status","==","pending").onSnapshot(async e=>{
+PENDING=[],e.forEach(e=>PENDING.push({id:e.id,...e.data()
+})),PENDING.sort((e,t)=>e.date!==t.date?e.date<t.date?-1:1:(e.startTime||"").localeCompare(t.startTime||""))
+;const t=orderGroups(PENDING).length,n=$("bellDot");t>0?(n.style.display="grid",
+n.textContent=t>99?"99+":t):n.style.display="none",$("kPending")&&($("kPending").textContent=t),
+await ensureContacts(PENDING),renderNotif()},e=>console.error(e))}function setView(e){currentView=e,
+$("tabList").classList.toggle("on","list"===e),$("tabGrid").classList.toggle("on","grid"===e),
+$("listView").style.display="list"===e?"block":"none",$("gridView").style.display="grid"===e?"block":"none",renderView()
+}function renderView(){"list"===currentView?renderList():renderGrid()}function renderList(){const e=$("listView")
+;e.innerHTML="";const t=orderGroups(DAY.filter(e=>"cancelled"!==e.status));t.length?(t.forEach(t=>{
+const n=groupStatus(t),a=[...new Set(t.map(e=>e.court))].sort(),o=t.reduce((e,t)=>e+Number(t.amount||0),0),s=t[0],r=groupKey(t),i=t.map(e=>(e.slots||[]).slice().sort().join(","))
+;let c=i.every(e=>e===i[0])?'<div class="times">'+slotsRange(s.slots)+"</div>":t.slice().sort((e,t)=>String(e.court).localeCompare(String(t.court))).map(e=>'<div class="times"><strong>'+esc(e.court)+":</strong> "+slotsRange(e.slots)+"</div>").join(""),d=""
+;"pending"===n?d='<button class="act act-confirm" data-key="'+r+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+r+'" data-act="cancel">Cancel</button>':"confirmed"===n&&(d='<button class="act act-cancel" data-key="'+r+'" data-act="cancel">Cancel booking</button>')
+;const l=document.createElement("div");l.className="booking";const u=emailOf(s)
+;l.innerHTML='<div class="row1"><span class="court">'+esc(a.join(", "))+'</span><span class="badge '+n+'">'+n+'</span><span class="amt">'+peso(o)+"</span></div>"+c+'<div class="who"><strong>'+esc(nameOf(s))+"</strong> · "+esc(contactOf(s))+(u?" · "+esc(u):"")+"</div>"+(d?'<div class="actions">'+d+"</div>":""),
+e.appendChild(l)
+}),e.querySelectorAll(".act").forEach(e=>e.onclick=()=>doAction(e.getAttribute("data-key"),e.getAttribute("data-act")))):e.innerHTML='<div class="empty">No bookings for this date.</div>'
+}function renderSchedHead(){const e=$("schedHead");e.innerHTML="";const t=document.createElement("th")
+;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const n=document.createElement("th");n.textContent=t.name,
+e.appendChild(n)})}function renderGrid(){if(!SETTINGS||!COURTS.length)return void($("schedBody").innerHTML="")
+;const e=buildSlots(),t=Number(SETTINGS.slotMinutes??60),n={};DAY.forEach(e=>{
+"cancelled"!==e.status&&(e.slots||[]).forEach(t=>n[e.court+"|"+t]=e)});const a={},o={};COURTS.forEach(t=>{a[t.name]={},
+o[t.name]=new Set;let s=0;for(;s<e.length;){const r=n[t.name+"|"+e[s].key];if(!r){s++;continue}let i=s+1
+;for(;i<e.length;){const a=n[t.name+"|"+e[i].key];if(!a||a.id!==r.id)break;i++}a[t.name][s]={booking:r,len:i-s}
+;for(let e=s+1;e<i;e++)o[t.name].add(e);s=i}});const s=$("schedBody");s.innerHTML="",e.forEach((e,n)=>{
+const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
+i.textContent=hourLabel(e.mins)+"-"+hourLabel(e.mins+t),r.appendChild(i),COURTS.forEach(e=>{if(o[e.name].has(n))return
+;const t=a[e.name][n];if(t){const e=t.booking,n=e.status||"pending",a=document.createElement("td")
+;a.className="cell book-cell "+n,
+a.rowSpan=t.len,a.innerHTML='<div class="nm">'+esc(nameOf(e))+'</div><div class="stt">'+n.toUpperCase()+"</div>",
+a.onclick=()=>openDetail(e),r.appendChild(a)}else{const e=document.createElement("td");e.className="cell"
+;const t=document.createElement("div");t.className="scell-open",t.textContent="Open",e.appendChild(t),r.appendChild(e)}
+}),s.appendChild(r)})}function openDetail(e){
+const t=e.bookingId?DAY.filter(t=>t.bookingId===e.bookingId&&"cancelled"!==t.status):[e],n=t.length?t:[e],a=groupStatus(n),o=[...new Set(n.map(e=>e.court))].sort().join(", "),s=n.reduce((e,t)=>e+Number(t.amount||0),0),r=n[0],i=r.bookingId||r.id,c=r.bookingId||r.id,d=n.map(e=>(e.slots||[]).slice().sort().join(",")),l=d.every(e=>e===d[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(r.slots)+"</div>":n.slice().sort((e,t)=>String(e.court).localeCompare(String(t.court))).map(e=>'<div class="mrow"><span>'+esc(e.court)+":</span> "+slotsRange(e.slots)+"</div>").join("")
+;let u=""
+;"pending"===a?u='<button class="act act-confirm" data-key="'+i+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel</button>':"confirmed"===a&&(u='<button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel booking</button>')
+;const m=r.bookingId&&CONTACTS[r.bookingId]&&CONTACTS[r.bookingId].note?CONTACTS[r.bookingId].note:"",p=r.handledBy||r.bookingId&&CONTACTS[r.bookingId]&&CONTACTS[r.bookingId].handledBy||""
+;$("detailModal").innerHTML="<h3>"+esc(o)+' · <span class="badge '+a+'">'+a+'</span></h3><div class="mrow"><span>Date:</span> '+niceDate(r.date)+"</div>"+l+'<div class="mrow"><span>Booker:</span> <strong>'+esc(nameOf(r))+'</strong></div><div class="mrow"><span>Contact:</span> '+esc(contactOf(r))+"</div>"+(emailOf(r)?'<div class="mrow"><span>Email:</span> '+esc(emailOf(r))+"</div>":"")+(r.paymentMethod?'<div class="mrow"><span>Payment:</span> '+esc(r.paymentMethod)+"</div>":"")+(p?'<div class="mrow"><span>Handled by:</span> '+esc(p)+"</div>":"")+'<div class="mrow"><span>Total:</span> <strong>'+peso(s)+'</strong></div><div class="note-box"><label class="note-label">Note</label><textarea id="noteInput" class="note-input" placeholder="Add a private note about this booking…">'+esc(m)+'</textarea><button class="mini-btn" id="saveNoteBtn" data-id="'+esc(r.bookingId||"")+'">Save note</button><span class="note-msg" id="noteMsg"></span></div><div class="modal-actions"><button class="btn-ghost" id="detailClose">Close</button><button class="btn-ghost" id="viewReceiptBtn">View receipt</button></div>'+(u?'<div class="modal-actions">'+u+"</div>":""),
+$("detailOverlay").classList.add("show"),$("detailClose").onclick=()=>$("detailOverlay").classList.remove("show"),
+$("viewReceiptBtn").onclick=()=>viewReceipt(c);const h=$("saveNoteBtn");h&&(h.onclick=async()=>{
+const e=h.getAttribute("data-id");if(e){h.disabled=!0;try{await db.collection("bookingContacts").doc(e).set({
+note:$("noteInput").value.trim()},{merge:!0
+}),CONTACTS[e]||(CONTACTS[e]={}),CONTACTS[e].note=$("noteInput").value.trim(),$("noteMsg").textContent="Saved ✓",
+setTimeout(()=>{const e=$("noteMsg");e&&(e.textContent="")},2500)}catch(e){console.error(e),
+$("noteMsg").textContent="Could not save."}finally{h.disabled=!1}}else $("noteMsg").textContent="No booking id."}),
+$("detailModal").querySelectorAll(".act").forEach(e=>e.onclick=async()=>{
+await doAction(e.getAttribute("data-key"),e.getAttribute("data-act")),$("detailOverlay").classList.remove("show")})}
+async function viewReceipt(e){try{const t=await db.collection("receipts").doc(e).get()
+;t.exists&&t.data().image?($("receiptImg").src=t.data().image,
+$("receiptOverlay").classList.add("show")):toast("No receipt was uploaded for this booking.")}catch(e){console.error(e),
+toast("Could not load receipt.")}}function renderNotif(){const e=$("notifBody")
+;if(!PENDING.length)return void(e.innerHTML='<div class="empty">No pending bookings. You\'re all caught up! 🎾</div>')
+;const t=orderGroups(PENDING);e.innerHTML="",t.forEach(t=>{
+const n=t[0],a=groupKey(t),o=[...new Set(t.map(e=>e.court))].sort().join(", "),s=t.reduce((e,t)=>e+Number(t.amount||0),0),r=document.createElement("div")
+;r.className="nitem",
+r.innerHTML='<div class="nt">'+esc(o)+" · "+niceDate(n.date)+'</div><div class="nd">'+slotsLabel(n.slots)+" · "+esc(nameOf(n))+" · "+peso(s)+'</div><div class="nacts"><button class="act-confirm" data-key="'+a+'" data-act="confirm">Confirm</button><button class="act-cancel" data-key="'+a+'" data-act="cancel">Cancel</button></div>',
+e.appendChild(r)
+}),e.querySelectorAll("button").forEach(e=>e.onclick=()=>doAction(e.getAttribute("data-key"),e.getAttribute("data-act")))
+}function closeNotif(){$("notif").classList.remove("show"),$("backdrop").classList.remove("show")}
+async function doAction(e,t){if("cancel"===t&&!confirm("Cancel this booking? The slots will reopen."))return
+;const n=DAY.concat(PENDING);let a=[...new Set(n.filter(t=>(t.bookingId||t.id)===e||t.bookingId===e).map(e=>e.id))]
+;a.length||(a=[e]);try{const e=db.batch();a.forEach(n=>e.update(db.collection("bookings").doc(n),{
+status:"confirm"===t?"confirmed":"cancelled"
+})),await e.commit(),toast("confirm"===t?"Booking confirmed.":"Booking cancelled."),analyticsLoaded=!1}catch(e){
+console.error(e),toast("Could not update. Please try again.")}}function buildCustomers(){const e={}
+;return orderGroups(ALLB).forEach(t=>{const n=groupStatus(t);if("cancelled"===n)return
+;const a=t[0],o=a.bookingId&&CONTACTS[a.bookingId]||{},s=(o.bookerName||"").trim(),r=(o.contact||"").trim(),i=(o.email||"").trim(),c=r||i||s||"__"+a.bookingId
+;e[c]||(e[c]={name:s||"—",contact:r,email:i,orders:0,spent:0,courts:{},dates:[]});const d=e[c];s&&(d.name=s),
+r&&!d.contact&&(d.contact=r),i&&!d.email&&(d.email=i),d.orders++;const l=t.reduce((e,t)=>e+Number(t.amount||0),0)
+;"confirmed"===n&&(d.spent+=l),t.forEach(e=>{d.courts[e.court]=(d.courts[e.court]||0)+(e.slots||[]).length}),
+d.dates.push(a.date)}),Object.values(e).map(e=>{const t=Object.entries(e.courts).sort((e,t)=>t[1]-e[1])[0]
+;return e.favoriteCourt=t?t[0]:"—",e.dates.sort(),e.lastVisit=e.dates[e.dates.length-1],e.vip=e.orders>=5,
+e.frequent=e.orders>=3&&e.orders<5,e}).sort((e,t)=>t.spent-e.spent||t.orders-e.orders)}async function renderReports(){
+$("repGrid").innerHTML='<div class="empty">Loading…</div>',await ensureAnalytics(),await ensureAllContacts()
+;const e=ALLB.filter(e=>"cancelled"!==e.status),t={};e.forEach(e=>(e.slots||[]).forEach(e=>{
+const n=Math.floor(hm2min(e)/60);t[n]=(t[n]||0)+1}));const n=Object.entries(t).map(([e,t])=>({h:+e,n:t
+})).sort((e,t)=>t.n-e.n).slice(0,5),a=Math.max(1,...n.map(e=>e.n)),o={};e.forEach(e=>{const t=e.court||"—";o[t]||(o[t]={
+c:t,rev:0,slots:0}),o[t].slots+=(e.slots||[]).length,"confirmed"===e.status&&(o[t].rev+=Number(e.amount||0))})
+;const s=Object.values(o).sort((e,t)=>t.rev-e.rev),r=Math.max(1,...s.map(e=>e.rev)),i=confRev(ALLB.filter(e=>inMonth(e,0))),c=confRev(ALLB.filter(e=>inMonth(e,1))),d=c>0?Math.round((i-c)/c*100):i>0?100:0,l=buildCustomers(),u=l.filter(e=>e.orders>1).length,m=l.length?Math.round(u/l.length*100):0,p=function(){
+const e=buildSlots().length,t=today().getDate(),n=(COURTS.length||1)*e*t;let a=0;return ALLB.forEach(e=>{
+"cancelled"!==e.status&&inMonth(e,0)&&(a+=(e.slots||[]).length)}),n?Math.min(100,Math.round(a/n*100)):0
+}(),h=n.length?n.map(e=>'<div class="barline"><span class="bl-l">'+hourLabel(60*e.h)+'</span><span class="bl-track"><span class="bl-fill" style="width:'+e.n/a*100+'%"></span></span><span class="bl-v">'+e.n+"</span></div>").join(""):'<div class="empty">No data yet.</div>',v=s.length?s.map(e=>'<div class="barline"><span class="bl-l">'+esc(e.c)+'</span><span class="bl-track"><span class="bl-fill" style="width:'+e.rev/r*100+'%"></span></span><span class="bl-v">'+peso(e.rev)+"</span></div>").join(""):'<div class="empty">No data yet.</div>'
+;$("repGrid").innerHTML='<div class="card"><div class="card-head"><h3>Revenue trend</h3></div><div class="big-stat">'+peso(i)+'</div><div class="big-sub">This month '+(d>=0?'<span style="color:var(--pos);font-weight:700">▲ '+d+"%</span>":'<span style="color:var(--cancel);font-weight:700">▼ '+Math.abs(d)+"%</span>")+" vs last month ("+peso(c)+')</div></div><div class="card"><div class="card-head"><h3>Occupancy (this month)</h3></div><div class="big-stat">'+p+'%</div><div class="big-sub">of court-hours booked so far this month</div></div><div class="card"><div class="card-head"><h3>Peak hours</h3></div>'+h+'</div><div class="card"><div class="card-head"><h3>Court performance</h3></div>'+v+'</div><div class="card"><div class="card-head"><h3>Customer retention</h3></div><div class="big-stat">'+m+'%</div><div class="big-sub">'+u+" of "+l.length+' players have booked more than once</div></div><div class="card"><div class="card-head"><h3>Total players</h3></div><div class="big-stat">'+l.length+'</div><div class="big-sub">unique players in the last 90 days</div></div>'
+}function openSupport(e){
+$("supTitle").textContent=e,$("supText").textContent=e+" is a premium Layaw System feature that isn't enabled for your club yet."
+;let t="";const n=SETTINGS||{},a=n.supportName||"Layaw System"
+;t=n.supportLink?'<a class="support-btn" href="'+esc(n.supportLink)+'" target="_blank" rel="noopener">Contact '+esc(a)+" to unlock</a>":'<a class="support-btn" href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Message us on Facebook</a>',
+$("supContact").innerHTML=t,$("supportOverlay").classList.add("show")}function getSecondary(){if(!secondaryApp){
+secondaryApp=firebase.initializeApp(firebaseConfig,"secondary");try{
+APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(secondaryApp).activate(APPCHECK_SITE_KEY,!0)
+}catch(e){console.warn("AppCheck:",e)}}return secondaryApp}async function loadAdmins(){const e=$("adminsList")
+;e.innerHTML='<div class="empty">Loading…</div>';try{const t=await db.collection("admins").get(),n=[];if(t.forEach(e=>{
+const t=e.data();!0!==t.removed&&n.push({uid:e.id,...t})
+}),n.sort((e,t)=>String(e.name||"").localeCompare(String(t.name||""))),
+!n.length)return void(e.innerHTML='<div class="empty">No staff yet. Add one below.</div>');e.innerHTML="",n.forEach(t=>{
+const n=!1!==t.active,a=document.createElement("div")
+;a.className="admin-row",a.innerHTML='<div><div class="an">'+esc(t.name||"Staff")+'</div></div><div class="ar"><span class="badge '+(n?"active":"disabled")+'">'+(n?"Active":"Disabled")+'</span><button class="mini-btn" data-uid="'+t.uid+'" data-act="'+(n?"disable":"enable")+'">'+(n?"Disable":"Enable")+'</button><button class="mini-btn danger" data-uid="'+t.uid+'" data-act="remove">Remove</button></div>',
+e.appendChild(a)
+}),e.querySelectorAll(".mini-btn").forEach(e=>e.onclick=()=>adminAction(e.getAttribute("data-uid"),e.getAttribute("data-act")))
+}catch(t){console.error(t),e.innerHTML='<div class="empty">Could not load staff.</div>'}}
+async function adminAction(e,t){if("remove"===t){
+if(!confirm("Remove this staff member? They will lose access and be removed from the list."))return;try{
+await db.collection("admins").doc(e).set({active:!1,removed:!0},{merge:!0}),toast("Staff removed."),loadAdmins()
+}catch(e){console.error(e),toast("Could not remove.")}return}const n="enable"===t
+;if(n||confirm("Disable this staff member? They won't be able to sign in."))try{
+await db.collection("admins").doc(e).update({active:n}),toast(n?"Staff enabled.":"Staff disabled."),loadAdmins()
+}catch(e){console.error(e),toast("Could not update.")}}function setVal(e,t){const n=$(e);n&&(n.value=null==t?"":t)}
+function setChk(e,t){const n=$(e);n&&(n.checked=!!t)}function fillSettings(){const e=SETTINGS||{}
+;setVal("set_openHour",e.openHour),setVal("set_closeHour",e.closeHour),setVal("set_slotMinutes",e.slotMinutes),
+setVal("set_advanceDays",e.advanceDays),setVal("set_holdMinutes",e.holdMinutes),
+setVal("set_checkoutMinutes",e.checkoutMinutes),setVal("set_idPrefix",e.idPrefix)
+;const t=(e.paymentMethods||[]).map(e=>String(e).toLowerCase());setChk("pm_gcash",t.includes("gcash")),
+setChk("pm_maya",t.includes("maya")),setChk("pm_bank",t.includes("bank")),setVal("set_gcashName",e.gcashName),
+setVal("set_gcashNumber",e.gcashNumber),setVal("set_gcashQrUrl",e.gcashQrUrl),setVal("set_mayaName",e.mayaName),
+setVal("set_mayaNumber",e.mayaNumber),setVal("set_mayaQrUrl",e.mayaQrUrl),setVal("set_bankName",e.bankName),
+setVal("set_bankNumber",e.bankNumber),setVal("set_bankQrUrl",e.bankQrUrl),setVal("set_contactNumber",e.contactNumber),setVal("set_notifyEmail",e.notifyEmail),
+setVal("set_addressName",e.addressName),setVal("set_address",e.address),setVal("set_mapsLink",e.mapsLink),
+setVal("set_facebookName",e.facebookName),setVal("set_facebookLink",e.facebookLink),
+setVal("set_instagramName",e.instagramName),setVal("set_instagramLink",e.instagramLink)}function sNum(e,t){const n=$(e)
+;if(!n)return t;const a=n.value.trim();if(""===a)return t;const o=Number(a);return isNaN(o)?t:o}function sStr(e){
+const t=$(e);return t?t.value.trim():""}async function saveConfig(e,t,n){t.disabled=!0,n.style.color="var(--green-d)",
+n.textContent="Saving…";try{await db.collection("settings").doc("config").set(e,{merge:!0}),
+SETTINGS=Object.assign(SETTINGS||{},e),n.textContent="Saved ✓",toast("Saved."),setTimeout(()=>{n.textContent=""},3e3)
+}catch(e){console.error(e),n.style.color="var(--cancel)",n.textContent="Could not save. Please try again."}finally{
+t.disabled=!1}}function hmMin(e){const[t,n]=String(e||"0:0").split(":").map(Number);return 60*(t||0)+(n||0)}
+function fmtMin(e){e=Number(e||0);let t=Math.floor(e/60),n=e%60;const a=t>=12&&t<24?"PM":"AM";let o=t%12
+;return 0===o&&(o=12),o+(n?":"+pad2(n):"")+a}function fmtHM(e){return fmtMin(hmMin(e))}
+document.querySelectorAll(".nav-item").forEach(e=>{e.onclick=()=>{
+if(e.dataset.support)return openSupport(e.dataset.support),void closeSidebar();if(e.dataset.soon){
+const[t,n]=e.dataset.soon.split("|");return showSoon(t,n),setActiveNav(e),void closeSidebar()}setActiveNav(e),
+openSection(e.dataset.sec),closeSidebar()}}),document.querySelectorAll("[data-go]").forEach(e=>e.onclick=()=>{
+const t=e.dataset.go;setActiveNav(document.querySelector('.nav-item[data-sec="'+t+'"]')),openSection(t)}),
+$("hamburger").onclick=()=>{$("sidebar").classList.add("open"),$("appBackdrop").classList.add("show")},
+$("appBackdrop").onclick=closeSidebar,$("userChip").onclick=e=>{e.stopPropagation(),
+$("userMenu").classList.toggle("show")},document.addEventListener("click",()=>$("userMenu").classList.remove("show")),
+$("kPendingLink").onclick=()=>{$("bellBtn").click()},$("revMonthSel").onchange=renderRevenueChart,
+$("prevMonth").onclick=()=>{viewMonth--,viewMonth<0&&(viewMonth=11,viewYear--),renderCalendar()},
+$("nextMonth").onclick=()=>{viewMonth++,viewMonth>11&&(viewMonth=0,viewYear++),renderCalendar()},
+$("todayBtn").onclick=()=>{const e=today();viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),
+renderCalendar(),watchDay()},$("tabList").onclick=()=>setView("list"),$("tabGrid").onclick=()=>setView("grid"),
+$("detailOverlay").onclick=e=>{e.target===$("detailOverlay")&&$("detailOverlay").classList.remove("show")},
+$("receiptClose").onclick=()=>$("receiptOverlay").classList.remove("show"),$("receiptOverlay").onclick=e=>{
+e.target===$("receiptOverlay")&&$("receiptOverlay").classList.remove("show")},$("bellBtn").onclick=()=>{
+$("notif").classList.add("show"),$("backdrop").classList.add("show")},$("notifClose").onclick=closeNotif,
+$("backdrop").onclick=closeNotif,$("supClose").onclick=()=>$("supportOverlay").classList.remove("show"),
+$("supportOverlay").onclick=e=>{e.target===$("supportOverlay")&&$("supportOverlay").classList.remove("show")},
+$("addAdminBtn").onclick=async()=>{const e=$("newAdminName").value.trim(),t=$("newAdminPin").value.trim()
+;if($("adminErr").textContent="",!e)return void($("adminErr").textContent="Please enter the staff name.")
+;if(!/^\d{6}$/.test(t))return void($("adminErr").textContent="PIN must be exactly 6 digits.");const n=$("addAdminBtn")
+;n.disabled=!0,n.textContent="Adding…";const a=adminEmail(e),o=getSecondary();try{
+await o.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)}catch(e){}try{
+const n=(await o.auth().createUserWithEmailAndPassword(a,t)).user.uid;await db.collection("admins").doc(n).set({name:e,
+email:a,slug:adminSlug(e),active:!0,removed:!1,createdAt:firebase.firestore.FieldValue.serverTimestamp()}),
+await o.auth().signOut(),$("newAdminName").value="",$("newAdminPin").value="",toast("Staff added."),loadAdmins()
+}catch(n){if("auth/email-already-in-use"===n.code)try{
+const n=await db.collection("admins").where("email","==",a).limit(1).get();if(n.empty)try{
+const n=(await o.auth().signInWithEmailAndPassword(a,t)).user.uid;await db.collection("admins").doc(n).set({name:e,
+email:a,slug:adminSlug(e),active:!0,removed:!1,createdAt:firebase.firestore.FieldValue.serverTimestamp()}),
+await o.auth().signOut(),$("newAdminName").value="",$("newAdminPin").value="",toast("Staff added."),loadAdmins()
+}catch(e){
+$("adminErr").textContent="That name was used before with a different PIN. Use that same PIN, or pick a slightly different name."
+}else{const s=n.docs[0],r=s.data()
+;if(!1!==r.active&&!0!==r.removed)$("adminErr").textContent="A staff member with that name already exists. Use a different name.";else{
+let n=!1;try{await o.auth().signInWithEmailAndPassword(a,t),n=!0,await o.auth().signOut()}catch(e){}
+await db.collection("admins").doc(s.id).set({name:e,slug:adminSlug(e),active:!0,removed:!1},{merge:!0}),
+$("newAdminName").value="",
+$("newAdminPin").value="",toast(n?"Staff re-enabled.":"Staff re-enabled — they keep their previous PIN."),loadAdmins()}}
+}catch(e){console.error(e),$("adminErr").textContent="Could not add staff. Please try again."}else{const e={
+"auth/weak-password":"PIN must be at least 6 digits.",
+"auth/invalid-email":"That name can't be used. Try a simpler name."}
+;$("adminErr").textContent=e[n.code]||"Could not add staff. Please try again."}}finally{n.disabled=!1,
+n.textContent="Add staff"}},$("savePricingBtn").onclick=()=>{saveConfig({openHour:sNum("set_openHour",8),
+closeHour:sNum("set_closeHour",22),slotMinutes:sNum("set_slotMinutes",60),
+advanceDays:Math.min(sNum("set_advanceDays",30),30),holdMinutes:sNum("set_holdMinutes",30),
+checkoutMinutes:sNum("set_checkoutMinutes",5),idPrefix:sStr("set_idPrefix")},$("savePricingBtn"),$("pricingMsg"))},
+$("saveSettingsBtn").onclick=()=>{const e=[];$("pm_gcash").checked&&e.push("GCash"),
+$("pm_maya").checked&&e.push("Maya"),$("pm_bank").checked&&e.push("Bank");saveConfig({paymentMethods:e,
+gcashName:sStr("set_gcashName"),gcashNumber:sStr("set_gcashNumber"),gcashQrUrl:sStr("set_gcashQrUrl"),
+mayaName:sStr("set_mayaName"),mayaNumber:sStr("set_mayaNumber"),mayaQrUrl:sStr("set_mayaQrUrl"),
+bankName:sStr("set_bankName"),bankNumber:sStr("set_bankNumber"),bankQrUrl:sStr("set_bankQrUrl"),
+contactNumber:sStr("set_contactNumber"),notifyEmail:sStr("set_notifyEmail"),addressName:sStr("set_addressName"),address:sStr("set_address"),
+mapsLink:sStr("set_mapsLink"),facebookName:sStr("set_facebookName"),facebookLink:sStr("set_facebookLink"),
+instagramName:sStr("set_instagramName"),instagramLink:sStr("set_instagramLink")},$("saveSettingsBtn"),$("settingsMsg"))}
+;let RATES_ALL=[];async function renderRates(){const e=$("ratesList");e.innerHTML='<div class="empty">Loading…</div>'
+;try{const t=await db.collection("rates").get();if(RATES_ALL=[],t.forEach(e=>RATES_ALL.push({id:e.id,...e.data()})),
+RATES_ALL.sort((e,t)=>hmMin(e.start)-hmMin(t.start)),
+!RATES_ALL.length)return void(e.innerHTML='<div class="empty">No rate bands yet. Add one below.</div>');e.innerHTML="",
+RATES_ALL.forEach(t=>{const n=document.createElement("div");n.className="rate-row",
+n.innerHTML='<div class="rr-main"><div class="rr-t">'+fmtHM(t.start)+" – "+fmtHM(t.end)+'</div><div class="pr-sub">'+peso(t.rate)+' / hour</div></div><button class="mini-btn danger" data-del="'+t.id+'">Delete</button>',
+e.appendChild(n)}),e.querySelectorAll("[data-del]").forEach(e=>e.onclick=async()=>{
+if(confirm("Delete this rate band?"))try{await db.collection("rates").doc(e.getAttribute("data-del")).delete(),
+toast("Rate band deleted."),renderRates()}catch(e){console.error(e),toast("Could not delete.")}})}catch(t){
+console.error(t),e.innerHTML='<div class="empty">Could not load rates.</div>'}}$("addRateBtn").onclick=async()=>{
+const e=$("newRateStart").value,t=$("newRateEnd").value,n=Number($("newRateAmt").value||0)
+;if($("rateErr").textContent="",!e||!t)return void($("rateErr").textContent="Please set both From and To times.")
+;if(hmMin(t)<=hmMin(e))return void($("rateErr").textContent="'To' must be after 'From'.")
+;if(!(n>=0))return void($("rateErr").textContent="Enter a valid rate.");const a=$("addRateBtn");a.disabled=!0,
+a.textContent="Adding…";try{await db.collection("rates").add({start:e,end:t,rate:n}),$("newRateStart").value="",
+$("newRateEnd").value="",$("newRateAmt").value="",toast("Rate band added."),renderRates()}catch(t){console.error(t),
+$("rateErr").textContent="Could not add rate band."}finally{a.disabled=!1,a.textContent="Add rate band"}}
+;const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];let PROMOS_ALL=[];async function renderPromos(){
+const e=$("promosList");e.innerHTML='<div class="empty">Loading…</div>';try{const t=await db.collection("promos").get()
+;if(PROMOS_ALL=[],t.forEach(e=>PROMOS_ALL.push({id:e.id,...e.data()
+})),PROMOS_ALL.sort((e,t)=>String(e.code||"").localeCompare(String(t.code||""))),
+!PROMOS_ALL.length)return void(e.innerHTML='<div class="empty">No promo codes yet. Tap “+ Promo Code” to create one.</div>')
+;e.innerHTML="",PROMOS_ALL.forEach(t=>{
+const n="amount"===t.discountType?peso(t.discountValue)+" off":t.discountValue+"% off",a=[]
+;Array.isArray(t.days)&&t.days.length&&a.push(t.days.map(e=>DOW[e]).join("/")),
+Array.isArray(t.timeWindows)&&t.timeWindows.length&&a.push(t.timeWindows.map(e=>fmtMin(e.start)+"-"+fmtMin(e.end)).join(", ")),
+Array.isArray(t.dateRanges)&&t.dateRanges.length&&a.push(t.dateRanges.map(e=>e.start+"→"+e.end).join(", ")),
+Number(t.minHours)>0&&a.push("min "+t.minHours+"h")
+;const o=a.length?a.join(" · "):"All days · all times · all dates",s=Number(t.usageCount||0),r=Number(t.usageLimit||0),i=r>0?s+"/"+r+" used"+(s>=r?" · LIMIT REACHED":""):s>0?s+"× used":"unlimited uses",c=!1!==t.active,d=document.createElement("div")
+;d.className="promo-row",
+d.innerHTML='<div class="pr-main"><div class="pr-code">'+esc(t.code)+' <span class="badge '+(c?"active":"disabled")+'">'+(c?"Active":"Off")+'</span></div><div class="pr-sub">'+n+" · "+esc(o)+" · "+esc(i)+'</div></div><div class="pr-act"><button class="mini-btn" data-toggle="'+t.id+'">'+(c?"Turn off":"Turn on")+'</button><button class="mini-btn danger" data-del="'+t.id+'">Delete</button></div>',
+e.appendChild(d)}),e.querySelectorAll("[data-toggle]").forEach(e=>e.onclick=async()=>{
+const t=e.getAttribute("data-toggle"),n=PROMOS_ALL.find(e=>e.id===t);try{await db.collection("promos").doc(t).update({
+active:!(!1!==n.active)}),renderPromos()}catch(e){console.error(e),toast("Could not update.")}}),
+e.querySelectorAll("[data-del]").forEach(e=>e.onclick=async()=>{if(confirm("Delete this promo code?"))try{
+await db.collection("promos").doc(e.getAttribute("data-del")).delete(),toast("Promo deleted."),renderPromos()}catch(e){
+console.error(e),toast("Could not delete.")}})}catch(t){
+console.error(t),e.innerHTML='<div class="empty">Could not load promos.</div>'}}function winRow(){
+const e=document.createElement("div")
+;return e.className="win-row",e.innerHTML='<input type="time" step="900" class="w-start"><span style="color:var(--muted)">to</span><input type="time" step="900" class="w-end"><button class="rm" type="button">✕</button>',
+e.querySelector(".rm").onclick=()=>e.remove(),e}function dateRow(){const e=document.createElement("div")
+;return e.className="win-row",
+e.innerHTML='<input type="date" class="d-start"><span style="color:var(--muted)">to</span><input type="date" class="d-end"><button class="rm" type="button">✕</button>',
+e.querySelector(".rm").onclick=()=>e.remove(),e}function openPromoModal(){$("promoCode").value="",
+$("promoType").value="percent",$("promoValue").value="",$("promoActive").checked=!0,$("promoErr").textContent="",
+$("promoUsageLimit").value="",$("promoMinHours").value="";const e=$("promoDays");e.innerHTML="",DOW.forEach((t,n)=>{
+const a=document.createElement("button");a.type="button",a.className="day-btn",a.textContent=t,a.dataset.dow=n,
+a.onclick=()=>a.classList.toggle("on"),e.appendChild(a)}),$("promoTimes").innerHTML="",$("promoDates").innerHTML="",
+$("promoOverlay").classList.add("show")}function payIcon(e){
+return'<div class="kpi-ico '+e+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg></div>'
+}function payKpi(e,t,n,a){
+return'<div class="kpi">'+payIcon(n)+'<div class="kpi-body"><div class="kl">'+e+'</div><div class="kn">'+t+"</div>"+(a?'<div class="kd">'+a+"</div>":"")+"</div></div>"
+}async function renderPayments(){$("payByMethod").innerHTML='<div class="empty">Loading…</div>',await ensureAnalytics(),
+await ensureAllContacts()
+;const e=ALLB.filter(e=>"confirmed"===e.status),t=e.reduce((e,t)=>e+Number(t.amount||0),0),n=orderGroups(ALLB.filter(e=>"pending"===e.status)),a=ALLB.filter(e=>"pending"===e.status).reduce((e,t)=>e+Number(t.amount||0),0),o=confRev(ALLB.filter(e=>inMonth(e,0))),s=confRev(ALLB.filter(e=>inMonth(e,1)))
+;$("payKpis").innerHTML=payKpi("Total revenue (90d)",peso(t),"rev")+payKpi("This month",peso(o),"bk")+payKpi("Pending amount",peso(a),"pend",n.length+" order"+(1===n.length?"":"s"))+payKpi("Transactions",String(e.length),"occ")
+;const r={};(SETTINGS.paymentMethods||[]).concat(["Cash"]).forEach(e=>{e&&!(e in r)&&(r[e]=0)}),e.forEach(e=>{
+const t=e.paymentMethod||"Other";r[t]=(r[t]||0)+Number(e.amount||0)})
+;const i=Object.entries(r).sort((e,t)=>t[1]-e[1]),c=Math.max(1,...i.map(e=>e[1]))
+;$("payByMethod").innerHTML=i.length?i.map(([e,t])=>'<div class="barline"><span class="bl-l">'+esc(e)+'</span><span class="bl-track"><span class="bl-fill" style="width:'+t/c*100+'%"></span></span><span class="bl-v">'+peso(t)+"</span></div>").join(""):'<div class="empty">No payment methods configured yet.</div>'
+;const d=s>0?Math.round((o-s)/s*100):o>0?100:0
+;$("payTrend").innerHTML='<div class="big-stat">'+peso(o)+'</div><div class="big-sub">'+(d>=0?'<span style="color:var(--pos);font-weight:700">▲ '+d+"%</span>":'<span style="color:var(--cancel);font-weight:700">▼ '+Math.abs(d)+"%</span>")+" vs last month ("+peso(s)+")</div>"
+;const l=e.slice().sort((e,t)=>e.date<t.date?1:-1).slice(0,25).map(e=>"<tr><td>"+niceDate(e.date)+"</td><td>"+esc(nameOf(e))+"</td><td>"+esc(e.court||"—")+'</td><td><span class="method">'+esc(e.paymentMethod||"—")+'</span></td><td class="amt">'+peso(e.amount)+"</td></tr>").join("")
+;$("txnTable").innerHTML='<thead><tr><th>Date</th><th>Player</th><th>Court</th><th>Method</th><th style="text-align:right">Amount</th></tr></thead><tbody>'+(l||'<tr><td colspan="5" class="empty">No transactions yet.</td></tr>')+"</tbody>"
+}$("addPromoBtn").onclick=()=>openPromoModal(),$("addTimeWin").onclick=()=>$("promoTimes").appendChild(winRow()),
+$("addDateRange").onclick=()=>$("promoDates").appendChild(dateRow()),
+$("promoCancel").onclick=()=>$("promoOverlay").classList.remove("show"),$("promoOverlay").onclick=e=>{
+e.target===$("promoOverlay")&&$("promoOverlay").classList.remove("show")},$("promoSave").onclick=async()=>{
+$("promoErr").textContent=""
+;const e=$("promoCode").value.trim().toUpperCase(),t=$("promoType").value,n=Number($("promoValue").value||0)
+;if(!e)return void($("promoErr").textContent="Enter a code.")
+;if(!(n>0))return void($("promoErr").textContent="Enter a discount value greater than 0.")
+;if("percent"===t&&n>100)return void($("promoErr").textContent="Percent cannot exceed 100.")
+;const a=[...$("promoDays").querySelectorAll(".day-btn.on")].map(e=>Number(e.dataset.dow)),o=[];let s=!1
+;if($("promoTimes").querySelectorAll(".win-row").forEach(e=>{
+const t=e.querySelector(".w-start").value,n=e.querySelector(".w-end").value;t&&n&&(hmMin(n)<=hmMin(t)?s=!0:o.push({
+start:hmMin(t),end:hmMin(n)}))
+}),s)return void($("promoErr").textContent="Each time window's end must be after its start.");const r=[];let i=!1
+;if($("promoDates").querySelectorAll(".win-row").forEach(e=>{
+const t=e.querySelector(".d-start").value,n=e.querySelector(".d-end").value;t&&n&&(n<t?i=!0:r.push({start:t,end:n}))}),
+i)return void($("promoErr").textContent="Each date range's end must be on or after its start.");const c=$("promoSave")
+;c.disabled=!0,c.textContent="Saving…";try{await db.collection("promos").add({code:e,discountType:t,discountValue:n,
+active:$("promoActive").checked,days:a,timeWindows:o,dateRanges:r,usageLimit:Number($("promoUsageLimit").value||0),
+usageCount:0,minHours:Number($("promoMinHours").value||0),createdAt:firebase.firestore.FieldValue.serverTimestamp()}),
+$("promoOverlay").classList.remove("show"),toast("Promo code saved."),renderPromos()}catch(e){console.error(e),
+$("promoErr").textContent="Could not save. Make sure the promos rule is added in Firebase."}finally{c.disabled=!1,
+c.textContent="Save promo"}},$("exportCsvBtn").onclick=async()=>{await ensureAnalytics(),await ensureAllContacts()
+;const e=[["Date","Booking ID","Court","Slots","Amount","Method","Status","Player","Contact"]]
+;ALLB.slice().sort((e,t)=>e.date<t.date?1:-1).forEach(t=>{
+"cancelled"!==t.status&&e.push([t.date||"",t.bookingId||t.id,t.court||"",(t.slots||[]).join(" "),t.amount||0,t.paymentMethod||"",t.status||"",nameOf(t),contactOf(t)])
+});const t=e.map(e=>e.map(e=>{const t=String(null==e?"":e);return/[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t
+}).join(",")).join("\n"),n=new Blob([t],{type:"text/csv;charset=utf-8;"
+}),a=URL.createObjectURL(n),o=document.createElement("a")
+;o.href=a,o.download=(SETTINGS&&SETTINGS.businessName||"club").replace(/[^a-z0-9]+/gi,"_").toLowerCase()+"_transactions.csv",
+document.body.appendChild(o),o.click(),o.remove(),URL.revokeObjectURL(a),toast("CSV exported.")},
+$("exportReceiptsBtn").onclick=async()=>{
+const e=$("exportReceiptsBtn"),t=$("rcptStatus"),n=($("rcptMonth").value||"").trim();e.disabled=!0,
+t.style.color="var(--muted)",t.textContent="Loading receipts…";try{
+if("undefined"==typeof JSZip)throw new Error("ZIP library not loaded. Check your connection and reload.")
+;await ensureAnalytics(),await ensureAllContacts();const a={};ALLB.forEach(e=>{a[e.bookingId||e.id]=e})
+;const o=await db.collection("receipts").get(),s=[];if(o.forEach(e=>{const t=e.data(),o=t.bookingId||e.id,r=a[o]
+;if(r&&"pending"===r.status)return;if(!t.image)return
+;const i=t.createdAt&&t.createdAt.toDate?t.createdAt.toDate():null,c=i?i.getFullYear()+"-"+String(i.getMonth()+1).padStart(2,"0")+"-"+String(i.getDate()).padStart(2,"0"):r&&r.date||""
+;n&&(c||"").slice(0,7)!==n||s.push({docId:e.id,bid:o,image:t.image,booking:r||{},ymd:c})}),
+!s.length)return t.textContent="No receipts to export for that selection.",void(e.disabled=!1)
+;if(!confirm("Export "+s.length+" receipt"+(1===s.length?"":"s")+" as a ZIP and then remove them from the database?\n\nBooking records are kept. This cannot be undone."))return t.textContent="",
+void(e.disabled=!1);t.textContent="Building ZIP for "+s.length+" receipt"+(1===s.length?"":"s")+"…"
+;const r=new JSZip,i=[["Booking ID","Date","Court","Amount","Method","Status","Player","Contact","File"]];s.forEach(e=>{
+const t=e.booking||{},n=String(t.court||"court").replace(/[^a-z0-9]+/gi,"-"),a=(e.bid+"_"+(e.ymd||"nodate")+"_"+n+".jpg").replace(/[^A-Za-z0-9._-]+/g,"_")
+;r.file(a,String(e.image).split(",").pop(),{base64:!0
+}),i.push([e.bid,e.ymd||"",t.court||"",t.amount||0,t.paymentMethod||"",t.status||"",nameOf(t),contactOf(t),a])})
+;const c=i.map(e=>e.map(e=>{const t=String(null==e?"":e);return/[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t
+}).join(",")).join("\n");r.file("transactions.csv",c);const d=await r.generateAsync({type:"blob"
+}),l=URL.createObjectURL(d),u=n||"all",m=document.createElement("a");if(m.href=l,
+m.download=(SETTINGS&&SETTINGS.businessName||"club").replace(/[^a-z0-9]+/gi,"_").toLowerCase()+"_receipts_"+u+".zip",
+document.body.appendChild(m),
+m.click(),m.remove(),URL.revokeObjectURL(l),!confirm("The ZIP download has started.\n\nClick OK ONLY if the file downloaded successfully — this will remove the "+s.length+" exported receipt"+(1===s.length?"":"s")+" from the database.\n\nClick Cancel to keep them."))return t.style.color="var(--muted)",
+t.textContent="Download kept. Receipts were NOT deleted.",void(e.disabled=!1)
+;t.textContent="Removing receipts from the database…";let p=0;for(let e=0;e<s.length;e+=450){
+const n=s.slice(e,e+450),a=db.batch();n.forEach(e=>a.delete(db.collection("receipts").doc(e.docId))),await a.commit(),
+p+=n.length,t.textContent="Removed "+p+"/"+s.length+"…"}t.style.color="var(--green-d)",
+t.textContent="✓ Exported "+s.length+" receipt"+(1===s.length?"":"s")+" and freed storage. Booking records kept.",
+toast("Receipts exported & cleared.")}catch(e){console.error(e),t.style.color="var(--cancel)",
+t.textContent="Error: "+(e&&e.message||e)+". No receipts were deleted.",toast("Export failed — nothing deleted.")
+}finally{e.disabled=!1}},loadBase()</script> </body> </html>
