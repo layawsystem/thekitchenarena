@@ -225,6 +225,8 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .cav-mini{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
 .fld-input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--elev);color:var(--text);font:inherit}
 .cav-slots{display:flex;flex-wrap:wrap;gap:7px}
+.cav-slot-actions{display:flex;gap:14px;margin-bottom:9px}
+.cav-linkbtn{background:none;border:none;color:var(--accent,#2747E8);font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
 .cav-slot{padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:var(--elev);color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;user-select:none}
 .cav-slot.on{background:var(--green);color:#fff;border-color:var(--green)}
 .cav-slot.taken{opacity:.4;cursor:not-allowed;text-decoration:line-through}
@@ -795,6 +797,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <label class="cav-mini">Date</label>
 <input type="date" id="cavDate" class="fld-input"/>
 <label class="cav-mini" style="margin-top:8px">Time slots to block</label>
+<div class="cav-slot-actions" style="display:none"><button id="cavSelectAll" class="cav-linkbtn" type="button">Select all (whole day)</button><button id="cavClearAll" class="cav-linkbtn" type="button">Clear all</button></div>
 <div id="cavSlots" class="cav-slots"><div class="cav-empty">Pick a date first.</div></div>
 <button id="cavAddBlock" class="btn" style="width:100%;margin-top:10px;padding:11px" disabled>Block selected slots</button>
 </div>
@@ -1017,8 +1020,9 @@ $("cavStatusText").textContent=un?"Not Available":"Available";
 $("cavStatusText").style.color=un?"var(--cancel)":"var(--ok-tx)";
 $("cavToggleBtn").textContent=un?"Mark Available":"Mark Not Available"}
 function courtBlocks(){return Array.isArray(CAV_COURT.blocks)?CAV_COURT.blocks:[]}
-function renderCavSlots(){const wrap=$("cavSlots"),d=$("cavDate").value;
-if(!d){wrap.innerHTML='<div class="cav-empty">Pick a date first.</div>';$("cavAddBlock").disabled=!0;return}
+function renderCavSlots(){const wrap=$("cavSlots"),d=$("cavDate").value;const acts=document.querySelector(".cav-slot-actions");
+if(!d){wrap.innerHTML='<div class="cav-empty">Pick a date first.</div>';$("cavAddBlock").disabled=!0;acts&&(acts.style.display="none");return}
+acts&&(acts.style.display="flex");
 const blocked=new Set();courtBlocks().forEach(b=>{if(b.date===d)(b.slots||[]).forEach(sl=>blocked.add(sl))});
 wrap.innerHTML="";buildSlots().forEach(sl=>{const el=document.createElement("div");
 const isBlocked=blocked.has(sl.key);el.className="cav-slot"+(isBlocked?" taken":"");
@@ -1026,6 +1030,7 @@ el.textContent=hourLabel(sl.mins);el.dataset.k=sl.key;
 if(!isBlocked)el.onclick=()=>{el.classList.toggle("on");syncAddBtn()};
 wrap.appendChild(el)});syncAddBtn()}
 function syncAddBtn(){const any=$("cavSlots").querySelectorAll(".cav-slot.on").length>0;$("cavAddBlock").disabled=!($("cavDate").value&&any)}
+function cavSelectAllSlots(on){$("cavSlots").querySelectorAll(".cav-slot:not(.taken)").forEach(el=>{el.classList.toggle("on",on)});syncAddBtn()}
 function renderCavBlocks(){const wrap=$("cavBlockList"),bl=courtBlocks();
 if(!bl.length){wrap.innerHTML='<div class="cav-empty">No blocks set.</div>';return}
 wrap.innerHTML="";bl.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>{
@@ -1226,6 +1231,8 @@ $("courtModalClose").onclick=()=>closeCourtModal(),
 $("courtOverlay").onclick=e=>{e.target===$("courtOverlay")&&closeCourtModal()},
 $("cavToggleBtn").onclick=()=>cavToggleOverall(),
 $("cavAddBlock").onclick=()=>cavAddBlock(),
+$("cavSelectAll").onclick=()=>cavSelectAllSlots(!0),
+$("cavClearAll").onclick=()=>cavSelectAllSlots(!1),
 $("cavDate").onchange=()=>renderCavSlots(),
 $("supportOverlay").onclick=e=>{e.target===$("supportOverlay")&&$("supportOverlay").classList.remove("show")},
 $("addAdminBtn").onclick=async()=>{const e=$("newAdminName").value.trim(),t=$("newAdminPin").value.trim()
