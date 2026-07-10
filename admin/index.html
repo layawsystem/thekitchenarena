@@ -345,6 +345,7 @@ const e=Number(SETTINGS&&SETTINGS.slotMinutes||60),n=(t||[]).map(hm2min).sort((t
 const c=i+e,r=(c-s)/60,l=(Number.isInteger(r)?r:r.toFixed(1))+(1===r?" hour":" hours");o.push(a(s)+"-"+a(c)+" ("+l+")"),
 t<n.length&&(s=n[t],i=n[t])}return o.join(", ")}function peso(t){return"₱"+Number(t||0).toLocaleString("en-PH")}
 function niceDate(t){return parseDstr(t).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})}
+function niceD(d){return niceDate(d)}
 function toast(t){const e=$("toast")
 ;e.textContent=t,e.classList.add("show"),setTimeout(()=>e.classList.remove("show"),2600)}function darken(t,e){
 3===(t=String(t).replace("#","")).length&&(t=t.split("").map(t=>t+t).join(""));const n=parseInt(t,16)
@@ -384,6 +385,35 @@ renderCavStatus();$("cavDate").value="";renderCavSlots();renderCavBlocks();
 $("cavBulkStart").value="";$("cavBulkEnd").value="";renderBulkSlots();
 $("courtOverlay").classList.add("show")}
 function closeCourtModal(){$("courtOverlay").classList.remove("show");CAV_COURT=null}
+async function cavAddBlock(){const d=$("cavDate").value;if(!d)return;
+const picked=[...$("cavSlots").querySelectorAll(".cav-slot.on")].map(el=>el.dataset.k);
+if(!picked.length)return;
+const bl=courtBlocks().slice();const existing=bl.find(b=>b.date===d);
+if(existing){existing.slots=[...new Set([...(existing.slots||[]),...picked])].sort()}
+else bl.push({date:d,slots:picked.slice().sort()});
+const ok=await saveCourtField({blocks:bl});
+if(ok){renderCavSlots();renderCavBlocks();toast("Slots blocked for "+niceD(d)+".")}}
+async function cavToggleOverall(){const un="unavailable"===String(CAV_COURT.status||"").toLowerCase();
+const ok=await saveCourtField({status:un?"":"unavailable"});
+if(ok){renderCavStatus();toast(un?"Court marked available.":"Court marked not available.")}}
+async function removeBlock(date){const bl=courtBlocks().filter(b=>b.date!==date);
+const ok=await saveCourtField({blocks:bl});
+if(ok){renderCavSlots();renderCavBlocks();toast("Block removed.")}}
+function renderCavBlocks(){const wrap=$("cavBlockList"),bl=courtBlocks();
+if(!bl.length){wrap.innerHTML='<div class="cav-empty">No blocks set.</div>';return}
+wrap.innerHTML="";bl.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>{
+const item=document.createElement("div");item.className="cav-block-item";
+const slots=(b.slots||[]).slice().sort().map(sl=>hourLabel(hm2min(sl))).join(", ");
+item.innerHTML='<div class="bd"><strong>'+esc(niceD(b.date))+'</strong><br>'+esc(slots)+'</div>';
+const x=document.createElement("button");x.className="bx";x.textContent="Remove";
+x.onclick=()=>removeBlock(b.date);item.appendChild(x);wrap.appendChild(item)})}
+async function saveCourtField(patch){if(!CAV_COURT||!CAV_COURT.id)return!1;
+try{await db.collection("courts").doc(CAV_COURT.id).update(patch);
+const idx=COURTS.findIndex(c=>c.id===CAV_COURT.id);
+if(idx>=0){Object.assign(COURTS[idx],patch);CAV_COURT=COURTS[idx]}
+renderCourtStatus();return!0}catch(e){console.error(e);toast("Could not update. Check your access.");return!1}}
+function bulkSelectAll(on){$("cavBulkSlots").querySelectorAll(".cav-slot").forEach(el=>el.classList.toggle("on",on));syncBulkBtns()}
+
 function renderCavStatus(){const un="unavailable"===String(CAV_COURT.status||"").toLowerCase();
 $("cavStatusText").textContent=un?"Not Available":"Available";
 $("cavStatusText").style.color=un?"var(--cancel)":"var(--ok-tx)";
@@ -403,7 +433,7 @@ function cavSelectAllSlots(on){$("cavSlots").querySelectorAll(".cav-slot:not(.ta
 function renderBulkSlots(){const wrap=$("cavBulkSlots");wrap.innerHTML="";buildSlots().forEach(sl=>{const el=document.createElement("div");
 el.className="cav-slot";el.textContent=hourLabel(sl.mins);el.dataset.k=sl.key;
 el.onclick=()=>{el.classList.toggle("on");syncBulkBtns()};wrap.appendChild(el)});syncBulkBtns()}
-function bulkSelectAll(on){$("cavBulkSlots").querySelectorAll(".cav-slot").forEach(el=>el.classList.toggle("on",on));syncBulkBtns()}
+
 function syncBulkBtns(){const any=$("cavBulkSlots").querySelectorAll(".cav-slot.on").length>0;
 const ok=$("cavBulkStart").value&&$("cavBulkEnd").value&&any;
 $("cavBulkBlock").disabled=!ok;$("cavBulkUnblock").disabled=!ok}
