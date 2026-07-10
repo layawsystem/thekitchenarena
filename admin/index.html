@@ -147,6 +147,32 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .nitem .nacts{display:flex;gap:8px}
 .nitem .nacts button{flex:1;border:none;padding:8px;border-radius:8px;font:inherit;font-weight:700;font-size:12px;cursor:pointer}
 .overlay{position:fixed;inset:0;background:rgba(14,49,64,.55);display:none;place-items:center;padding:16px;z-index:50}
+.cav-section{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.cav-label{font-size:13px;font-weight:800;color:var(--text);margin-bottom:10px;text-transform:uppercase;letter-spacing:.04em}
+.cav-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cav-hint{font-size:12px;color:var(--muted);margin-top:8px}
+.cav-mini{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+.cav-slots{display:flex;flex-wrap:wrap;gap:7px}
+.cav-slot-actions{display:flex;gap:14px;margin-bottom:9px}
+.cav-linkbtn{background:none;border:none;color:var(--accent,#2747E8);font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+.cav-slot{padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:var(--elev);color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;user-select:none}
+.cav-slot.on{background:var(--green);color:#fff;border-color:var(--green)}
+.cav-slot.taken{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+.cav-empty{font-size:13px;color:var(--muted)}
+.cav-blocklist{display:flex;flex-direction:column;gap:8px}
+.cav-block-item{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--elev)}
+.court-status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.court-card{border:1px solid var(--line);border-radius:13px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
+.court-card:hover{border-color:var(--teal,#0B97A6);background:rgba(255,255,255,.03)}
+.court-card .ci{width:34px;height:34px;border-radius:9px;background:var(--ok-bg);color:var(--pos,#2747E8);display:grid;place-items:center;margin-bottom:10px}
+.court-card .ci svg{width:18px;height:18px}
+.court-card .cn{font-weight:800;font-size:14px}
+.court-card .ct{font-size:12px;color:var(--muted);margin-bottom:10px}
+.court-card .toggle-hint{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.02em}
+.court-card.busy{opacity:.55;pointer-events:none}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:5px 11px;border-radius:999px}
+.pill.avail{background:var(--ok-bg);color:var(--ok-tx)}
+.pill.na{background:var(--book-bg,#3E1A20);color:var(--cancel,#E88A92)}
 .overlay.show{display:grid}
 .modal{background:var(--card);border-radius:var(--radius);padding:24px;width:100%;max-width:440px;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto}
 .modal h3{font-size:18px;color:var(--text);margin-bottom:4px}
@@ -203,7 +229,54 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <tbody id="schedBody">
 </tbody>
 </table>
-</div> </div> </div> </div> </div> </div> </div> <div class="backdrop" id="backdrop">
+</div> </div> </div> </div> </div> </div> </div>
+<div class="card cs-card" style="margin:0 16px 16px">
+<div class="view-head"><h3>Court Status</h3></div>
+<div id="courtStatus" class="court-status-grid"></div>
+</div>
+<div class="overlay" id="courtOverlay">
+<div class="modal" style="max-width:480px;max-height:88vh;overflow-y:auto">
+<h3 id="courtModalTitle" style="margin-bottom:4px">Court</h3>
+<p class="sub" style="margin-bottom:16px">Manage this court's availability. Each control is separate — use only what you need.</p>
+<div class="cav-section">
+<div class="cav-label">Overall availability</div>
+<div class="cav-toggle-row">
+<span id="cavStatusText">Available</span>
+<button id="cavToggleBtn" class="btn" style="padding:9px 16px">Mark Not Available</button>
+</div>
+<div class="cav-hint">Turns the whole court off (all dates, all times).</div>
+</div>
+<div class="cav-section">
+<div class="cav-label">Block specific date &amp; times</div>
+<label class="cav-mini">Date</label>
+<input type="date" id="cavDate" class="fld-input"/>
+<label class="cav-mini" style="margin-top:8px">Time slots to block</label>
+<div class="cav-slot-actions" style="display:none"><button id="cavSelectAll" class="cav-linkbtn" type="button">Select all (whole day)</button><button id="cavClearAll" class="cav-linkbtn" type="button">Clear all</button></div>
+<div id="cavSlots" class="cav-slots"><div class="cav-empty">Pick a date first.</div></div>
+<button id="cavAddBlock" class="btn" style="width:100%;margin-top:10px;padding:11px" disabled>Block selected slots</button>
+</div>
+<div class="cav-section">
+<div class="cav-label">Bulk: block a date range</div>
+<div style="display:flex;gap:10px">
+<div style="flex:1"><label class="cav-mini">Start date</label><input type="date" id="cavBulkStart" class="fld-input"/></div>
+<div style="flex:1"><label class="cav-mini">End date</label><input type="date" id="cavBulkEnd" class="fld-input"/></div>
+</div>
+<div class="cav-slot-actions" style="margin-top:10px"><button id="cavBulkSelectAll" class="cav-linkbtn" type="button">Select all (whole day)</button><button id="cavBulkClearAll" class="cav-linkbtn" type="button">Clear all</button></div>
+<div id="cavBulkSlots" class="cav-slots"></div>
+<div style="display:flex;gap:10px;margin-top:10px">
+<button id="cavBulkBlock" class="btn" style="flex:1;padding:11px" disabled>Block range</button>
+<button id="cavBulkUnblock" class="btn-ghost" style="flex:1;padding:11px" disabled>Unblock range</button>
+</div>
+<div class="cav-hint">Applies to every day from start to end date (inclusive).</div>
+</div>
+<div class="cav-section">
+<div class="cav-label">Current blocks</div>
+<div id="cavBlockList" class="cav-blocklist"><div class="cav-empty">No blocks set.</div></div>
+</div>
+<button class="btn-ghost" id="courtModalClose" style="width:100%;margin-top:6px;padding:13px">Done</button>
+</div>
+</div>
+<div class="backdrop" id="backdrop">
 </div> <div class="notif" id="notif"> <div class="notif-head">
 <h3>Pending bookings</h3>
 <button class="x" id="notifClose">×</button>
@@ -291,11 +364,63 @@ e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary
 e.setProperty("--green","#0D2863"),e.setProperty("--green-d","#0A1E4C")
 ;const n=SETTINGS.businessName||"The Kitchen Arena";$("loginBiz").textContent=n,$("topBiz").textContent=n,
 document.title=n+" — Admin",(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;[$("loginLogo"),$("topLogo")].forEach(function(t){if(!t)return;t.src=_lu;t.style.display="block"})})()}const e=await db.collection("courts").get();COURTS=[],e.forEach(t=>{const e=t.data()
-;!1!==e.active&&COURTS.push({id:t.id,name:e.name||"Court"})}),COURTS.sort((t,e)=>t.name.localeCompare(e.name))}catch(t){
+;!1!==e.active&&COURTS.push({id:t.id,name:e.name||"Court",type:e.type||"",status:e.status||"",blocks:Array.isArray(e.blocks)?e.blocks:[]})}),COURTS.sort((t,e)=>t.name.localeCompare(e.name))}catch(t){
 console.warn(t)}}function adminSlug(t){return String(t||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"")}
 function adminEmail(t){const e=adminSlug(t);return e?e+"@courtadmin.app":""}async function startDashboard(){
 SETTINGS||await loadBase();const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),selectedDate=dstr(t),
-renderCalendar(),renderSchedHead(),watchDay(),watchPending()}function renderCalendar(){
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),renderCourtStatus()}function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+var IC_COURT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>';
+function renderCourtStatus(){var e=$("courtStatus");if(!e)return;if(!COURTS.length){e.innerHTML='<div class="empty" style="color:var(--muted);font-size:13px">No courts set up yet.</div>';return}
+e.innerHTML="";COURTS.forEach(function(o){var un="unavailable"===String(o.status||"").toLowerCase();
+var s=un?"na":"avail",r=un?"Not Available":"Available";
+var ty=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"";
+var c=document.createElement("div");c.className="court-card";
+c.innerHTML='<div class="ci">'+IC_COURT+'</div><div class="cn">'+esc(o.name)+'</div><div class="ct">'+(ty?"("+esc(ty)+")":"&nbsp;")+'</div><span class="pill '+s+'">'+r+'</span><div class="toggle-hint">Tap to manage availability</div>';
+c.onclick=function(){openCourtModal(o)};e.appendChild(c)})}
+let CAV_COURT=null;
+function openCourtModal(court){CAV_COURT=court;
+$("courtModalTitle").textContent=court.name+(court.type?" ("+court.type+")":"");
+renderCavStatus();$("cavDate").value="";renderCavSlots();renderCavBlocks();
+$("cavBulkStart").value="";$("cavBulkEnd").value="";renderBulkSlots();
+$("courtOverlay").classList.add("show")}
+function closeCourtModal(){$("courtOverlay").classList.remove("show");CAV_COURT=null}
+function renderCavStatus(){const un="unavailable"===String(CAV_COURT.status||"").toLowerCase();
+$("cavStatusText").textContent=un?"Not Available":"Available";
+$("cavStatusText").style.color=un?"var(--cancel)":"var(--ok-tx)";
+$("cavToggleBtn").textContent=un?"Mark Available":"Mark Not Available"}
+function courtBlocks(){return Array.isArray(CAV_COURT.blocks)?CAV_COURT.blocks:[]}
+function renderCavSlots(){const wrap=$("cavSlots"),d=$("cavDate").value;const acts=document.querySelector(".cav-slot-actions");
+if(!d){wrap.innerHTML='<div class="cav-empty">Pick a date first.</div>';$("cavAddBlock").disabled=!0;acts&&(acts.style.display="none");return}
+acts&&(acts.style.display="flex");
+const blocked=new Set();courtBlocks().forEach(b=>{if(b.date===d)(b.slots||[]).forEach(sl=>blocked.add(sl))});
+wrap.innerHTML="";buildSlots().forEach(sl=>{const el=document.createElement("div");
+const isBlocked=blocked.has(sl.key);el.className="cav-slot"+(isBlocked?" taken":"");
+el.textContent=hourLabel(sl.mins);el.dataset.k=sl.key;
+if(!isBlocked)el.onclick=()=>{el.classList.toggle("on");syncAddBtn()};
+wrap.appendChild(el)});syncAddBtn()}
+function syncAddBtn(){const any=$("cavSlots").querySelectorAll(".cav-slot.on").length>0;$("cavAddBlock").disabled=!($("cavDate").value&&any)}
+function cavSelectAllSlots(on){$("cavSlots").querySelectorAll(".cav-slot:not(.taken)").forEach(el=>{el.classList.toggle("on",on)});syncAddBtn()}
+function renderBulkSlots(){const wrap=$("cavBulkSlots");wrap.innerHTML="";buildSlots().forEach(sl=>{const el=document.createElement("div");
+el.className="cav-slot";el.textContent=hourLabel(sl.mins);el.dataset.k=sl.key;
+el.onclick=()=>{el.classList.toggle("on");syncBulkBtns()};wrap.appendChild(el)});syncBulkBtns()}
+function bulkSelectAll(on){$("cavBulkSlots").querySelectorAll(".cav-slot").forEach(el=>el.classList.toggle("on",on));syncBulkBtns()}
+function syncBulkBtns(){const any=$("cavBulkSlots").querySelectorAll(".cav-slot.on").length>0;
+const ok=$("cavBulkStart").value&&$("cavBulkEnd").value&&any;
+$("cavBulkBlock").disabled=!ok;$("cavBulkUnblock").disabled=!ok}
+function bulkDates(){const s=$("cavBulkStart").value,e=$("cavBulkEnd").value;if(!s||!e)return[];
+const out=[],d=new Date(s+"T00:00:00"),end=new Date(e+"T00:00:00");if(end<d)return[];
+let guard=0;while(d<=end&&guard<400){out.push(d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()));d.setDate(d.getDate()+1);guard++}return out}
+async function cavBulkBlock(){const dates=bulkDates();if(!dates.length)return toast("Check your dates.");
+const picked=[...$("cavBulkSlots").querySelectorAll(".cav-slot.on")].map(el=>el.dataset.k);if(!picked.length)return;
+const bl=courtBlocks().slice();dates.forEach(d=>{let ex=bl.find(b=>b.date===d);
+if(ex)ex.slots=[...new Set([...(ex.slots||[]),...picked])].sort();else bl.push({date:d,slots:picked.slice().sort()})});
+const ok=await saveCourtField({blocks:bl});if(ok){renderCavSlots(),renderCavBlocks();toast("Blocked "+dates.length+" day(s).")}}
+async function cavBulkUnblock(){const dates=new Set(bulkDates());if(!dates.size)return toast("Check your dates.");
+const picked=new Set([...$("cavBulkSlots").querySelectorAll(".cav-slot.on")].map(el=>el.dataset.k));if(!picked.size)return;
+let bl=courtBlocks().map(b=>{if(!dates.has(b.date))return b;
+return{date:b.date,slots:(b.slots||[]).filter(sl=>!picked.has(sl))}}).filter(b=>(b.slots||[]).length>0);
+const ok=await saveCourtField({blocks:bl});if(ok){renderCavSlots(),renderCavBlocks();toast("Unblocked "+dates.size+" day(s).")}}
+function renderCalendar(){
 $("calMonth").textContent=["January","February","March","April","May","June","July","August","September","October","November","December"][viewMonth]+" "+viewYear
 ;const t=$("calGrid");t.innerHTML="",["SUN","MON","TUE","WED","THU","FRI","SAT"].forEach(e=>{
 const n=document.createElement("div");n.className="dow",n.textContent=e,t.appendChild(n)})
@@ -421,7 +546,20 @@ $("signinBtn").onclick=async()=>{const t=$("adminName").value.trim(),e=$("adminP
 $("adminPin").addEventListener("keydown",t=>{"Enter"===t.key&&$("signinBtn").click()}),
 $("signoutBtn").onclick=()=>auth.signOut(),$("prevMonth").onclick=()=>{viewMonth--,viewMonth<0&&(viewMonth=11,
 viewYear--),renderCalendar()},$("nextMonth").onclick=()=>{viewMonth++,viewMonth>11&&(viewMonth=0,viewYear++),
-renderCalendar()},$("todayBtn").onclick=()=>{const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),
+renderCalendar()},
+$("courtModalClose").onclick=()=>closeCourtModal(),
+$("courtOverlay").onclick=e=>{e.target===$("courtOverlay")&&closeCourtModal()},
+$("cavToggleBtn").onclick=()=>cavToggleOverall(),
+$("cavAddBlock").onclick=()=>cavAddBlock(),
+$("cavSelectAll").onclick=()=>cavSelectAllSlots(!0),
+$("cavClearAll").onclick=()=>cavSelectAllSlots(!1),
+$("cavBulkSelectAll").onclick=()=>bulkSelectAll(!0),
+$("cavBulkClearAll").onclick=()=>bulkSelectAll(!1),
+$("cavBulkBlock").onclick=()=>cavBulkBlock(),
+$("cavBulkUnblock").onclick=()=>cavBulkUnblock(),
+$("cavBulkStart").onchange=()=>syncBulkBtns(),
+$("cavBulkEnd").onchange=()=>syncBulkBtns(),
+$("cavDate").onchange=()=>renderCavSlots(),$("todayBtn").onclick=()=>{const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),
 selectedDate=dstr(t),renderCalendar(),watchDay()},$("tabList").onclick=()=>setView("list"),
 $("tabGrid").onclick=()=>setView("grid"),$("detailOverlay").onclick=t=>{
 t.target===$("detailOverlay")&&$("detailOverlay").classList.remove("show")
