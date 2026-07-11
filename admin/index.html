@@ -369,7 +369,7 @@ document.title=n+" — Admin",(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;[$(
 console.warn(t)}}function adminSlug(t){return String(t||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"")}
 function adminEmail(t){const e=adminSlug(t);return e?e+"@courtadmin.app":""}async function startDashboard(){
 await loadBase();const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),selectedDate=dstr(t),
-renderCalendar(),renderSchedHead(),watchDay(),watchPending(),renderCourtStatus()}function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),renderCourtStatus(),watchCourts()}function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 var IC_COURT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>';
 function renderCourtStatus(){var e=$("courtStatus");if(!e)return;if(!COURTS.length){e.innerHTML='<div class="empty" style="color:var(--muted);font-size:13px">No courts set up yet.</div>';return}
 e.innerHTML="";COURTS.forEach(function(o){var un="unavailable"===String(o.status||"").toLowerCase();
@@ -458,7 +458,14 @@ const n=document.createElement("div");n.className="dow",n.textContent=e,t.append
 ;for(let n=0;n<e;n++)t.appendChild(document.createElement("div"));for(let e=1;e<=n;e++){
 const n=dstr(new Date(viewYear,viewMonth,e)),a=document.createElement("div");a.className="cal-day",a.textContent=e,
 n===selectedDate&&a.classList.add("active"),a.onclick=()=>{selectedDate=n,renderCalendar(),watchDay()},t.appendChild(a)}
-}function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
+}function watchCourts(){if(window.__courtsUnsub)window.__courtsUnsub();
+window.__courtsUnsub=db.collection("courts").onSnapshot(function(snap){
+var arr=[];snap.forEach(function(d){var t=d.data();if(!1!==t.active)arr.push({id:d.id,name:t.name||"Court",type:t.type||"",status:t.status||"",blocks:Array.isArray(t.blocks)?t.blocks:[]})});
+arr.sort(function(a,b){return a.name.localeCompare(b.name)});COURTS=arr;
+try{renderCourtStatus()}catch(e){}
+if(CAV_COURT){var fresh=COURTS.find(function(c){return c.id===CAV_COURT.id});if(fresh){CAV_COURT=fresh;try{renderCavStatus();renderCavBlocks();if($("cavDate").value)renderCavSlots()}catch(e){}}}
+},function(e){console.warn("courts watch:",e)})}
+function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
 dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async t=>{DAY=[],t.forEach(t=>DAY.push({
 id:t.id,...t.data()})),DAY.sort((t,e)=>{const n=t.createdAt&&t.createdAt.seconds||0
 ;return(e.createdAt&&e.createdAt.seconds||0)-n});const e=orderGroups(DAY.filter(t=>"cancelled"!==t.status));let n=0,a=0
