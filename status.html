@@ -135,11 +135,12 @@ ticker&&clearInterval(ticker),tick(),"pending"===combined&&(ticker=setInterval(t
 if("pending"!==combined)return void(ticker&&(clearInterval(ticker),ticker=null));let t=deadline-Date.now();t<0&&(t=0)
 ;const e=Math.floor(t/1e3);$("tH").textContent=pad2(Math.floor(e/3600)),$("tM").textContent=pad2(Math.floor(e%3600/60)),
 $("tS").textContent=pad2(e%60),
-t<=0&&($("timerHelp").textContent="The hold time has passed and your booking is still pending. Please contact us to follow up.",
+t<=0&&($("timerHelp").textContent="The hold time has passed and your booking is still pending. We'll confirm it once your payment is verified.",
 updateContact(!0),ticker&&(clearInterval(ticker),ticker=null))}function updateContact(t){
 const e=$("contactBox"),n=t||"pending"===combined&&deadline&&Date.now()>=deadline
-;"pending"===combined&&n&&SETTINGS.facebookLink?(e.style.display="block",
-e.innerHTML='<strong>Need help?</strong> Message us to follow up on your booking.<a class="fb-help-btn" href="'+esc(SETTINGS.facebookLink)+'" target="_blank" rel="noopener">Message us on Facebook</a>'):"pending"===combined&&n&&SETTINGS.contactNumber?(e.style.display="block",
+;const FB_LINK=SETTINGS.facebookLink||"https://www.facebook.com/profile.php?id=61589844632164"
+;"pending"===combined&&n&&FB_LINK?(e.style.display="block",
+e.innerHTML='<strong>Need help?</strong> Message us to follow up on your booking.<a class="fb-help-btn" href="'+esc(FB_LINK)+'" target="_blank" rel="noopener">Message us on Facebook</a>'):"pending"===combined&&n&&SETTINGS.contactNumber?(e.style.display="block",
 e.innerHTML='<strong>Need help?</strong> Contact us to follow up on your booking.<span class="num">📞 '+SETTINGS.contactNumber+"</span>"):"pending"===combined?(e.style.display="block",
 e.innerHTML="<strong>Need help?</strong> A way to reach us will appear when the timer reaches zero."):e.style.display="none"
 }$("copyBtn").onclick=()=>{
