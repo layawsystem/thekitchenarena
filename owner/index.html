@@ -914,7 +914,7 @@ $("appFoot").textContent="© "+(new Date).getFullYear()+" "+(SETTINGS&&SETTINGS.
 $("datePill").textContent=(new Date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"
 })+" ("+(new Date).toLocaleDateString("en-US",{weekday:"short"})+")"}async function startDashboard(){
 SETTINGS||await loadBase();const e=today();viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),
-renderCalendar(),renderSchedHead(),watchDay(),watchPending(),openSection("dashboard")}function setActiveNav(e){
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),watchCourts(),openSection("dashboard")}function setActiveNav(e){
 document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")),e&&e.classList.add("active")}
 function closeSidebar(){$("sidebar").classList.remove("open"),$("appBackdrop").classList.remove("show")}
 auth&&auth.onAuthStateChanged(async e=>{if($("boot").style.display="none",e){let t=!1;try{
@@ -1109,7 +1109,14 @@ const n=document.createElement("div");n.className="dow",n.textContent=t,e.append
 ;for(let n=0;n<t;n++)e.appendChild(document.createElement("div"));for(let t=1;t<=n;t++){
 const n=dstr(new Date(viewYear,viewMonth,t)),a=document.createElement("div");a.className="cal-day",a.textContent=t,
 n===selectedDate&&a.classList.add("active"),a.onclick=()=>{selectedDate=n,renderCalendar(),watchDay()},e.appendChild(a)}
-}function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
+}function watchCourts(){if(window.__courtsUnsub)window.__courtsUnsub();
+window.__courtsUnsub=db.collection("courts").onSnapshot(function(snap){
+var arr=[];snap.forEach(function(d){var t=d.data();if(!1!==t.active)arr.push({id:d.id,name:t.name||"Court",type:t.type||"",status:t.status||(t.maintenance?"maintenance":""),blocks:Array.isArray(t.blocks)?t.blocks:[]})});
+arr.sort(function(a,b){return a.name.localeCompare(b.name)});COURTS=arr;
+try{renderCourtStatus()}catch(e){}
+if(CAV_COURT){var fresh=COURTS.find(function(c){return c.id===CAV_COURT.id});if(fresh){CAV_COURT=fresh;try{renderCavStatus();renderCavBlocks();if($("cavDate").value)renderCavSlots()}catch(e){}}}
+},function(e){console.warn("courts watch:",e)})}
+function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
 dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async e=>{DAY=[],e.forEach(e=>DAY.push({
 id:e.id,...e.data()})),DAY.sort((e,t)=>{const n=e.createdAt&&e.createdAt.seconds||0
 ;return(t.createdAt&&t.createdAt.seconds||0)-n});const t=orderGroups(DAY.filter(e=>"cancelled"!==e.status));let n=0,a=0
