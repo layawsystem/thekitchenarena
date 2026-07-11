@@ -335,7 +335,7 @@ db.collection("promos").get().catch(()=>null)
 ;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||"",blocks:Array.isArray(t.blocks)?t.blocks:[]})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
 !COURTS.length)return void showError("No active courts found.");RATES=[];if(rr)rr.forEach(e=>{const t=e.data();let o=hm2min(t.start),n=hm2min(t.end);n<=o&&(n+=1440),RATES.push({start:o,end:n,
 rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start);PROMOS=[];if(pp)pp.forEach(e=>PROMOS.push({id:e.id,...e.data()}));applyTheme(),renderBrand(),startHero(),renderFooterLinks();const o=today();viewYear=o.getFullYear(),
-viewMonth=o.getMonth(),selectedDate=dstr(o),renderCalendar(),renderGridHead(),watchAvailability(),updateSummary(),
+viewMonth=o.getMonth(),selectedDate=dstr(o),renderCalendar(),renderGridHead(),watchAvailability(),watchCourtsLive(),updateSummary(),
 window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",$("app").style.display="block"}catch(e){console.error(e),
 showError("timeout"===e.message?"Couldn't connect. If you opened this from Messenger or Facebook, tap ••• and choose “Open in browser”, then try again.":"Failed to load data: "+(e.message||e))}}function applyTheme(){
 const e=document.documentElement.style,t=SETTINGS.colorPrimary||"#0D2863",o=SETTINGS.colorAccent||"#0D2863"
@@ -391,7 +391,13 @@ const e=Number(SETTINGS.openHour??8),t=Number(SETTINGS.closeHour??22),o=Number(S
 return Number(SETTINGS.ratePerHour??0)}function slotCost(e){return Number(SETTINGS.slotMinutes??60)/60*rateForSlot(e)}
 function renderGridHead(){const e=$("gridHead");e.innerHTML="";const t=document.createElement("th")
 ;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const o=document.createElement("th");o.textContent=t.name,
-e.appendChild(o)})}function watchAvailability(){db&&(availUnsub&&(availUnsub(),availUnsub=null),
+e.appendChild(o)})}function watchCourtsLive(){if(window.__courtsUnsub)window.__courtsUnsub();
+window.__courtsUnsub=db.collection("courts").onSnapshot(function(snap){
+var arr=[];snap.forEach(function(d){var t=d.data();if(!1!==t.active)arr.push({id:d.id,name:t.name||"Court",status:t.status||"",blocks:Array.isArray(t.blocks)?t.blocks:[]})});
+arr.sort(function(a,b){return a.name.localeCompare(b.name)});COURTS=arr;
+try{renderGridHead();renderGrid()}catch(e){}
+},function(e){console.warn("courts watch:",e)})}
+function watchAvailability(){db&&(availUnsub&&(availUnsub(),availUnsub=null),
 availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{bookedSet=new Set,
 pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
 ;if("reserved"===t.status){const hu=t.holdUntil&&t.holdUntil.toMillis?t.holdUntil.toMillis():0
