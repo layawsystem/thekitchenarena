@@ -136,7 +136,8 @@ if("pending"!==combined)return void(ticker&&(clearInterval(ticker),ticker=null))
 ;const e=Math.floor(t/1e3);$("tH").textContent=pad2(Math.floor(e/3600)),$("tM").textContent=pad2(Math.floor(e%3600/60)),
 $("tS").textContent=pad2(e%60),
 t<=0&&($("timerHelp").textContent="The hold time has passed and your booking is still pending. We'll confirm it once your payment is verified.",
-updateContact(!0),ticker&&(clearInterval(ticker),ticker=null))}function updateContact(t){
+updateContact(!0),ticker&&(clearInterval(ticker),ticker=null))}function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]})}
+function updateContact(t){
 const e=$("contactBox"),n=t||"pending"===combined&&deadline&&Date.now()>=deadline
 ;const FB_LINK=SETTINGS.facebookLink||"https://www.facebook.com/profile.php?id=61589844632164"
 ;"pending"===combined&&n&&FB_LINK?(e.style.display="block",
