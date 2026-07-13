@@ -174,6 +174,8 @@ table.sched td.book-cell .stt{font-size:10px;letter-spacing:.08em;font-weight:80
 table.sched td.book-cell.confirmed .stt{color:var(--conf-tx)}
 table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .scell-open{background:var(--open-bg);color:var(--open-tx);border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
+.scell-blocked{background:#3a2416;color:#E0954A;border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
+.scell-na{background:var(--past-bg,#1b2430);color:var(--past-tx,#7C8DA6);border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
 .search{width:100%;max-width:340px}
 .cust-row{display:flex;align-items:center;gap:13px;padding:13px 14px;border:1px solid var(--line);border-radius:13px;margin-bottom:9px;cursor:pointer;transition:border-color .14s}
 .cust-row:hover{border-color:var(--green)}
@@ -1114,6 +1116,9 @@ window.__courtsUnsub=db.collection("courts").onSnapshot(function(snap){
 var arr=[];snap.forEach(function(d){var t=d.data();if(!1!==t.active)arr.push({id:d.id,name:t.name||"Court",type:t.type||"",status:t.status||(t.maintenance?"maintenance":""),blocks:Array.isArray(t.blocks)?t.blocks:[]})});
 arr.sort(function(a,b){return a.name.localeCompare(b.name)});COURTS=arr;
 try{renderCourtStatus()}catch(e){}
+/* Blocks affect the schedule grid too — re-render it so blocked slots
+   stop showing as Open while the page is open. */
+try{renderSchedHead();renderGrid()}catch(e){}
 if(CAV_COURT){var fresh=COURTS.find(function(c){return c.id===CAV_COURT.id});if(fresh){CAV_COURT=fresh;try{renderCavStatus();renderCavBlocks();if($("cavDate").value)renderCavSlots()}catch(e){}}}
 },function(e){console.warn("courts watch:",e)})}
 function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
@@ -1143,19 +1148,24 @@ e.appendChild(l)
 }),e.querySelectorAll(".act").forEach(e=>e.onclick=()=>doAction(e.getAttribute("data-key"),e.getAttribute("data-act")))):e.innerHTML='<div class="empty">No bookings for this date.</div>'
 }function renderSchedHead(){const e=$("schedHead");e.innerHTML="";const t=document.createElement("th")
 ;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const n=document.createElement("th");n.textContent=t.name,
-e.appendChild(n)})}function renderGrid(){if(!SETTINGS||!COURTS.length)return void($("schedBody").innerHTML="")
+e.appendChild(n)})}function isCourtBlocked(court,date,slotKey){return!!court&&Array.isArray(court.blocks)&&court.blocks.some(b=>b&&b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}
+function renderGrid(){if(!SETTINGS||!COURTS.length)return void($("schedBody").innerHTML="")
 ;const e=buildSlots(),t=Number(SETTINGS.slotMinutes??60),n={};DAY.forEach(e=>{
 "cancelled"!==e.status&&(e.slots||[]).forEach(t=>n[e.court+"|"+t]=e)});const a={},o={};COURTS.forEach(t=>{a[t.name]={},
 o[t.name]=new Set;let s=0;for(;s<e.length;){const r=n[t.name+"|"+e[s].key];if(!r){s++;continue}let i=s+1
 ;for(;i<e.length;){const a=n[t.name+"|"+e[i].key];if(!a||a.id!==r.id)break;i++}a[t.name][s]={booking:r,len:i-s}
 ;for(let e=s+1;e<i;e++)o[t.name].add(e);s=i}});const s=$("schedBody");s.innerHTML="",e.forEach((e,n)=>{
 const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
-i.textContent=hourLabel(e.mins)+"-"+hourLabel(e.mins+t),r.appendChild(i),COURTS.forEach(e=>{if(o[e.name].has(n))return
+i.textContent=hourLabel(e.mins)+"-"+hourLabel(e.mins+t),r.appendChild(i);const SLOTKEY=e.key;COURTS.forEach(e=>{if(o[e.name].has(n))return
 ;const t=a[e.name][n];if(t){const e=t.booking,n=e.status||"pending",a=document.createElement("td")
 ;a.className="cell book-cell "+n,
 a.rowSpan=t.len,a.innerHTML='<div class="nm">'+esc(nameOf(e))+'</div><div class="stt">'+n.toUpperCase()+"</div>",
-a.onclick=()=>openDetail(e),r.appendChild(a)}else{const e=document.createElement("td");e.className="cell"
-;const t=document.createElement("div");t.className="scell-open",t.textContent="Open",e.appendChild(t),r.appendChild(e)}
+a.onclick=()=>openDetail(e),r.appendChild(a)}else{const t=document.createElement("td");t.className="cell"
+;const o=document.createElement("div");
+if("unavailable"===String(e.status||"").toLowerCase()){o.className="scell-na",o.textContent="Not Available"}
+else if(isCourtBlocked(e,selectedDate,SLOTKEY)){o.className="scell-blocked",o.textContent="Blocked"}
+else{o.className="scell-open",o.textContent="Open"}
+t.appendChild(o),r.appendChild(t)}
 }),s.appendChild(r)})}function openDetail(e){
 const t=e.bookingId?DAY.filter(t=>t.bookingId===e.bookingId&&"cancelled"!==t.status):[e],n=t.length?t:[e],a=groupStatus(n),o=[...new Set(n.map(e=>e.court))].sort().join(", "),s=n.reduce((e,t)=>e+Number(t.amount||0),0),r=n[0],i=r.bookingId||r.id,c=r.bookingId||r.id,d=n.map(e=>(e.slots||[]).slice().sort().join(",")),l=d.every(e=>e===d[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(r.slots)+"</div>":n.slice().sort((e,t)=>String(e.court).localeCompare(String(t.court))).map(e=>'<div class="mrow"><span>'+esc(e.court)+":</span> "+slotsRange(e.slots)+"</div>").join("")
 ;let u=""
