@@ -205,7 +205,7 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <h1 id="bizName">Loading…</h1>
 </div> </div> <p class="subline" id="bizTagline">
 </p> <div id="heroWrap" class="hero-wrap" style="display:none">
-</div> <div id="loading" class="loading">Connecting to the booking system…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6">Taking longer than usual. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) for the best experience.<br><br><button id="retryLoad" style="margin-top:8px;background:var(--teal);color:#fff;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div> <div id="errorBox" class="error-box" style="display:none">
+</div> <div id="loading" class="loading">Connecting to the booking system…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6">Taking longer than usual. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) for the best experience.<br><br><button id="retryLoad" style="margin-top:8px;background:var(--teal,#0B97A6);color:#fff;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div> <div id="errorBox" class="error-box" style="display:none">
 </div> <div id="app" style="display:none"> <div class="grid-layout"> <div> <div class="card"> <h3>Select a date</h3> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
 </div> <div class="cal-grid" id="calGrid">
 </div> <p class="cal-note" id="calNote">
@@ -504,8 +504,8 @@ catch(e){console.warn("release failed",e)}}function paymentOptions(){const e=[{k
 name:SETTINGS.gcashName,number:SETTINGS.gcashNumber,qr:SETTINGS.gcashQrUrl},{key:"Maya",label:"Maya",
 name:SETTINGS.mayaName,number:SETTINGS.mayaNumber,qr:SETTINGS.mayaQrUrl},{key:"Bank",label:"Bank Transfer",
 name:SETTINGS.bankName,number:SETTINGS.bankNumber,qr:SETTINGS.bankQrUrl
-}],t=Array.isArray(SETTINGS.paymentMethods)?SETTINGS.paymentMethods:null
-;return e.filter(e=>t?t.includes(e.key):e.number||e.qr)}function renderPayMethods(){
+}],t=Array.isArray(SETTINGS.paymentMethods)?SETTINGS.paymentMethods.map(x=>String(x).toLowerCase()):null
+;return e.filter(e=>t?t.includes(e.key.toLowerCase()):e.number||e.qr)}function renderPayMethods(){
 const e=paymentOptions(),t=$("payMethods");t.innerHTML="",chosenPayment=null,$("payDetail").style.display="none",
 e.length?e.forEach(e=>{const o=document.createElement("div");o.className="pay-opt",o.textContent=e.label,o.onclick=()=>{
 chosenPayment=e.key,[...t.children].forEach(e=>e.classList.remove("on")),o.classList.add("on"),showPayDetail(e)},
