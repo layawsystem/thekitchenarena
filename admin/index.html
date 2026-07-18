@@ -90,6 +90,7 @@ input:focus{outline:2px solid var(--green);border-color:var(--green)}
 .act-confirm{background:var(--green);color:#fff}
 .act-confirm:hover{background:var(--green-d)}
 .act-cancel{background:var(--elev);color:var(--cancel);border:1px solid #6e2a31}
+.act-delete{background:#5c1a20;color:#ffd7db;border:1px solid #7a2530}
 .act-cancel:hover{background:#3e1a20}
 .table-scroll{overflow-x:auto}
 table.sched{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}
@@ -412,7 +413,7 @@ document.title=n+" — Admin",(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;[$(
 console.warn(t)}}function adminSlug(t){return String(t||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"")}
 function adminEmail(t){const e=adminSlug(t);return e?e+"@courtadmin.app":""}async function startDashboard(){
 await loadBase();const t=today();viewYear=t.getFullYear(),viewMonth=t.getMonth(),selectedDate=dstr(t),
-renderCalendar(),renderSchedHead(),watchDay(),watchPending(),renderCourtStatus(),watchCourts()}function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),renderCourtStatus(),watchCourts(),startExpiryRefresh()}function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 var IC_COURT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>';
 function renderCourtStatus(){var e=$("courtStatus");if(!e)return;if(!COURTS.length){e.innerHTML='<div class="empty" style="color:var(--muted);font-size:13px">No courts set up yet.</div>';return}
 e.innerHTML="";COURTS.forEach(function(o){var un="unavailable"===String(o.status||"").toLowerCase();
@@ -568,7 +569,7 @@ if(CAV_COURT){var fresh=COURTS.find(function(c){return c.id===CAV_COURT.id});if(
 function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
 dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async t=>{DAY=[],t.forEach(t=>DAY.push({
 id:t.id,...t.data()})),DAY.sort((t,e)=>{const n=t.createdAt&&t.createdAt.seconds||0
-;return(e.createdAt&&e.createdAt.seconds||0)-n});const e=orderGroups(DAY.filter(t=>"cancelled"!==t.status));let n=0,a=0
+;return(e.createdAt&&e.createdAt.seconds||0)-n});const e=orderGroups(DAY.filter(t=>isLiveBooking(t)));let n=0,a=0
 ;e.forEach(t=>{const e=groupStatus(t);"pending"===e?n++:"confirmed"===e&&a++});let o=0;DAY.forEach(t=>{
 "confirmed"===t.status&&(o+=Number(t.amount||0))}),$("stPending").textContent=n,$("stConfirmed").textContent=a,
 $("stRevenue").textContent=peso(o),await ensureContacts(DAY),renderView()},t=>{console.error(t),
@@ -581,24 +582,38 @@ n.textContent=e>99?"99+":e):n.style.display="none",await ensureContacts(PENDING)
 function setView(t){currentView=t,$("tabList").classList.toggle("on","list"===t),
 $("tabGrid").classList.toggle("on","grid"===t),$("listView").style.display="list"===t?"block":"none",
 $("gridView").style.display="grid"===t?"block":"none",renderView()}function renderView(){
-"list"===currentView?renderList():renderGrid()}function renderList(){const t=$("listView");t.innerHTML=""
-;const e=orderGroups(DAY.filter(t=>"cancelled"!==t.status));e.length?(e.forEach(e=>{
+"list"===currentView?renderList():renderGrid()}
+function recountStats(){if(!Array.isArray(DAY))return;const g=orderGroups(DAY.filter(t=>isLiveBooking(t)));
+let n=0,a=0;g.forEach(t=>{const e=groupStatus(t);"pending"===e?n++:"confirmed"===e&&a++});
+let o=0;DAY.forEach(t=>{"confirmed"===t.status&&(o+=Number(t.amount||0))});
+$("stPending")&&($("stPending").textContent=n);$("stConfirmed")&&($("stConfirmed").textContent=a);
+$("stRevenue")&&($("stRevenue").textContent=peso(o))}
+function startExpiryRefresh(){if(window.__expiryTimer)clearInterval(window.__expiryTimer);
+window.__expiryTimer=setInterval(function(){try{recountStats();renderView()}catch(e){}},3e4)}
+function renderList(){const t=$("listView");t.innerHTML=""
+;const e=orderGroups(DAY.filter(t=>isLiveBooking(t)));e.length?(e.forEach(e=>{
 const n=groupStatus(e),a=[...new Set(e.map(t=>t.court))].sort(),o=e.reduce((t,e)=>t+Number(e.amount||0),0),s=e[0],i=groupKey(e),c=e.map(t=>(t.slots||[]).slice().sort().join(","))
 ;let r=c.every(t=>t===c[0])?'<div class="times">'+slotsRange(s.slots)+"</div>":e.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="times"><strong>'+t.court+":</strong> "+slotsRange(t.slots)+"</div>").join(""),l=""
 ;"pending"===n?l='<button class="act act-confirm" data-key="'+i+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel</button>':"confirmed"===n&&(l='<button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel booking</button>')
-;const d=document.createElement("div");d.className="booking";const u=emailOf(s)
+;const d=document.createElement("div");d.className="booking";d.style.cursor="pointer";d.dataset.key=i;const u=emailOf(s)
 ;d.innerHTML='<div class="row1"><span class="court">'+a.join(", ")+'</span><span class="badge '+n+'">'+n+'</span><span class="amt">'+peso(o)+"</span></div>"+r+'<div class="who"><strong>'+nameOf(s)+"</strong> · "+contactOf(s)+(u?" · "+u:"")+"</div>"+(l?'<div class="actions">'+l+"</div>":""),
 t.appendChild(d)
-}),t.querySelectorAll(".act").forEach(t=>t.onclick=()=>doAction(t.getAttribute("data-key"),t.getAttribute("data-act")))):t.innerHTML='<div class="empty">No bookings for this date.</div>'
+}),t.querySelectorAll(".act").forEach(t=>t.onclick=()=>doAction(t.getAttribute("data-key"),t.getAttribute("data-act"))),
+t.querySelectorAll(".booking").forEach(card=>card.onclick=ev=>{if(ev.target.closest(".act"))return;
+const grp=DAY.filter(b=>(b.bookingId||b.id)===card.dataset.key);if(grp.length)openDetail(grp[0])})):t.innerHTML='<div class="empty">No bookings for this date.</div>'
 }function buildSlots(){
 const t=Number(SETTINGS.openHour??8),e=Number(SETTINGS.closeHour??22),n=Number(SETTINGS.slotMinutes??60),a=[]
 ;for(let o=60*t;o+n<=60*e;o+=n)a.push({key:pad2(Math.floor(o/60))+":"+pad2(o%60),mins:o});return a}
 function renderSchedHead(){const t=$("schedHead");t.innerHTML="";const e=document.createElement("th")
 ;e.textContent="Time",t.appendChild(e),COURTS.forEach(e=>{const n=document.createElement("th");n.textContent=e.name,
-t.appendChild(n)})}function isCourtBlocked(court,date,slotKey){return!!court&&Array.isArray(court.blocks)&&court.blocks.some(b=>b&&b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}
+t.appendChild(n)})}function bkHoldMs(e){return e&&e.holdUntil&&e.holdUntil.toMillis?e.holdUntil.toMillis():0}
+function isLiveBooking(e){if(!e||"cancelled"===e.status)return!1;
+if("reserved"===e.status){const hu=bkHoldMs(e);return!(!hu||hu<Date.now())}return!0}
+function isCourtBlocked(court,date,slotKey){return!!court&&Array.isArray(court.blocks)&&court.blocks.some(b=>b&&b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}
+function bkRank(e){return"confirmed"===e.status?3:"pending"===e.status?2:"reserved"===e.status?1:0}
 function renderGrid(){if(!SETTINGS||!COURTS.length)return void($("schedBody").innerHTML="")
 ;const t=buildSlots(),e=Number(SETTINGS.slotMinutes??60),n={};DAY.forEach(t=>{
-"cancelled"!==t.status&&(t.slots||[]).forEach(e=>n[t.court+"|"+e]=t)});const a={},o={};COURTS.forEach(e=>{a[e.name]={},
+isLiveBooking(t)&&(t.slots||[]).forEach(e=>{const k=t.court+"|"+e;if(!n[k]||bkRank(t)>bkRank(n[k]))n[k]=t})});const a={},o={};COURTS.forEach(e=>{a[e.name]={},
 o[e.name]=new Set;let s=0;for(;s<t.length;){const i=n[e.name+"|"+t[s].key];if(!i){s++;continue}let c=s+1
 ;for(;c<t.length;){const a=n[e.name+"|"+t[c].key];if(!a||a.id!==i.id)break;c++}a[e.name][s]={booking:i,len:c-s}
 ;for(let t=s+1;t<c;t++)o[e.name].add(t);s=c}});const s=$("schedBody");s.innerHTML="",t.forEach((t,n)=>{
@@ -617,6 +632,7 @@ e.appendChild(c),i.appendChild(e)}
 const e=t.bookingId?DAY.filter(e=>e.bookingId===t.bookingId&&"cancelled"!==e.status):[t],n=e.length?e:[t],a=groupStatus(n),o=[...new Set(n.map(t=>t.court))].sort().join(", "),s=n.reduce((t,e)=>t+Number(e.amount||0),0),i=n[0],c=i.bookingId||i.id,r=i.bookingId||i.id,l=n.map(t=>(t.slots||[]).slice().sort().join(",")),d=l.every(t=>t===l[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(i.slots)+"</div>":n.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="mrow"><span>'+t.court+":</span> "+slotsRange(t.slots)+"</div>").join("")
 ;let u=""
 ;"pending"===a?u='<button class="act act-confirm" data-key="'+c+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+c+'" data-act="cancel">Cancel</button>':"confirmed"===a&&(u='<button class="act act-cancel" data-key="'+c+'" data-act="cancel">Cancel booking</button>')
+;u+='<button class="act act-delete" data-key="'+c+'" data-act="delete">Delete</button>'
 ;const m=i.bookingId&&CONTACTS[i.bookingId]&&CONTACTS[i.bookingId].note?CONTACTS[i.bookingId].note:"",h=i.handledBy||i.bookingId&&CONTACTS[i.bookingId]&&CONTACTS[i.bookingId].handledBy||""
 ;$("detailModal").innerHTML="<h3>"+o+' · <span class="badge '+a+'">'+a+'</span></h3><div class="mrow"><span>Date:</span> '+niceDate(i.date)+"</div>"+d+'<div class="mrow"><span>Booker:</span> <strong>'+nameOf(i)+'</strong></div><div class="mrow"><span>Contact:</span> '+contactOf(i)+"</div>"+(emailOf(i)?'<div class="mrow"><span>Email:</span> '+emailOf(i)+"</div>":"")+(i.paymentMethod?'<div class="mrow"><span>Payment:</span> '+i.paymentMethod+"</div>":"")+(h?'<div class="mrow"><span>Handled by:</span> '+h+"</div>":"")+'<div class="mrow"><span>Total:</span> <strong>'+peso(s)+'</strong></div><div class="note-box"><label class="note-label">Note</label><textarea id="noteInput" class="note-input" placeholder="Add a private note about this booking…">'+m+'</textarea><button class="mini-btn" id="saveNoteBtn" data-id="'+(i.bookingId||"")+'">Save note</button><span class="note-msg" id="noteMsg"></span></div><div class="modal-actions"><button class="btn-ghost" id="detailClose">Close</button><button class="btn-ghost" id="viewReceiptBtn">View receipt</button></div>'+(u?'<div class="modal-actions">'+u+"</div>":""),
 $("detailOverlay").classList.add("show"),$("detailClose").onclick=()=>$("detailOverlay").classList.remove("show"),
@@ -641,10 +657,15 @@ t.appendChild(i)
 }),t.querySelectorAll("button").forEach(t=>t.onclick=()=>doAction(t.getAttribute("data-key"),t.getAttribute("data-act")))
 }function closeNotif(){$("notif").classList.remove("show"),$("backdrop").classList.remove("show")}
 async function doAction(t,e){if("cancel"===e&&!confirm("Cancel this booking? The slots will reopen."))return
+;if("delete"===e&&!confirm("Are you sure you want to delete this booking? This permanently removes it and reopens the slots. This cannot be undone."))return
 ;const n=DAY.concat(PENDING);let a=[...new Set(n.filter(e=>(e.bookingId||e.id)===t||e.bookingId===t).map(t=>t.id))]
-;a.length||(a=[t]);try{const t=db.batch();a.forEach(n=>t.update(db.collection("bookings").doc(n),{
+;a.length||(a=[t]);try{const o=db.batch();
+if("delete"===e){a.forEach(id=>o.delete(db.collection("bookings").doc(id)));await o.commit();
+try{$("detailOverlay").classList.remove("show")}catch(t){}
+toast("Booking deleted.")}
+else{a.forEach(n=>o.update(db.collection("bookings").doc(n),{
 status:"confirm"===e?"confirmed":"cancelled"
-})),await t.commit(),toast("confirm"===e?"Booking confirmed.":"Booking cancelled.")}catch(t){console.error(t),
+})),await o.commit(),toast("confirm"===e?"Booking confirmed.":"Booking cancelled.")}}catch(t){console.error(t),
 toast("Could not update. Please try again.")}}function walkSlotCost(){
 return Number(SETTINGS.ratePerHour??0)*(Number(SETTINGS.slotMinutes??60)/60)}function openWalkIn(){
 SETTINGS&&COURTS.length?(walkCart.clear(),$("walkDate").textContent=niceDate(selectedDate),$("walkName").value="",
