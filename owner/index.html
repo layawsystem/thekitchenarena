@@ -158,6 +158,7 @@ to{opacity:1;transform:none}
 .act-confirm{background:var(--green);color:#fff}
 .act-confirm:hover{background:var(--green-d)}
 .act-cancel{background:var(--elev);color:var(--cancel);border:1px solid #6e2a31}
+.act-delete{background:#5c1a20;color:#ffd7db;border:1px solid #7a2530}
 .act-cancel:hover{background:#3e1a20}
 .table-scroll{overflow-x:auto}
 table.sched{width:max-content;min-width:100%;border-collapse:separate;border-spacing:0}
@@ -959,7 +960,7 @@ $("appFoot").textContent="© "+(new Date).getFullYear()+" "+(SETTINGS&&SETTINGS.
 $("datePill").textContent=(new Date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"
 })+" ("+(new Date).toLocaleDateString("en-US",{weekday:"short"})+")"}async function startDashboard(){
 SETTINGS||await loadBase();const e=today();viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),
-renderCalendar(),renderSchedHead(),watchDay(),watchPending(),watchCourts(),openSection("dashboard")}function setActiveNav(e){
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),watchCourts(),startExpiryRefresh(),openSection("dashboard")}function setActiveNav(e){
 document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")),e&&e.classList.add("active")}
 function closeSidebar(){$("sidebar").classList.remove("open"),$("appBackdrop").classList.remove("show")}
 auth&&auth.onAuthStateChanged(async e=>{if($("boot").style.display="none",e){let t=!1;try{
@@ -1221,7 +1222,7 @@ if(CAV_COURT){var fresh=COURTS.find(function(c){return c.id===CAV_COURT.id});if(
 function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
 dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async e=>{DAY=[],e.forEach(e=>DAY.push({
 id:e.id,...e.data()})),DAY.sort((e,t)=>{const n=e.createdAt&&e.createdAt.seconds||0
-;return(t.createdAt&&t.createdAt.seconds||0)-n});const t=orderGroups(DAY.filter(e=>"cancelled"!==e.status));let n=0,a=0
+;return(t.createdAt&&t.createdAt.seconds||0)-n});const t=orderGroups(DAY.filter(e=>isLiveBooking(e)));let n=0,a=0
 ;t.forEach(e=>{const t=groupStatus(e);"pending"===t?n++:"confirmed"===t&&a++});let o=0;DAY.forEach(e=>{
 "confirmed"===e.status&&(o+=Number(e.amount||0))}),$("stPending").textContent=n,$("stConfirmed").textContent=a,
 $("stRevenue").textContent=peso(o),await ensureContacts(DAY),renderView()},e=>{console.error(e),
@@ -1234,21 +1235,42 @@ n.textContent=t>99?"99+":t):n.style.display="none",$("kPending")&&($("kPending")
 await ensureContacts(PENDING),renderNotif()},e=>console.error(e))}function setView(e){currentView=e,
 $("tabList").classList.toggle("on","list"===e),$("tabGrid").classList.toggle("on","grid"===e),
 $("listView").style.display="list"===e?"block":"none",$("gridView").style.display="grid"===e?"block":"none",renderView()
-}function renderView(){"list"===currentView?renderList():renderGrid()}function renderList(){const e=$("listView")
-;e.innerHTML="";const t=orderGroups(DAY.filter(e=>"cancelled"!==e.status));t.length?(t.forEach(t=>{
+}function renderView(){"list"===currentView?renderList():renderGrid()}
+/* Expired reservations should free their slot on their own. Firestore doesn't
+   push an update when a holdUntil simply passes, so re-render on a timer to drop
+   them from the grid, list, and the day's counts. */
+function recountStats(){if(!Array.isArray(DAY))return;const groups=orderGroups(DAY.filter(e=>isLiveBooking(e)));
+let n=0,a=0;groups.forEach(g=>{const st=groupStatus(g);"pending"===st?n++:"confirmed"===st&&a++});
+let o=0;DAY.forEach(e=>{"confirmed"===e.status&&(o+=Number(e.amount||0))});
+$("stPending")&&($("stPending").textContent=n);$("stConfirmed")&&($("stConfirmed").textContent=a);
+$("stRevenue")&&($("stRevenue").textContent=peso(o))}
+function startExpiryRefresh(){if(window.__expiryTimer)clearInterval(window.__expiryTimer);
+window.__expiryTimer=setInterval(function(){try{recountStats();renderView()}catch(e){}},3e4)}
+function renderList(){const e=$("listView")
+;e.innerHTML="";const t=orderGroups(DAY.filter(e=>isLiveBooking(e)));t.length?(t.forEach(t=>{
 const n=groupStatus(t),a=[...new Set(t.map(e=>e.court))].sort(),o=t.reduce((e,t)=>e+Number(t.amount||0),0),s=t[0],r=groupKey(t),i=t.map(e=>(e.slots||[]).slice().sort().join(","))
 ;let c=i.every(e=>e===i[0])?'<div class="times">'+slotsRange(s.slots)+"</div>":t.slice().sort((e,t)=>String(e.court).localeCompare(String(t.court))).map(e=>'<div class="times"><strong>'+esc(e.court)+":</strong> "+slotsRange(e.slots)+"</div>").join(""),d=""
 ;"pending"===n?d='<button class="act act-confirm" data-key="'+r+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+r+'" data-act="cancel">Cancel</button>':"confirmed"===n&&(d='<button class="act act-cancel" data-key="'+r+'" data-act="cancel">Cancel booking</button>')
-;const l=document.createElement("div");l.className="booking";const u=emailOf(s)
+;const l=document.createElement("div");l.className="booking";l.style.cursor="pointer";l.dataset.key=r;const u=emailOf(s)
 ;l.innerHTML='<div class="row1"><span class="court">'+esc(a.join(", "))+'</span><span class="badge '+n+'">'+n+'</span><span class="amt">'+peso(o)+"</span></div>"+c+'<div class="who"><strong>'+esc(nameOf(s))+"</strong> · "+esc(contactOf(s))+(u?" · "+esc(u):"")+"</div>"+(d?'<div class="actions">'+d+"</div>":""),
 e.appendChild(l)
-}),e.querySelectorAll(".act").forEach(e=>e.onclick=()=>doAction(e.getAttribute("data-key"),e.getAttribute("data-act")))):e.innerHTML='<div class="empty">No bookings for this date.</div>'
+}),e.querySelectorAll(".act").forEach(e=>e.onclick=()=>doAction(e.getAttribute("data-key"),e.getAttribute("data-act"))),
+e.querySelectorAll(".booking").forEach(card=>card.onclick=ev=>{if(ev.target.closest(".act"))return;
+const grp=DAY.filter(b=>(b.bookingId||b.id)===card.dataset.key);if(grp.length)openDetail(grp[0])})):e.innerHTML='<div class="empty">No bookings for this date.</div>'
 }function renderSchedHead(){const e=$("schedHead");e.innerHTML="";const t=document.createElement("th")
 ;t.textContent="Time",e.appendChild(t),COURTS.forEach(t=>{const n=document.createElement("th");n.textContent=t.name,
-e.appendChild(n)})}function isCourtBlocked(court,date,slotKey){return!!court&&Array.isArray(court.blocks)&&court.blocks.some(b=>b&&b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}
+e.appendChild(n)})}/* A booking counts as "live" (holds its slot) unless it's cancelled, or it's a
+   still-reserved checkout whose 5-minute hold has already expired. Expired
+   reservations are abandoned carts — they should free the slot, same as the
+   customer booking page treats them. */
+function bkHoldMs(e){return e&&e.holdUntil&&e.holdUntil.toMillis?e.holdUntil.toMillis():0}
+function isLiveBooking(e){if(!e||"cancelled"===e.status)return!1;
+if("reserved"===e.status){const hu=bkHoldMs(e);return!(!hu||hu<Date.now())}return!0}
+function isCourtBlocked(court,date,slotKey){return!!court&&Array.isArray(court.blocks)&&court.blocks.some(b=>b&&b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}
+function bkRank(e){return"confirmed"===e.status?3:"pending"===e.status?2:"reserved"===e.status?1:0}
 function renderGrid(){if(!SETTINGS||!COURTS.length)return void($("schedBody").innerHTML="")
 ;const e=buildSlots(),t=Number(SETTINGS.slotMinutes??60),n={};DAY.forEach(e=>{
-"cancelled"!==e.status&&(e.slots||[]).forEach(t=>n[e.court+"|"+t]=e)});const a={},o={};COURTS.forEach(t=>{a[t.name]={},
+isLiveBooking(e)&&(e.slots||[]).forEach(t=>{const k=e.court+"|"+t;if(!n[k]||bkRank(e)>bkRank(n[k]))n[k]=e})});const a={},o={};COURTS.forEach(t=>{a[t.name]={},
 o[t.name]=new Set;let s=0;for(;s<e.length;){const r=n[t.name+"|"+e[s].key];if(!r){s++;continue}let i=s+1
 ;for(;i<e.length;){const a=n[t.name+"|"+e[i].key];if(!a||a.id!==r.id)break;i++}a[t.name][s]={booking:r,len:i-s}
 ;for(let e=s+1;e<i;e++)o[t.name].add(e);s=i}});const s=$("schedBody");s.innerHTML="",e.forEach((e,n)=>{
@@ -1267,6 +1289,7 @@ t.appendChild(o),r.appendChild(t)}
 const t=e.bookingId?DAY.filter(t=>t.bookingId===e.bookingId&&"cancelled"!==t.status):[e],n=t.length?t:[e],a=groupStatus(n),o=[...new Set(n.map(e=>e.court))].sort().join(", "),s=n.reduce((e,t)=>e+Number(t.amount||0),0),r=n[0],i=r.bookingId||r.id,c=r.bookingId||r.id,d=n.map(e=>(e.slots||[]).slice().sort().join(",")),l=d.every(e=>e===d[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(r.slots)+"</div>":n.slice().sort((e,t)=>String(e.court).localeCompare(String(t.court))).map(e=>'<div class="mrow"><span>'+esc(e.court)+":</span> "+slotsRange(e.slots)+"</div>").join("")
 ;let u=""
 ;"pending"===a?u='<button class="act act-confirm" data-key="'+i+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel</button>':"confirmed"===a&&(u='<button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel booking</button>')
+;u+='<button class="act act-delete" data-key="'+i+'" data-act="delete">Delete</button>'
 ;const m=r.bookingId&&CONTACTS[r.bookingId]&&CONTACTS[r.bookingId].note?CONTACTS[r.bookingId].note:"",p=r.handledBy||r.bookingId&&CONTACTS[r.bookingId]&&CONTACTS[r.bookingId].handledBy||""
 ;$("detailModal").innerHTML="<h3>"+esc(o)+' · <span class="badge '+a+'">'+a+'</span></h3><div class="mrow"><span>Date:</span> '+niceDate(r.date)+"</div>"+l+'<div class="mrow"><span>Booker:</span> <strong>'+esc(nameOf(r))+'</strong></div><div class="mrow"><span>Contact:</span> '+esc(contactOf(r))+"</div>"+(emailOf(r)?'<div class="mrow"><span>Email:</span> '+esc(emailOf(r))+"</div>":"")+(r.paymentMethod?'<div class="mrow"><span>Payment:</span> '+esc(r.paymentMethod)+"</div>":"")+(p?'<div class="mrow"><span>Handled by:</span> '+esc(p)+"</div>":"")+'<div class="mrow"><span>Total:</span> <strong>'+peso(s)+'</strong></div><div class="note-box"><label class="note-label">Note</label><textarea id="noteInput" class="note-input" placeholder="Add a private note about this booking…">'+esc(m)+'</textarea><button class="mini-btn" id="saveNoteBtn" data-id="'+esc(r.bookingId||"")+'">Save note</button><span class="note-msg" id="noteMsg"></span></div><div class="modal-actions"><button class="btn-ghost" id="detailClose">Close</button><button class="btn-ghost" id="viewReceiptBtn">View receipt</button></div>'+(u?'<div class="modal-actions">'+u+"</div>":""),
 $("detailOverlay").classList.add("show"),$("detailClose").onclick=()=>$("detailOverlay").classList.remove("show"),
@@ -1291,10 +1314,15 @@ e.appendChild(r)
 }),e.querySelectorAll("button").forEach(e=>e.onclick=()=>doAction(e.getAttribute("data-key"),e.getAttribute("data-act")))
 }function closeNotif(){$("notif").classList.remove("show"),$("backdrop").classList.remove("show")}
 async function doAction(e,t){if("cancel"===t&&!confirm("Cancel this booking? The slots will reopen."))return
+;if("delete"===t&&!confirm("Are you sure you want to delete this booking? This permanently removes it and reopens the slots. This cannot be undone."))return
 ;const n=DAY.concat(PENDING);let a=[...new Set(n.filter(t=>(t.bookingId||t.id)===e||t.bookingId===e).map(e=>e.id))]
-;a.length||(a=[e]);try{const e=db.batch();a.forEach(n=>e.update(db.collection("bookings").doc(n),{
+;a.length||(a=[e]);try{const n=db.batch();
+if("delete"===t){a.forEach(id=>n.delete(db.collection("bookings").doc(id)));await n.commit();
+try{$("detailOverlay").classList.remove("show")}catch(e){}
+toast("Booking deleted."),analyticsLoaded=!1}
+else{a.forEach(id=>n.update(db.collection("bookings").doc(id),{
 status:"confirm"===t?"confirmed":"cancelled"
-})),await e.commit(),toast("confirm"===t?"Booking confirmed.":"Booking cancelled."),analyticsLoaded=!1}catch(e){
+})),await n.commit(),toast("confirm"===t?"Booking confirmed.":"Booking cancelled."),analyticsLoaded=!1}}catch(e){
 console.error(e),toast("Could not update. Please try again.")}}function buildCustomers(){const e={}
 ;return orderGroups(ALLB).forEach(t=>{const n=groupStatus(t);if("cancelled"===n)return
 ;const a=t[0],o=a.bookingId&&CONTACTS[a.bookingId]||{},s=(o.bookerName||"").trim(),r=(o.contact||"").trim(),i=(o.email||"").trim(),c=r||i||s||"__"+a.bookingId
