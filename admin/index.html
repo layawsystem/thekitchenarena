@@ -107,6 +107,12 @@ table.sched td.book-cell .stt{font-size:10px;letter-spacing:.08em;font-weight:80
 table.sched td.book-cell.confirmed .stt{color:var(--conf-tx)}
 table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .scell-open{background:var(--open-bg);color:var(--open-tx);border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
+.slot-menu{position:fixed;z-index:9000;display:none;min-width:190px;background:var(--elev);border:1px solid var(--line);border-radius:12px;padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.45)}
+.slot-menu.show{display:block}
+.slot-menu-head{padding:8px 10px 6px;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.02em;border-bottom:1px solid var(--line);margin-bottom:4px}
+.slot-menu-item{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text);font:inherit;font-size:13.5px;font-weight:600;padding:10px 10px;border-radius:8px;cursor:pointer}
+.slot-menu-item:hover{background:rgba(255,255,255,.06)}
+.slot-menu-cancel{color:var(--muted);font-weight:500}
 .scell-blocked{background:#3a2416;color:#E0954A;border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
 .scell-na{background:var(--past-bg,#1b2430);color:var(--past-tx,#7C8DA6);border-radius:9px;padding:12px 4px;text-align:center;font-size:13px;font-weight:700}
 .cal-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap}
@@ -284,6 +290,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <button class="btn-ghost" id="courtModalClose" style="width:100%;margin-top:6px;padding:13px">Done</button>
 </div>
 </div>
+<div id="slotMenu" class="slot-menu"><div class="slot-menu-head" id="slotMenuHead"></div><button class="slot-menu-item" id="slotMenuToggle"></button><button class="slot-menu-item" id="slotMenuMulti">Block multiple slots…</button><button class="slot-menu-item slot-menu-cancel" id="slotMenuCancel">Cancel</button></div>
 <div class="overlay" id="multiCourtOverlay">
 <div class="modal" style="max-width:520px;max-height:88vh;overflow-y:auto">
 <h3 style="margin-bottom:4px">Block multiple courts</h3>
@@ -556,6 +563,43 @@ renderCourtStatus();try{renderSchedHead();renderGrid()}catch(e){}
 toast((unblock?"Unblocked ":"Blocked ")+ok+" court"+(1===ok?"":"s")+" across "+dates.length+" day"+(1===dates.length?"":"s")+".")}
 
 
+/* ── Slot quick menu (tap a slot in the grid) ──────────────────────── */
+let SLOTMENU_CTX=null;
+function openSlotMenu(ev,court,slotKey,isBlocked){ev.stopPropagation();
+SLOTMENU_CTX={court:court,slotKey:slotKey,blocked:isBlocked};
+const menu=$("slotMenu");
+$("slotMenuHead").textContent=court.name+" · "+hourLabel(hm2minKey(slotKey));
+$("slotMenuToggle").textContent=isBlocked?"Open this slot":"Block this slot";
+menu.classList.add("show");
+/* Position next to the tapped cell, kept inside the viewport. */
+const r=ev.currentTarget.getBoundingClientRect(),mw=menu.offsetWidth||200,mh=menu.offsetHeight||160;
+let left=r.left+r.width/2-mw/2,top=r.bottom+6;
+if(left<8)left=8;if(left+mw>window.innerWidth-8)left=window.innerWidth-mw-8;
+if(top+mh>window.innerHeight-8)top=r.top-mh-6;if(top<8)top=8;
+menu.style.left=left+"px";menu.style.top=top+"px"}
+function closeSlotMenu(){$("slotMenu").classList.remove("show");SLOTMENU_CTX=null}
+function hm2minKey(k){const p=String(k||"").split(":");return 60*(Number(p[0])||0)+(Number(p[1])||0)}
+async function slotMenuToggle(){if(!SLOTMENU_CTX)return;const{court,slotKey,blocked}=SLOTMENU_CTX;
+closeSlotMenu();
+const cur=Array.isArray(court.blocks)?court.blocks.map(b=>({date:b.date,slots:(b.slots||[]).slice()})):[];
+let next;
+if(blocked){next=cur.map(b=>b.date===selectedDate?{date:b.date,slots:b.slots.filter(s=>s!==slotKey)}:b).filter(b=>b.slots.length>0)}
+else{next=cur;const ex=next.find(b=>b.date===selectedDate);
+if(ex){if(!ex.slots.includes(slotKey))ex.slots.push(slotKey);ex.slots.sort()}
+else next.push({date:selectedDate,slots:[slotKey]})}
+try{await db.collection("courts").doc(court.id).update({blocks:next});
+const idx=COURTS.findIndex(c=>c.id===court.id);if(idx>=0)COURTS[idx].blocks=next;
+renderCourtStatus();renderSchedHead();renderGrid();
+toast(blocked?"Slot opened.":"Slot blocked.")}
+catch(e){console.error(e),toast("Could not update. Please try again.")}}
+function slotMenuMulti(){if(!SLOTMENU_CTX)return;const court=SLOTMENU_CTX.court;closeSlotMenu();
+openCourtModal(court);
+/* Carry the date across so they only have to pick the times. */
+$("cavDate").value=selectedDate;renderCavSlots();
+$("cavBulkStart").value=selectedDate;$("cavBulkEnd").value=selectedDate;renderBulkSlots();
+try{syncAddBtn();syncBulkBtns()}catch(e){}}
+
+
 function watchCourts(){if(window.__courtsUnsub)window.__courtsUnsub();
 window.__courtsUnsub=db.collection("courts").onSnapshot(function(snap){
 var arr=[];snap.forEach(function(d){var t=d.data();if(!1!==t.active)arr.push({id:d.id,name:t.name||"Court",type:t.type||"",status:t.status||"",blocks:Array.isArray(t.blocks)?t.blocks:[]})});
@@ -625,8 +669,10 @@ a.rowSpan=e.len,a.innerHTML='<div class="nm">'+nameOf(t)+'</div><div class="stt"
 a.onclick=()=>openDetail(t),i.appendChild(a)}else{const e=document.createElement("td");e.className="cell"
 ;const c=document.createElement("div");
 if("unavailable"===String(t.status||"").toLowerCase()){c.className="scell-na",c.textContent="Not Available"}
-else if(isCourtBlocked(t,selectedDate,SLOTKEY)){c.className="scell-blocked",c.textContent="Blocked"}
-else{c.className="scell-open",c.textContent="Open"}
+else if(isCourtBlocked(t,selectedDate,SLOTKEY)){c.className="scell-blocked",c.textContent="Blocked",
+c.style.cursor="pointer",c.onclick=ev=>openSlotMenu(ev,t,SLOTKEY,!0)}
+else{c.className="scell-open",c.textContent="Open",
+c.style.cursor="pointer",c.onclick=ev=>openSlotMenu(ev,t,SLOTKEY,!1)}
 e.appendChild(c),i.appendChild(e)}
 }),s.appendChild(i)})}function openDetail(t){
 const e=t.bookingId?DAY.filter(e=>e.bookingId===t.bookingId&&"cancelled"!==e.status):[t],n=e.length?e:[t],a=groupStatus(n),o=[...new Set(n.map(t=>t.court))].sort().join(", "),s=n.reduce((t,e)=>t+Number(e.amount||0),0),i=n[0],c=i.bookingId||i.id,r=i.bookingId||i.id,l=n.map(t=>(t.slots||[]).slice().sort().join(",")),d=l.every(t=>t===l[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(i.slots)+"</div>":n.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="mrow"><span>'+t.court+":</span> "+slotsRange(t.slots)+"</div>").join("")
@@ -711,6 +757,12 @@ $("signoutBtn").onclick=()=>auth.signOut(),$("prevMonth").onclick=()=>{viewMonth
 viewYear--),renderCalendar()},$("nextMonth").onclick=()=>{viewMonth++,viewMonth>11&&(viewMonth=0,viewYear++),
 renderCalendar()},
 $("courtModalClose").onclick=()=>closeCourtModal(),
+$("slotMenuToggle").onclick=()=>slotMenuToggle(),
+$("slotMenuMulti").onclick=()=>slotMenuMulti(),
+$("slotMenuCancel").onclick=()=>closeSlotMenu(),
+document.addEventListener("click",e=>{const m=$("slotMenu");
+if(m&&m.classList.contains("show")&&!m.contains(e.target))closeSlotMenu()}),
+window.addEventListener("resize",()=>closeSlotMenu()),
 $("multiCourtBtn").onclick=()=>openMultiCourt(),
 $("multiCourtClose").onclick=()=>closeMultiCourt(),
 $("multiCourtOverlay").onclick=e=>{e.target===$("multiCourtOverlay")&&closeMultiCourt()},
