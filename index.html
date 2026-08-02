@@ -402,8 +402,8 @@ pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cance
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-booked",i.textContent="Booked"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
-i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
+;i.className="cell-inner",s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",i.textContent="Past"):"unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-booked",
+i.textContent="Booked"):bookedSet.has(o)?(i.className+=" cell-booked",
 i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
 cart.delete(n),afterCartChange()}):(i.className+=" cell-open",i.textContent="Open",i.onclick=()=>{cart.add(n),
