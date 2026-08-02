@@ -244,13 +244,6 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <div class="lab">Past</div>
 <div class="sub">Unavailable</div>
 </div>
-</div> <div class="item">
-<div class="sw" style="background:#3a2416">
-</div>
-<div>
-<div class="lab">Booked</div>
-<div class="sub">Not available</div>
-</div>
 </div> </div> </div> </div> <div class="card"> <h3>Select your slots</h3> <div class="info-bar">Tap a cell to select. You can pick slots across <strong>multiple dates</strong> — switch dates and your selections are kept.</div> <div class="table-scroll">
 <table class="slots">
 <thead>
@@ -409,7 +402,7 @@ pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cance
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-blocked",i.textContent="Booked"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
+;i.className="cell-inner","unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-booked",i.textContent="Booked"):s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",
 i.textContent="Past"):bookedSet.has(o)?(i.className+=" cell-booked",
 i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
