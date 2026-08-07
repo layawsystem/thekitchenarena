@@ -59,6 +59,7 @@ table.slots .time-cell{font-size:13px;font-weight:700;color:var(--text);padding:
 .cell-pending{background:var(--pend-bg);color:var(--pend-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--pend-bd)}
 .cell-past{background:var(--past-bg);color:var(--past-tx);cursor:not-allowed;box-shadow:inset 0 0 0 1px var(--past-bd)}
 .cell-blocked{background:#3a2416;color:#E0954A;cursor:not-allowed;box-shadow:inset 0 0 0 1px #6b4420}
+.cell-loading{background:var(--past-bg);color:var(--past-tx);cursor:progress;box-shadow:inset 0 0 0 1px var(--past-bd);opacity:.55}
 .summary{position:sticky;top:18px}
 .sum-empty{color:var(--muted);font-size:14px}
 .sum-list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:340px;overflow-y:auto}
@@ -297,7 +298,7 @@ let db;try{const e=firebase.initializeApp(firebaseConfig);try{
 APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e).activate(APPCHECK_SITE_KEY,!0)
 }catch(e){console.warn("AppCheck:",e)}db=firebase.firestore();try{db.enablePersistence({synchronizeTabs:!0}).catch(function(){})}catch(e){}}catch(e){
 showError("Could not connect. Check the Firebase config at the top of this file.")}
-let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,reserving=!1
+let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,reserving=!1,availReady=!1,availDate=null
 /* ── EASY-EDIT SETTING ── minutes of grace before a time slot is marked "Past".
    A slot stays open for this many minutes AFTER its start time, then turns Past.
    Example at 15: the 8:00–9:00 slot stays Open until 8:15, then shows Past at 8:16. */
@@ -391,23 +392,33 @@ arr.sort(function(a,b){return a.name.localeCompare(b.name)});COURTS=arr;
 try{renderGridHead();renderGrid()}catch(e){}
 },function(e){console.warn("courts watch:",e)})}
 function watchAvailability(){db&&(availUnsub&&(availUnsub(),availUnsub=null),
-availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{bookedSet=new Set,
+/* Drop the previous date's availability right away and mark the grid "not ready".
+   Without this the grid keeps painting the OLD date's bookings until the new
+   snapshot lands — on a slow link that stale view can sit there for seconds. */
+bookedSet=new Set,pendingSet=new Set,availReady=!1,availDate=selectedDate,
+availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(e=>{
+/* Ignore a late snapshot belonging to a date the user already moved away from. */
+if(availDate!==selectedDate)return;bookedSet=new Set,
 pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
 ;if("reserved"===t.status){const hu=t.holdUntil&&t.holdUntil.toMillis?t.holdUntil.toMillis():0
 ;if(!hu||hu<now)return;if(reservedBookingId&&t.bookingId===reservedBookingId)return
 ;(t.slots||[]).forEach(e=>pendingSet.add(t.court+"|"+e));return}
-;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),renderGrid()
+;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),availReady=!0,renderGrid()
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
 ;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
 ;i.className="cell-inner",s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",i.textContent="Past"):"unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-booked",
-i.textContent="Booked"):bookedSet.has(o)?(i.className+=" cell-booked",
+i.textContent="Booked"):availReady?bookedSet.has(o)?(i.className+=" cell-booked",
 i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
 cart.delete(n),afterCartChange()}):(i.className+=" cell-open",i.textContent="Open",i.onclick=()=>{cart.add(n),
-afterCartChange()}),t.appendChild(i),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
+afterCartChange()}):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{cart.delete(n),
+/* Availability for this date has not arrived yet. Keep the customer's own picks
+   visible, but never show an un-verified slot as Open — that is how someone ends
+   up selecting a slot that is already taken. */
+afterCartChange()}):(i.className+=" cell-loading",i.textContent="…"),t.appendChild(i),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
 updateSummary(),renderCalendar()}function cartTotal(){let e=0;return cart.forEach(t=>{
 e+=slotCost(hm2min(t.split("|")[2]))}),e}function promoQualifies(e,t,o){const n=parseDstr(t).getDay()
 ;if(Array.isArray(e.days)&&e.days.length&&!e.days.includes(n))return!1
