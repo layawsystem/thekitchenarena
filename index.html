@@ -1,4 +1,4 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Book a Court</title> <link rel="preconnect" href="https://www.google.com"/> <link rel="preconnect" href="https://content-firebaseappcheck.googleapis.com" crossorigin/> <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/> <link rel="preconnect" href="https://i.imgur.com"/> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
+<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Book a Court</title> <link rel="icon" href="/assets/logo.png"/> <link rel="apple-touch-icon" href="/assets/logo.png"/> <link rel="preconnect" href="https://www.google.com"/> <link rel="preconnect" href="https://content-firebaseappcheck.googleapis.com" crossorigin/> <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
 authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
 storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
 appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--disabled:#64748B;--brand-l:#9DBBF5;--link:#7FA7F0;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#15336B;--sel-tx:#FFFFFF;--sel-bd:#3B5CA0;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#232C3B;--past-tx:#7E8CA0;--past-bd:#333F52;--input-bg:#0E1626;--input-line:#2E3B52;--input-focus:#3B5CA0;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--btn-dis-bg:#232E42;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
@@ -416,20 +416,27 @@ pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cance
 ;(t.slots||[]).forEach(e=>pendingSet.add(t.court+"|"+e));return}
 ;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),availReady=!0,renderGrid()
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
+/* A slot the customer picked can be taken by someone else, blocked by the venue, or
+   simply roll into the past while they are still choosing. Every removal goes through
+   drop() so the summary, the calendar dots and the total cannot drift out of step
+   with the grid — and so the customer is told instead of silently losing a slot. */
+;let dropped=0;const drop=k=>{cart.has(k)&&(cart.delete(k),dropped++)}
 ;const t=selectedDate===dstr(today()),o=60*(new Date).getHours()+(new Date).getMinutes(),n=Number(SETTINGS.slotMinutes??60)
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner",s?(cart.has(n)&&cart.delete(n),i.className+=" cell-past",i.textContent="Past"):"unavailable"===String(e.status).toLowerCase()?(cart.has(n)&&cart.delete(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(cart.has(n)&&cart.delete(n),i.className+=" cell-booked",
-i.textContent="Booked"):availReady?bookedSet.has(o)?(i.className+=" cell-booked",
-i.textContent="Booked"):pendingSet.has(o)?(i.className+=" cell-pending",
+;i.className="cell-inner",s?(drop(n),i.className+=" cell-past",i.textContent="Past"):"unavailable"===String(e.status).toLowerCase()?(drop(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(drop(n),i.className+=" cell-booked",
+i.textContent="Booked"):availReady?bookedSet.has(o)?(drop(n),i.className+=" cell-booked",
+i.textContent="Booked"):pendingSet.has(o)?(drop(n),i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
 cart.delete(n),afterCartChange()}):(i.className+=" cell-open",i.textContent="Open",i.onclick=()=>{cart.add(n),
 afterCartChange()}):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{cart.delete(n),
 /* Availability for this date has not arrived yet. Keep the customer's own picks
    visible, but never show an un-verified slot as Open — that is how someone ends
    up selecting a slot that is already taken. */
-afterCartChange()}):(i.className+=" cell-loading",i.textContent="…"),t.appendChild(i),r.appendChild(t)}),e.appendChild(r)})}function afterCartChange(){renderGrid(),
+afterCartChange()}):(i.className+=" cell-loading",i.textContent="…"),t.appendChild(i),r.appendChild(t)}),e.appendChild(r)})
+;dropped&&(updateSummary(),renderCalendar(),toast(1===dropped?"A slot you picked was just taken — removed from your selection":dropped+" slots you picked were just taken — removed from your selection"))
+}function afterCartChange(){renderGrid(),
 updateSummary(),renderCalendar()}function cartTotal(){let e=0;return cart.forEach(t=>{
 e+=slotCost(hm2min(t.split("|")[2]))}),e}function promoQualifies(e,t,o){const n=parseDstr(t).getDay()
 ;if(Array.isArray(e.days)&&e.days.length&&!e.days.includes(n))return!1
