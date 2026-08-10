@@ -25,6 +25,8 @@ body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI"
 .st-confirmed{color:var(--ok-tx)}
 .st-cancelled{color:var(--cancel-tx)}
 .status-sub{color:var(--text);font-size:15px;margin-top:4px}
+.cancel-note{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.5}
+.cancel-note .cn-reason{display:block;margin-top:4px;color:var(--text-2,var(--text))}
 .timer-lab{font-size:13px;color:var(--muted);margin-top:18px}
 .timer{display:flex;justify-content:center;gap:8px;margin:6px 0 4px}
 .timer .unit{text-align:center;min-width:74px}
@@ -62,6 +64,7 @@ body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI"
 <div class="l">Booking ID</div>
 <div class="v" id="bid">—</div>
 </div> <button class="copy-btn" id="copyBtn">⧉ Copy</button> </div> <div class="card status-card"> <div class="status-icon" id="statusIcon">⏳</div> <div class="status-text" id="statusText">—</div> <div class="status-sub" id="statusSub">
+</div> <div class="cancel-note" id="cancelNote" style="display:none">
 </div> <div id="timerWrap"> <div class="timer-lab">Time remaining</div> <div class="timer"> <div class="unit">
 <div class="num" id="tH">00</div>
 <div class="ul">HRS</div>
@@ -109,7 +112,19 @@ showError("Failed to load: "+(t.message||t))}else showError("No booking ID provi
 unsub=db.collection("bookings").where("bookingId","==",BID).onSnapshot(t=>{ORDER=[],t.forEach(t=>ORDER.push(t.data())),
 ORDER.length?render():showError("Booking not found. Please check your Booking ID.")},t=>{console.error(t),
 showError("Could not load booking status.")})}function combinedStatus(){
-return ORDER.some(t=>"pending"===t.status)?"pending":ORDER.some(t=>"confirmed"===t.status)?"confirmed":"cancelled"}
+/* Only call a booking cancelled when a document actually says so. Anything else that
+   is neither pending nor confirmed — an abandoned "reserved" hold, an unrecognised
+   status — used to fall through to a red CANCELLED and tell a customer their booking
+   was called off when nobody had cancelled anything. */
+return ORDER.some(t=>"pending"===t.status)?"pending":ORDER.some(t=>"confirmed"===t.status)?"confirmed":ORDER.some(t=>"cancelled"===t.status)?"cancelled":"pending"}
+/* Staff have to sign a cancellation, so tell the customer who called it off and why.
+   Everything goes in through textContent — these strings are typed by a person.
+   Bookings cancelled before this was recorded have nothing to show, and say nothing. */
+function renderCancelNote(){const n=$("cancelNote"),c=ORDER.find(t=>"cancelled"===t.status&&t.cancelledBy)
+;if(!c)return void(n.style.display="none");n.innerHTML=""
+;const b=document.createElement("div");b.textContent="Cancelled by "+c.cancelledBy,n.appendChild(b)
+;if(c.cancelReason){const r=document.createElement("span");r.className="cn-reason",
+r.textContent="Reason: "+c.cancelReason,n.appendChild(r)}n.style.display="block"}
 function render(){$("loading").style.display="none",$("content").style.display="block",$("bid").textContent=BID,
 combined=combinedStatus()
 ;const t=Number(SETTINGS.slotMinutes??60),e=ORDER.filter(t=>"cancelled"!==t.status),n=e.length?e:ORDER,o={}
@@ -120,12 +135,13 @@ n.forEach(t=>i+=Number(t.amount||0)),
 r+='<div class="det-day"><div class="det-row"><span class="left">📅 <span>'+niceDate(e)+'</span></span><span class="time">'+(c<1/0?hourLabel12(c)+" – "+hourLabel12(l):"—")+'</span></div><div class="det-row"><span class="left">🏟️ <span>'+a+"</span></span></div></div>"
 }),$("detList").innerHTML=r;const c=s*t/60;$("dHours").textContent=c+(1===c?" hour":" hours"),
 $("dAmount").textContent=peso(i);const l=$("statusIcon"),d=$("statusText"),u=$("statusSub")
+;$("cancelNote").style.display="none"
 ;l.className="status-icon "+("confirmed"===combined?"si-confirmed":"cancelled"===combined?"si-cancelled":"si-pending"),
 d.className="status-text "+("confirmed"===combined?"st-confirmed":"cancelled"===combined?"st-cancelled":"st-pending"),
 "confirmed"===combined?(l.textContent="✓",
 d.textContent="Confirmed",u.textContent="Your booking is confirmed. See you on the court!",
 $("timerWrap").style.display="none",$("payNote").style.display="none"):"cancelled"===combined?(l.textContent="✕",
-d.textContent="Cancelled",u.textContent="This booking was cancelled.",$("timerWrap").style.display="none",
+d.textContent="Cancelled",u.textContent="This booking was cancelled.",renderCancelNote(),$("timerWrap").style.display="none",
 $("payNote").style.display="none"):(l.textContent="⏳",d.textContent="Pending",u.textContent="Your slot is on hold.",
 $("timerWrap").style.display="block",$("payNote").style.display="flex");const p=Number(SETTINGS.holdMinutes??30)
 ;let m=Date.now()
