@@ -376,16 +376,6 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <strong id="walkChange">₱0</strong>
 </div> </div> <div class="walk-err" id="walkErr">
 </div> <div class="modal-actions"> <button class="btn-ghost" id="walkCancel">Cancel</button> <button class="act act-confirm" id="walkConfirm">Confirm &amp; Save</button> </div> </div>
-</div> <div class="overlay" id="cancelOverlay">
-<div class="modal"> <h3>Cancel booking</h3> <p class="wsub" style="margin-bottom:20px">The slots will reopen and the customer will see who cancelled this on their status page.</p> <div class="fld">
-<label>Your name</label>
-<input id="cancelBy" placeholder="Your name" autocomplete="off"/>
-</div> <div class="fld">
-<label>Reason <span class="opt">(optional)</span>
-</label>
-<input id="cancelReason" placeholder="e.g. No payment received" autocomplete="off"/>
-</div> <div class="walk-err" id="cancelErr">
-</div> <div class="modal-actions"> <button class="btn-ghost" id="cancelBack">Go back</button> <button class="act act-cancel" id="cancelGo">Cancel booking</button> </div> </div>
 </div> <div id="boot" class="loading">Loading…</div> <div class="toast" id="toast">
 </div> <script>const TKA_LOGO="https://i.imgur.com/SPrzHHN.png";let db,auth,viewYear,viewMonth,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],ADMIN_NAME="",walkCart=new Set
 ;try{const t=firebase.initializeApp(firebaseConfig,"layawAdmin");try{
@@ -648,7 +638,7 @@ function renderList(){const t=$("listView");t.innerHTML=""
 ;const e=orderGroups(DAY.filter(t=>isLiveBooking(t)));e.length?(e.forEach(e=>{
 const n=groupStatus(e),a=[...new Set(e.map(t=>t.court))].sort(),o=e.reduce((t,e)=>t+Number(e.amount||0),0),s=e[0],i=groupKey(e),c=e.map(t=>(t.slots||[]).slice().sort().join(","))
 ;let r=c.every(t=>t===c[0])?'<div class="times">'+slotsRange(s.slots)+"</div>":e.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="times"><strong>'+t.court+":</strong> "+slotsRange(t.slots)+"</div>").join(""),l=""
-;"pending"===n?l='<button class="act act-confirm" data-key="'+i+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel</button>':"confirmed"===n&&(l='<button class="act act-cancel" data-key="'+i+'" data-act="cancel">Cancel booking</button>')
+;"pending"===n&&(l='<button class="act act-confirm" data-key="'+i+'" data-act="confirm">Confirm</button>')
 ;const d=document.createElement("div");d.className="booking";d.style.cursor="pointer";d.dataset.key=i;const u=emailOf(s)
 ;d.innerHTML='<div class="row1"><span class="court">'+a.join(", ")+'</span><span class="badge '+n+'">'+n+'</span><span class="amt">'+peso(o)+"</span></div>"+r+'<div class="who"><strong>'+nameOf(s)+"</strong> · "+contactOf(s)+(u?" · "+u:"")+"</div>"+(l?'<div class="actions">'+l+"</div>":""),
 t.appendChild(d)
@@ -687,8 +677,10 @@ e.appendChild(c),i.appendChild(e)}
 }),s.appendChild(i)})}function openDetail(t){
 const e=t.bookingId?DAY.filter(e=>e.bookingId===t.bookingId&&"cancelled"!==e.status):[t],n=e.length?e:[t],a=groupStatus(n),o=[...new Set(n.map(t=>t.court))].sort().join(", "),s=n.reduce((t,e)=>t+Number(e.amount||0),0),i=n[0],c=i.bookingId||i.id,r=i.bookingId||i.id,l=n.map(t=>(t.slots||[]).slice().sort().join(",")),d=l.every(t=>t===l[0])?'<div class="mrow"><span>Time:</span> '+slotsRange(i.slots)+"</div>":n.slice().sort((t,e)=>String(t.court).localeCompare(String(e.court))).map(t=>'<div class="mrow"><span>'+t.court+":</span> "+slotsRange(t.slots)+"</div>").join("")
 ;let u=""
-;"pending"===a?u='<button class="act act-confirm" data-key="'+c+'" data-act="confirm">Confirm</button><button class="act act-cancel" data-key="'+c+'" data-act="cancel">Cancel</button>':"confirmed"===a&&(u='<button class="act act-cancel" data-key="'+c+'" data-act="cancel">Cancel booking</button>')
-;u+='<button class="act act-delete" data-key="'+c+'" data-act="delete">Delete</button>'
+/* Staff confirm bookings and manage court blocks. Cancelling and deleting are the
+   owner's calls — the venue wants an override step before a paid slot disappears —
+   so those buttons live on the owner dashboard only. */
+;"pending"===a&&(u='<button class="act act-confirm" data-key="'+c+'" data-act="confirm">Confirm</button>')
 ;const m=i.bookingId&&CONTACTS[i.bookingId]&&CONTACTS[i.bookingId].note?CONTACTS[i.bookingId].note:"",h=i.handledBy||i.bookingId&&CONTACTS[i.bookingId]&&CONTACTS[i.bookingId].handledBy||""
 ;$("detailModal").innerHTML="<h3>"+o+' · <span class="badge '+a+'">'+a+'</span></h3><div class="mrow"><span>Date:</span> '+niceDate(i.date)+"</div>"+d+'<div class="mrow"><span>Booker:</span> <strong>'+nameOf(i)+'</strong></div><div class="mrow"><span>Contact:</span> '+contactOf(i)+"</div>"+(emailOf(i)?'<div class="mrow"><span>Email:</span> '+emailOf(i)+"</div>":"")+(i.paymentMethod?'<div class="mrow"><span>Payment:</span> '+i.paymentMethod+"</div>":"")+(h?'<div class="mrow"><span>Handled by:</span> '+h+"</div>":"")+'<div class="mrow"><span>Total:</span> <strong>'+peso(s)+'</strong></div><div class="note-box"><label class="note-label">Note</label><textarea id="noteInput" class="note-input" placeholder="Add a private note about this booking…">'+m+'</textarea><button class="mini-btn" id="saveNoteBtn" data-id="'+(i.bookingId||"")+'">Save note</button><span class="note-msg" id="noteMsg"></span></div><div class="modal-actions"><button class="btn-ghost" id="detailClose">Close</button><button class="btn-ghost" id="viewReceiptBtn">View receipt</button></div>'+(u?'<div class="modal-actions">'+u+"</div>":""),
 $("detailOverlay").classList.add("show"),$("detailClose").onclick=()=>$("detailOverlay").classList.remove("show"),
@@ -708,33 +700,19 @@ toast("Could not load receipt.")}}function renderNotif(){const t=$("notifBody")
 ;const e=orderGroups(PENDING);t.innerHTML="",e.forEach(e=>{
 const n=e[0],a=groupKey(e),o=[...new Set(e.map(t=>t.court))].sort().join(", "),s=e.reduce((t,e)=>t+Number(e.amount||0),0),i=document.createElement("div")
 ;i.className="nitem",
-i.innerHTML='<div class="nt">'+o+" · "+niceDate(n.date)+'</div><div class="nd">'+slotsRange(n.slots)+" · "+nameOf(n)+" · "+peso(s)+'</div><div class="nacts"><button class="act-confirm" data-key="'+a+'" data-act="confirm">Confirm</button><button class="act-cancel" data-key="'+a+'" data-act="cancel">Cancel</button></div>',
+i.innerHTML='<div class="nt">'+o+" · "+niceDate(n.date)+'</div><div class="nd">'+slotsRange(n.slots)+" · "+nameOf(n)+" · "+peso(s)+'</div><div class="nacts"><button class="act-confirm" data-key="'+a+'" data-act="confirm">Confirm</button></div>',
 t.appendChild(i)
 }),t.querySelectorAll("button").forEach(t=>t.onclick=()=>doAction(t.getAttribute("data-key"),t.getAttribute("data-act")))
 }function closeNotif(){$("notif").classList.remove("show"),$("backdrop").classList.remove("show")}
-/* A cancellation is the one action the customer gets an explanation for, so it is
-   signed before it touches anything. Name is required; the reason is optional but it
-   is what stops a customer having to ask why. Resolves null if staff back out. */
-function askCancelDetails(){return new Promise(res=>{const o=$("cancelOverlay"),n=$("cancelBy"),r=$("cancelReason"),
-er=$("cancelErr");n.value=ADMIN_NAME||"",r.value="",er.textContent="",o.classList.add("show"),
-setTimeout(()=>{n.focus(),n.select()},60)
-;const done=v=>{o.classList.remove("show"),$("cancelGo").onclick=null,$("cancelBack").onclick=null,
-n.onkeydown=null,res(v)}
-;$("cancelBack").onclick=()=>done(null)
-;$("cancelGo").onclick=()=>{const w=n.value.trim();if(!w)return void(er.textContent="Please enter your name.")
-;done({by:w,reason:r.value.trim()})}
-;n.onkeydown=e=>{"Enter"===e.key&&$("cancelGo").click()}})}
-async function doAction(t,e){let cx=null;if("cancel"===e){if(cx=await askCancelDetails(),!cx)return}
-;if("delete"===e&&!confirm("Are you sure you want to delete this booking? This permanently removes it and reopens the slots. This cannot be undone."))return
+/* Confirming is the only booking status this dashboard may write. Cancelling and
+   deleting were moved to the owner so a paid slot cannot disappear without an
+   override; the buttons are gone, and this guard is what makes that true rather
+   than merely invisible if an old handler or a stale tab calls in. */
+async function doAction(t,e){if("confirm"!==e)return void toast("Cancellations are done from the Owner dashboard.")
 ;const n=DAY.concat(PENDING);let a=[...new Set(n.filter(e=>(e.bookingId||e.id)===t||e.bookingId===t).map(t=>t.id))]
-;a.length||(a=[t]);try{const o=db.batch();
-if("delete"===e){a.forEach(id=>o.delete(db.collection("bookings").doc(id)));await o.commit();
-try{$("detailOverlay").classList.remove("show")}catch(t){}
-toast("Booking deleted.")}
-else{const patch="confirm"===e?{status:"confirmed"}:{status:"cancelled",cancelledBy:cx.by,cancelReason:cx.reason||"",
-cancelledAt:firebase.firestore.FieldValue.serverTimestamp()}
-;a.forEach(n=>o.update(db.collection("bookings").doc(n),patch)),
-await o.commit(),toast("confirm"===e?"Booking confirmed.":"Booking cancelled.")}}catch(t){console.error(t),
+;a.length||(a=[t]);try{const o=db.batch()
+;a.forEach(n=>o.update(db.collection("bookings").doc(n),{status:"confirmed"})),
+await o.commit(),toast("Booking confirmed.")}catch(t){console.error(t),
 toast("Could not update. Please try again.")}}function walkSlotCost(){
 return Number(SETTINGS.ratePerHour??0)*(Number(SETTINGS.slotMinutes??60)/60)}function openWalkIn(){
 SETTINGS&&COURTS.length?(walkCart.clear(),$("walkDate").textContent=niceDate(selectedDate),$("walkName").value="",
