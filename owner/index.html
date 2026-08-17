@@ -1,7 +1,44 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Owner</title> <link rel="icon" href="/assets/logo.png"/> <link rel="apple-touch-icon" href="/assets/logo.png"/> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
-authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
-storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
-appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--chart:#2747E8;--chart-d:#1B34B0;--chart-l:#7AA0F5;--pos:#2747E8;--btn-bd:#24407F;--sidebar:#0A1524;--sidebar-2:#0E1B2E;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--brand-l:#9DBBF5;--link:#7FA7F0;--input-bg:#0E1626;--input-line:#2E3B52;--pend-bg:#3E3212;--pend-tx:#E0B93E;--conf-bg:#15321F;--conf-tx:#48A768;--open-bg:#15321F;--open-tx:#48A768;--ok-bg:#15321F;--ok-tx:#48A768;--cancel:#E88A92;--purple-bg:#241C42;--purple:#A99BF5;--amber-bg:#3E3212;--amber:#E0B93E;--teal-bg:#123536;--teal:#4FC3B4;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}input,select,textarea,.note-input{color:var(--text)}input::placeholder,textarea::placeholder,.note-input::placeholder{color:var(--muted)}input[type=color]{color:var(--text)}
+<!DOCTYPE html> <html lang="en"> <head><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"/><meta name="theme-color" content="#0A0A0C"/><meta name="robots" content="noindex,nofollow"><!-- private page: never index --> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>Owner</title>
+<!-- ══════════════════ CLIENT CONFIG · EDIT THIS BLOCK ONLY ══════════════════
+     Keep this block IDENTICAL in all 5 pages:
+       index.html · status.html · admin/index.html · owner/index.html · owner/confirm.html
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+/* 1 · Firebase web config — console > Project settings > Your apps > Web app > Config */
+const firebaseConfig={
+apiKey:"AIzaSyBdm8eunNIggHZAUtkmYnCHXdyA0GgueuQ",
+authDomain:"rallysocial.firebaseapp.com",
+projectId:"rallysocial",
+storageBucket:"rallysocial.firebasestorage.app",
+messagingSenderId:"596573981033",
+appId:"1:596573981033:web:2c8dc245b783ed662d55f8"
+};
+/* 2 · App Check reCAPTCHA v3 SITE key (console > App Check > Apps > Web).
+       Leave the PASTE_ text as-is to run without App Check. */
+const APPCHECK_SITE_KEY="6Lffb3ctAAAAALXpz7GesLrsisxsj28sBIb4WWWE";
+/* 3 · Venue details — used for page titles and the Privacy / Terms text. */
+const CLIENT={
+name:"Rally Social",
+sport:"Pickleball",
+email:"hello@rallysocial.net",
+address:"Rally Social Sports Center, 2nd Floor, CityMall Dau, Dau Access Rd, Dau, Mabalacat, Pampanga 2010",
+siteUrl:"https://booking.rallysocial.net",
+docsUpdated:"July 28, 2026"
+};
+</script>
+<!-- ═════════════════════ END CLIENT CONFIG ═════════════════════ -->
+<script>/* ── LAYAW THEME HELPERS · identical in all 5 pages ────────────────────────
+   txOn(hex)        -> "#231803" or "#FFFFFF", whichever reads on that colour.
+                       Crossover at WCAG luminance 0.205, the point where white
+                       and near-black give equal contrast. Any brand colour a
+                       client picks gets readable button text with no config.
+   accVars(el,hex)  -> writes --acc-05 … --acc-55 (alpha shades) plus
+                       --acc-lite / --acc-tint (light mixes) and --link onto
+                       :root, so every highlight in the glass theme follows the
+                       client's accent instead of a hardcoded colour. */
+function txOn(h){h=String(h||"").replace("#","");if(3===h.length)h=h.split("").map(function(c){return c+c}).join("");if(6!==h.length)return"#FFFFFF";var n=parseInt(h,16);function f(c){c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)}var L=.2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(255&n);return L>.205?"#231803":"#FFFFFF"}
+function accVars(el,h){h=String(h||"").replace("#","");if(3===h.length)h=h.split("").map(function(c){return c+c}).join("");if(6!==h.length||!el)return;var n=parseInt(h,16),r=n>>16&255,g=n>>8&255,b=255&n;function a(v){return"rgba("+r+","+g+","+b+","+v+")"}function mix(w){return"rgb("+Math.round(r+(255-r)*w)+","+Math.round(g+(255-g)*w)+","+Math.round(b+(255-b)*w)+")"}function dk(t){return"rgb("+Math.round(r*t)+","+Math.round(g*t)+","+Math.round(b*t)+")"}el.setProperty("--acc-05",a(.05));el.setProperty("--acc-08",a(.08));el.setProperty("--acc-12",a(.12));el.setProperty("--acc-22",a(.22));el.setProperty("--acc-40",a(.4));el.setProperty("--acc-55",a(.55));el.setProperty("--acc-lite",mix(.45));el.setProperty("--acc-tint",mix(.62));el.setProperty("--link",mix(.1));el.setProperty("--brand-l",mix(.35));el.setProperty("--chart","#"+h);el.setProperty("--chart-d",dk(.72));el.setProperty("--chart-l",mix(.45));el.setProperty("--pos","#"+h);el.setProperty("--btn-bd",a(.45));el.setProperty("--input-focus",a(.55));el.setProperty("--sel-bd",a(.55))}</script>
+<script>document.title=CLIENT.name+" — Owner";</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#242428;--navy-d:#17171A;--green:#242428;--green-d:#17171A;--chart:#6B7280;--chart-d:#4B5563;--chart-l:#9CA3AF;--pos:#6B7280;--btn-bd:#3A3A42;--sidebar:#131316;--sidebar-2:#1A1A1E;--bg:#101013;--card:#191c25;--elev:#1C1C21;--line:#2B2B32;--text:#F1F5F9;--text-2:#CACAD1;--muted:#8E8E97;--brand-l:#B9B9C1;--link:#B9B9C1;--input-bg:#141418;--input-line:#33333C;--pend-bg:#3E3212;--pend-tx:#E0B93E;--conf-bg:#15321F;--conf-tx:#48A768;--open-bg:#15321F;--open-tx:#48A768;--ok-bg:#15321F;--ok-tx:#48A768;--cancel:#E88A92;--purple-bg:#241C42;--purple:#A99BF5;--amber-bg:#3E3212;--amber:#E0B93E;--teal-bg:#123536;--teal:#4FC3B4;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}input,select,textarea,.note-input{color:var(--text)}input::placeholder,textarea::placeholder,.note-input::placeholder{color:var(--muted)}input[type=color]{color:var(--text)}
 *{box-sizing:border-box;margin:0;padding:0}
 body,html{max-width:100%}
 body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -24,7 +61,7 @@ input:focus{outline:2px solid var(--green);border-color:var(--green)}
 .app{display:flex;min-height:100vh}
 .sidebar{width:248px;flex-shrink:0;background:linear-gradient(180deg,var(--sidebar),var(--sidebar-2));color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
 .side-brand{display:flex;align-items:center;gap:11px;padding:20px 18px 18px}
-.side-brand .logo{width:40px;height:40px;border-radius:11px;object-fit:cover;background:var(--green);display:grid;place-items:center;flex-shrink:0}
+.side-brand .logo{width:40px;height:40px;border-radius:11px;object-fit:contain;padding:4px;background:rgba(255,255,255,.10);display:grid;place-items:center;flex-shrink:0}
 .side-brand .logo svg{width:22px;height:22px}
 .side-brand .bn{font-size:15px;font-weight:800;line-height:1.1;letter-spacing:.01em}
 .side-brand .bs{font-size:9px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;font-weight:700;margin-top:2px}
@@ -34,7 +71,7 @@ input:focus{outline:2px solid var(--green);border-color:var(--green)}
 .nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;cursor:pointer;color:rgba(255,255,255,.78);font-weight:600;font-size:14px;margin-bottom:2px;transition:background .14s,color .14s}
 .nav-item svg{width:19px;height:19px;flex-shrink:0;opacity:.9}
 .nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
-.nav-item.active{background:var(--green);color:#fff;box-shadow:0 6px 16px rgba(39,71,232,.35)}
+.nav-item.active{background:var(--green);color:#fff;box-shadow:0 6px 16px var(--acc-22)}
 .nav-item.active svg{opacity:1}
 .nav-item.locked{color:rgba(255,255,255,.5)}
 .nav-item .lock{margin-left:auto;width:14px;height:14px;opacity:.65}
@@ -104,7 +141,7 @@ to{opacity:1;transform:none}
 .pill{display:inline-block;font-size:11px;font-weight:800;padding:5px 11px;border-radius:999px}
 .pill.avail{background:var(--ok-bg);color:var(--ok-tx)}
 .pill.occ{background:var(--pend-bg);color:var(--pend-tx)}
-.pill.maint{background:#232c3b;color:#8a99ad}.pill.na{background:var(--book-bg,#3E1A20);color:var(--cancel,#E88A92)}.court-card{cursor:pointer;transition:border-color .15s,background .15s;position:relative}.court-card:hover{border-color:var(--teal,#0B97A6);background:rgba(255,255,255,.03)}.court-card .toggle-hint{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.02em}.court-card.busy{opacity:.55;pointer-events:none}
+.pill.maint{background:#26262C;color:#8E8E97}.pill.na{background:var(--book-bg,#3E1A20);color:var(--cancel,#E88A92)}.court-card{cursor:pointer;transition:border-color .15s,background .15s;position:relative}.court-card:hover{border-color:var(--teal,#0B97A6);background:rgba(255,255,255,.03)}.court-card .toggle-hint{font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.02em}.court-card.busy{opacity:.55;pointer-events:none}
 .recent-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
 .recent-row:last-child{border-bottom:none}
 .recent-row .rt{font-weight:700;min-width:138px}
@@ -113,9 +150,9 @@ to{opacity:1;transform:none}
 .badge{font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em}
 .badge.pending{background:var(--pend-bg);color:var(--pend-tx)}
 .badge.confirmed{background:var(--ok-bg);color:var(--ok-tx)}
-.badge.cancelled{background:#232c3b;color:#8a99ad}
+.badge.cancelled{background:#26262C;color:#8E8E97}
 .badge.active{background:var(--ok-bg);color:var(--ok-tx)}
-.badge.disabled{background:#232c3b;color:#8a99ad}
+.badge.disabled{background:#26262C;color:#8E8E97}
 .sec-head{margin-bottom:16px}
 .sec-head h2{font-size:22px;font-weight:800}
 .sec-head p{color:var(--muted);font-size:14px}
@@ -241,7 +278,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .mc-court .nm{font-size:13px;font-weight:700;color:var(--text)}
 .mc-court .ty{font-size:11px;color:var(--muted)}
 .cav-slot-actions{display:flex;gap:14px;margin-bottom:9px}
-.cav-linkbtn{background:none;border:none;color:var(--accent,#2747E8);font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
+.cav-linkbtn{background:none;border:none;color:var(--green,#242428);font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
 .cav-slot{padding:7px 11px;border:1px solid var(--line);border-radius:999px;background:var(--elev);color:var(--text-2);font-size:12px;font-weight:700;cursor:pointer;user-select:none}
 .cav-slot.on{background:var(--green);color:#fff;border-color:var(--green)}
 .cav-slot.taken{opacity:.4;cursor:not-allowed;text-decoration:line-through}
@@ -349,7 +386,294 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 .txn-table .method{font-size:11px;font-weight:700;background:var(--bg);padding:3px 9px;border-radius:999px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}
 }
-@media print{:root{--bg:#fff;--card:#fff;--elev:#fff;--text:#000;--text-2:#111;--muted:#333;--line:#ccc;--sidebar:#fff;--sidebar-2:#fff;--input-bg:#fff;--input-line:#999}body,html{background:#fff!important;color:#000!important}*{color:#000!important;box-shadow:none!important;text-shadow:none!important}.card,.kpi,.pos-row,.container,.content{background:#fff!important;border-color:#ccc!important}.rev-total,.kpi .kd .up,.pos-row.change strong,.up{color:#04284D!important}svg [fill],svg[fill]{fill:#04284D!important}svg [stroke]{stroke:#04284D!important}.sidebar,.hamburger,.icon-btn,.bell,.signout,.user-menu,.save-bar button,.act{display:none!important}}</style> </head> <body> <div id="loginView" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand">
+@media print{:root{--bg:#fff;--card:#fff;--elev:#fff;--text:#000;--text-2:#111;--muted:#333;--line:#ccc;--sidebar:#fff;--sidebar-2:#fff;--input-bg:#fff;--input-line:#999}body,html{background:#fff!important;color:#000!important}*{color:#000!important;box-shadow:none!important;text-shadow:none!important}.card,.kpi,.pos-row,.container,.content{background:#fff!important;border-color:#ccc!important}.rev-total,.kpi .kd .up,.pos-row.change strong,.up{color:#04284D!important}svg [fill],svg[fill]{fill:#04284D!important}svg [stroke]{stroke:#04284D!important}.sidebar,.hamburger,.icon-btn,.bell,.signout,.user-menu,.save-bar button,.act{display:none!important}}
+/* ══════════════════════ LAYAW GLASS THEME v1 ══════════════════════
+   Appended override — nothing above this line was edited. Delete this
+   block to go back to the flat theme.
+
+   Colour source of truth stays Firestore settings/config. At runtime the
+   page writes these onto :root as inline styles, which beat this sheet:
+
+     colorPrimary     -> --navy / --navy-d      nav, calendar, chips
+     colorAccent      -> --green / --green-d    primary buttons
+     slotSelectedBg   -> --sel-bg
+     (auto)           -> --btn-tx / --nav-tx / --sel-tx
+                         readable text, picked from luminance
+     (auto)           -> --acc-05 … --acc-55, --acc-lite, --acc-tint
+                         alpha + light tints of the accent, used for every
+                         highlight below
+
+   Nothing here is client-specific: the values in :root are only the
+   pre-load fallbacks. A client's brand colour flows through automatically.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#070708;
+  --card:rgba(255,255,255,.048);
+  --elev:rgba(255,255,255,.075);
+  --line:rgba(255,255,255,.10);
+  --text:#EAE6DE;
+  --text-2:#BFB9AE;
+  --muted:#8B857A;
+  --disabled:#57534A;
+  --input-bg:rgba(255,255,255,.04);
+  --input-line:rgba(255,255,255,.12);
+  --brand-l:#E1DDD6;
+  --glass:22px;
+  --radius:18px;
+  --shadow:0 18px 44px rgba(0,0,0,.55);
+
+  /* Accent tints — replaced at runtime with shades of colorAccent.
+     These neutral fallbacks keep the theme usable before Firestore loads
+     and on any page that does not apply a theme. */
+  --acc-05:rgba(255,255,255,.045);
+  --acc-08:rgba(255,255,255,.07);
+  --acc-12:rgba(255,255,255,.10);
+  --acc-22:rgba(255,255,255,.16);
+  --acc-40:rgba(255,255,255,.28);
+  --acc-55:rgba(255,255,255,.38);
+  --acc-lite:#D8D3C8;
+  --acc-tint:#C9C2B4;
+  --link:var(--acc-lite);
+  --input-focus:var(--acc-55);
+  --info-bg:var(--acc-08);
+  --info-line:var(--acc-22);
+  --info-tx:var(--acc-tint);
+
+  /* Slot states, re-tuned as translucent tints for a dark glass surface */
+  --open-bg:rgba(72,167,104,.14);   --open-tx:#7BD79B;  --open-bd:rgba(72,167,104,.34);
+  --book-bg:rgba(232,138,146,.13);  --book-tx:#EFA0A7;  --book-bd:rgba(232,138,146,.30);
+  --pend-bg:rgba(224,185,62,.14);   --pend-tx:#E8C766;  --pend-bd:rgba(224,185,62,.32);
+  --past-bg:rgba(255,255,255,.045); --past-tx:#7C776D;  --past-bd:rgba(255,255,255,.07);
+  --ok-bg:rgba(72,167,104,.14);     --ok-tx:#7BD79B;
+  --conf-bg:rgba(72,167,104,.14);   --conf-tx:#7BD79B;
+  --cancel-bg:rgba(232,138,146,.13);--cancel-tx:#EFA0A7;
+  --btn-dis-bg:rgba(255,255,255,.05);
+
+  /* Pre-load brand fallbacks. Firestore overrides all four. */
+  --navy:#242428;  --navy-d:#17171A;
+  --green:#242428; --green-d:#17171A;
+  --sel-bg:#2B2B32;
+  --btn-tx:#FFFFFF; --nav-tx:#FFFFFF; --sel-tx:#FFFFFF;
+}
+
+/* ── Page: near-black with a slow wash of the brand colour ──────── */
+body{
+  background:
+    radial-gradient(1150px 640px at 86% -8%,var(--acc-12),transparent 60%),
+    radial-gradient(880px 540px at -10% 106%,var(--acc-08),transparent 58%),
+    #070708;
+  background-attachment:fixed;
+}
+
+/* ── Glass surfaces ─────────────────────────────────────────────── */
+.card,.modal,.modal-box,.modal-doc,.login-card,.notif,.stat,.kpi,.pos,.slot-menu,.cav-section,.booking,.nitem,.admin-row,.promo-row,.rate-row,.court-card,.mc-court{
+  background:linear-gradient(158deg,rgba(255,255,255,.062),rgba(255,255,255,.022));
+  -webkit-backdrop-filter:blur(var(--glass)) saturate(150%);
+  backdrop-filter:blur(var(--glass)) saturate(150%);
+  border:1px solid rgba(255,255,255,.085);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.075);
+}
+.stat,.kpi,.booking,.nitem,.admin-row,.promo-row,.rate-row,.court-card,.mc-court,.cav-section,.pos{
+  box-shadow:0 8px 22px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.card{border-radius:var(--radius)}
+/* a brand-tinted rim on the panel the eye should land on */
+.summary.card,.login-card,.status-card{
+  border-color:var(--acc-22);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px var(--acc-05);
+}
+
+/* ── Type ───────────────────────────────────────────────────────── */
+.card h3,.modal h3,.det-title,.sec-head h2,.card-head h3{color:var(--text);letter-spacing:-.01em}
+.brand .eyebrow,.login-card .eyebrow,.topbar .eyebrow{color:var(--link);letter-spacing:.22em}
+.brand h1{color:#F7F5F1}
+
+/* ── Brand-coloured surfaces: readable text, no flat fills ──────── */
+.btn,.act-confirm,.mb-btn,.btn-walk{
+  background:var(--green);
+  color:var(--btn-tx);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.38);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 62%);
+}
+.btn:hover,.act-confirm:hover,.btn-walk:hover{background-color:var(--green-d)}
+.btn:disabled,.mb-btn:disabled{
+  background:var(--btn-dis-bg);background-image:none;color:var(--disabled);
+  border-color:rgba(255,255,255,.08);box-shadow:none;
+}
+/* the original .mobile-bar .mb-btn rule (2 classes) outranks a bare .mb-btn,
+   so the phone CTA has to be re-stated at matching specificity or it stays white */
+.mobile-bar .mb-btn{
+  background:var(--green);color:var(--btn-tx);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 62%);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 8px 20px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.38);
+}
+.mobile-bar .mb-btn:disabled{
+  background:rgba(255,255,255,.07);background-image:none;color:var(--disabled);
+  border-color:rgba(255,255,255,.08);box-shadow:none;
+}
+.btn-apply,.btn-navy,.cal-day.active,.toggle button.on,.timer-bar,.wcell.sel{
+  background:var(--navy);
+  color:var(--nav-tx);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 62%);
+}
+.btn-apply:hover,.btn-navy:hover{background-color:var(--navy-d)}
+.cal-day.active{box-shadow:0 6px 16px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+.timer-bar{border:1px solid rgba(255,255,255,.18);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.timer-bar .tb-count{background:rgba(0,0,0,.18)}
+.topbar{
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  -webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);
+  border-bottom:1px solid rgba(255,255,255,.10);color:var(--text);
+}
+.topbar h1{color:#F7F5F1}
+.bell .dot{border-color:rgba(20,20,22,.9)}
+.mobile-bar{
+  background:rgba(12,12,14,.72);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);
+  border-top:1px solid rgba(255,255,255,.10);
+}
+
+/* ── Ghost / secondary ──────────────────────────────────────────── */
+.btn-ghost,.copy-btn,.mini-btn,.doc-x,.signout,.bell,.icon-btn{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.11);
+  color:var(--text);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.btn-ghost:hover,.copy-btn:hover,.mini-btn:hover{
+  background:var(--acc-12);border-color:var(--acc-40);color:var(--acc-lite);
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────── */
+input,select,textarea,.fi,.note-input{
+  background:var(--input-bg);
+  border:1px solid var(--input-line);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+input:focus,select:focus,textarea:focus,.fi:focus,.note-input:focus{
+  outline:2px solid var(--input-focus);border-color:var(--acc-55);
+}
+
+/* ── Slot grid ──────────────────────────────────────────────────── */
+table.slots thead th,table.sched thead th,table.slots .time-cell,table.sched td.time-cell{
+  background:rgba(10,10,12,.82);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.09);
+}
+table.slots td.cell,table.sched td.cell{border-bottom:1px solid rgba(255,255,255,.055)}
+.cell-inner,.scell-open,.scell-blocked,.scell-na,.wcell{border-radius:11px;letter-spacing:.01em}
+.cell-open,.scell-open{box-shadow:inset 0 0 0 1px var(--open-bd)}
+.cell-open:hover{outline:2px solid var(--green);outline-offset:-2px}
+.cell-selected{
+  background:var(--sel-bg);color:var(--sel-tx);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 6px 16px rgba(0,0,0,.35);
+}
+.cell-blocked,.scell-blocked{background:rgba(224,149,74,.13);color:#E5A863;box-shadow:inset 0 0 0 1px rgba(224,149,74,.28)}
+.legend .sw{box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
+
+/* ── Info / notes ───────────────────────────────────────────────── */
+.info-bar,.hold-note,.contact-box{
+  background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.pay-note,.note,.sum-note,.cal-note{color:var(--muted)}
+.help-box{background:rgba(224,185,62,.10);border:1px solid rgba(224,185,62,.24)}
+
+/* ── Hero, upload, misc ─────────────────────────────────────────── */
+.hero-wrap{border:1px solid rgba(255,255,255,.09);box-shadow:0 22px 50px rgba(0,0,0,.6)}
+.upload{border:2px dashed rgba(255,255,255,.14);background:rgba(255,255,255,.02)}
+.upload:hover{border-color:var(--acc-40);background:var(--acc-05)}
+.pay-opt{background:rgba(255,255,255,.045);border:1.5px solid rgba(255,255,255,.10)}
+.pay-opt.on{border-color:var(--acc-55);background:var(--acc-12);color:var(--acc-lite)}
+.toast{
+  background:rgba(16,16,18,.88);color:var(--text);
+  border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+.modal-overlay,.overlay,.backdrop{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.footer{border-top:1px solid rgba(255,255,255,.08)}
+.sidebar{
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  -webkit-backdrop-filter:blur(24px) saturate(150%);backdrop-filter:blur(24px) saturate(150%);
+  border-right:1px solid rgba(255,255,255,.09);
+}
+.nav-item.active{background:var(--acc-12);color:var(--acc-lite)}
+
+/* ── Cheaper glass on small screens / reduced transparency ──────── */
+@media (max-width:1000px){:root{--glass:14px}}
+@media (prefers-reduced-transparency:reduce){
+  .card,.modal,.modal-box,.modal-doc,.login-card,.notif,.stat,.kpi,.sidebar{
+    -webkit-backdrop-filter:none;backdrop-filter:none;background:#141416;
+  }
+}
+/* Fallback where backdrop-filter is unsupported (older Android WebView) */
+@supports not (backdrop-filter:blur(2px)){
+  .card,.modal,.modal-box,.modal-doc,.login-card,.notif,.stat,.kpi,.sidebar{background:#141416}
+}
+/* ════════════════════ END LAYAW GLASS THEME ════════════════════ */
+</style> <style>/* LAYAW-NATIVE-CONTROLS */:root{color-scheme:dark}select option,select optgroup{background:#16161B;color:#EAE6DE}</style><style>/* LAYAW-MODAL-MOBILE */
+/* Let the overlay scroll, and pin the modal to the top once it is taller than
+   the screen — grid centring pushes the top off-screen on a phone. */
+.overlay{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.overlay.show{place-items:start center}
+@media (min-height:820px){.overlay.show{place-items:center}}
+.modal{max-height:none;margin:auto 0;overscroll-behavior:contain}
+@supports (height:100dvh){.modal{max-height:calc(100dvh - 32px)}}
+/* Anything scrollable inside the modal keeps its scroll to itself. */
+/* Only the overlay and the modal trap scrolling. Applying this to every
+   descendant made .table-scroll a dead end: overflow-x:auto forces a computed
+   overflow-y:auto, so it counts as a vertical scroll container with nothing to
+   scroll, and `contain` then stopped the wheel from ever reaching the modal.
+   The slot table fills most of the Walk-in modal, so it would not scroll. */
+.modal .table-scroll{overscroll-behavior-x:contain}
+/* While a modal is open the page behind must not move. */
+body.layaw-modal-open{overflow:hidden;position:relative}
+/* Two date inputs side by side do not fit a narrow phone. */
+/* Flex children default to min-width:auto, so the Start/End date row refused
+   to shrink and the End date input sat ~67px past the modal's right edge on a
+   375px screen. Everything inside a modal is allowed to shrink, and the row
+   wraps rather than overflow. */
+.modal div,.modal label{min-width:0}
+.modal input,.modal select,.modal textarea,.modal .fld-input{
+  max-width:100%;box-sizing:border-box;min-width:0
+}
+.modal [style*="display:flex"]{flex-wrap:wrap}
+@media (max-width:430px){
+  .cav-section input[type="date"],.cav-section .fld-input{width:100%}
+}
+</style><style>/* LAYAW-MOBILE-FIX-2 */
+/* Sticky cells must be opaque. backdrop-filter is not dependable on sticky
+   table cells in iOS Safari, and at .82 alpha the cells scrolling underneath
+   read straight through the time column. */
+table.slots thead th,table.sched thead th,
+table.slots .time-cell,table.sched td.time-cell{
+  background:#141416;
+  -webkit-backdrop-filter:none;backdrop-filter:none
+}
+@media (max-width:640px){
+  /* Three stat tiles across a phone leaves ~107px each; grid items will not
+     shrink below their content, so the amounts burst out of the card. */
+  .stats{grid-template-columns:1fr 1fr;gap:10px}
+  .stat{padding:12px 14px;min-width:0}
+  .stat .n{font-size:20px}
+  .stat .l{font-size:11.5px}
+  /* A two-up form gives each field ~150px on a 375px screen. */
+  .form-grid{grid-template-columns:1fr}
+  /* Fixed minimums on a flex row cannot fit; let the row wrap instead. */
+  .recent-row{flex-wrap:wrap}
+  .recent-row .rt,.recent-row .rc{min-width:0}
+  /* Nothing may push the page sideways. */
+  .content,.card{min-width:0}
+}
+@media (max-width:360px){
+  .stats{grid-template-columns:1fr}
+  /* Title plus a right-hand link will not fit on the narrowest phones. */
+  .card-head{flex-wrap:wrap;gap:8px}
+  .card-head h3{min-width:0}
+}
+</style></head> <body> <div id="loginView" class="login-wrap" style="display:none"> <div class="login-card"> <div class="brand">
 <img id="loginLogo" alt="" style="display:none"/>
 <div>
 <div class="eyebrow">Owner access</div>
@@ -370,8 +694,8 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <circle cx="11" cy="14" r="1.3" fill="#fff" stroke="none"/>
 </svg>
 </span> <div>
-<div class="bn" id="topBiz">The Kitchen Arena</div>
-<div class="bs" id="brandSub">The Kitchen Arena</div>
+<div class="bn" id="topBiz">Dashboard</div>
+<div class="bs" id="brandSub">Owner</div>
 </div> </div> <nav class="nav" id="navMenu"> <div class="nav-item active" data-sec="dashboard">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M3 11l9-8 9 8"/>
@@ -388,7 +712,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <rect x="2" y="5" width="20" height="14" rx="2"/>
 <path d="M2 10h20"/>
-</svg> Payments</div> <div class="nav-sep">
+</svg> Payments</div><div class="nav-item" data-sec="participants"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Participants</div> <div class="nav-sep">
 </div> <div class="nav-item" data-sec="reports">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 <path d="M4 19V5M4 19h16"/>
@@ -434,7 +758,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <path d="M3 9h18M9 3v18"/>
 </svg>
 </span> <div>
-<div class="sf-n" id="footBiz">The Kitchen Arena</div>
+<div class="sf-n" id="footBiz">Dashboard</div>
 <div class="sf-r">Owner</div>
 </div> </div> </aside> <div class="app-backdrop" id="appBackdrop">
 </div> <main class="main"> <header class="appbar"> <button class="hamburger" id="hamburger">☰</button> <span class="date-pill">
@@ -452,7 +776,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <span class="dot" id="bellDot" style="display:none">0</span>
 </button> <div class="user-chip" id="userChip">
 <span class="avatar" id="userAvatar" style="overflow:hidden;padding:0">O</span>
-<span class="un" id="topBizName">The Kitchen Arena</span>
+<span class="un" id="topBizName">Owner</span>
 <span class="cv">▾</span> <div class="user-menu" id="userMenu">
 <button id="signoutBtn">Sign out</button>
 </div> </div> </header> <div class="content"> <section id="sec-dashboard" class="sec show"> <div class="dash-greet">
@@ -519,7 +843,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div> <div id="timeChart">
 </div> <div class="legend">
 <span>
-<i style="background:#1B2740">
+<i style="background:var(--acc-12,#1C1C21)">
 </i>Low</span>
 <span>
 <i style="background:var(--green)">
@@ -529,7 +853,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </i>High</span>
 </div> </div> </div> <div class="dash-row3"> <div class="card">
 <div class="card-head">
-<h3>Court Status</h3>
+<h3>Court Status</h3><span style="font-size:11.5px;color:var(--muted);margin-left:10px;font-weight:600">right now</span>
 <button id="multiCourtBtn" class="btn" style="width:auto;flex:none;margin-left:auto;padding:9px 15px;font-size:12.5px;white-space:nowrap">Block multiple courts</button>
 </div>
 <div class="court-grid" id="courtStatus">
@@ -649,7 +973,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div>
 <div class="fld full">
 <label>QR image URL</label>
-<input id="set_gcashQrUrl" placeholder="https://i.imgur.com/..."/>
+<input id="set_gcashQrUrl" placeholder="https://example.com/qr.png"/>
 </div>
 </div> </div> <div class="pay-method"> <div class="pm-head">
 <label class="switch">
@@ -669,7 +993,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div>
 <div class="fld full">
 <label>QR image URL</label>
-<input id="set_mayaQrUrl" placeholder="https://i.imgur.com/..."/>
+<input id="set_mayaQrUrl" placeholder="https://example.com/qr.png"/>
 </div>
 </div> </div> <div class="pay-method"> <div class="pm-head">
 <label class="switch">
@@ -689,7 +1013,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div>
 <div class="fld full">
 <label>QR image URL</label>
-<input id="set_bankQrUrl" placeholder="https://i.imgur.com/..."/>
+<input id="set_bankQrUrl" placeholder="https://example.com/qr.png"/>
 </div>
 </div> </div> </div> <div class="card"> <div class="card-head">
 <h3>Contact &amp; Links</h3>
@@ -730,7 +1054,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div> <h4 style="font-size:14px;color:var(--text);margin:18px 0 10px">Add a staff member</h4> <div class="add-row"> <input type="text" id="newAdminName" placeholder="Staff name"/> <input type="tel" id="newAdminPin" class="pin" placeholder="6-digit PIN" maxlength="6" inputmode="numeric"/> </div> <div class="form-err" id="adminErr">
 </div> <div style="margin-top:12px">
 <button class="act act-confirm" id="addAdminBtn" style="max-width:200px">Add staff</button>
-</div> </div> </div> </section> <section id="sec-payments" class="sec"> <div class="sec-head">
+</div> </div> </div> </section> <section id="sec-participants" class="sec"> <div class="sec-head"><h2>Participants</h2><p>Everyone who has signed the Participant Agreement &mdash; from the sign-up page or at checkout. They sign once; after that the agreement is skipped at checkout. Click anyone to see their full profile.</p></div> <div class="card"> <div class="card-head"><h3>Signed agreements</h3><span id="partCount" style="margin-left:12px;font-size:12.5px;color:var(--muted)"></span><button class="btn-ghost" id="exportParticipantsBtn" style="margin-left:auto">&#8681; Export CSV</button></div> <input type="search" id="partSearch" placeholder="Search name, email or mobile number" style="width:100%;margin-bottom:14px;border:1px solid var(--input-line);border-radius:10px;padding:11px 12px;font:inherit;background:var(--input-bg);color:var(--text)"/> <div class="table-scroll"> <table class="txn-table" id="partTable"> <thead> <tr><th>Signed</th><th>Name</th><th>Email</th><th>Mobile</th><th>Date of birth</th><th>Address</th><th>Emergency contact</th><th>Version</th><th>Source</th></tr> </thead> <tbody id="partBody"> <tr><td class="empty" colspan="9">Loading&hellip;</td></tr> </tbody> </table> </div> <p style="font-size:12.5px;color:var(--muted);margin-top:14px;line-height:1.6">This page holds personal data &mdash; dates of birth, home addresses and emergency contacts. Only you and your staff can see it; it is never shown on the public booking page. Keep exported files somewhere private, and delete them when you no longer need them.</p> </div> </section> <section id="sec-payments" class="sec"> <div class="sec-head">
 <h2>Payments</h2>
 <p>Sales summary and transaction records from the last 90 days.</p>
 </div> <div class="kpi-grid" id="payKpis">
@@ -815,7 +1139,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <label class="cav-mini" style="margin-top:8px">Time slots to block</label>
 <div class="cav-slot-actions" style="display:none"><button id="cavSelectAll" class="cav-linkbtn" type="button">Select all (whole day)</button><button id="cavClearAll" class="cav-linkbtn" type="button">Clear all</button></div>
 <div id="cavSlots" class="cav-slots"><div class="cav-empty">Pick a date first.</div></div>
-<button id="cavAddBlock" class="btn" style="width:100%;margin-top:10px;padding:11px" disabled>Block selected slots</button>
+<label class="cav-mini" style="margin-top:8px">Note &mdash; who is this for? (optional)</label><input type="text" id="cavNote" class="fld-input" placeholder="e.g. Coach Rey clinic, Ana Duque"/><div class="cav-hint">Only you and your staff can see this. Players never do.</div><button id="cavAddBlock" class="btn" style="width:100%;margin-top:10px;padding:11px" disabled>Block selected slots</button>
 </div>
 <div class="cav-section">
 <div class="cav-label">Bulk: block a date range</div>
@@ -826,7 +1150,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <div class="cav-slot-actions" style="margin-top:10px"><button id="cavBulkSelectAll" class="cav-linkbtn" type="button">Select all (whole day)</button><button id="cavBulkClearAll" class="cav-linkbtn" type="button">Clear all</button></div>
 <div id="cavBulkSlots" class="cav-slots"></div>
 <div style="display:flex;gap:10px;margin-top:10px">
-<button id="cavBulkBlock" class="btn" style="flex:1;padding:11px" disabled>Block range</button>
+</div><label class="cav-mini">Note &mdash; who is this for? (optional)</label><input type="text" id="cavBulkNote" class="fld-input" placeholder="e.g. League night"/><div style="display:flex;gap:10px;margin-top:10px"><button id="cavBulkBlock" class="btn" style="flex:1;padding:11px" disabled>Block range</button>
 <button id="cavBulkUnblock" class="btn-ghost" style="flex:1;padding:11px" disabled>Unblock range</button>
 </div>
 <div class="cav-hint">Applies to every day from start to end date (inclusive).</div>
@@ -838,7 +1162,7 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 <button class="btn-ghost" id="courtModalClose" style="width:100%;margin-top:6px;padding:13px">Done</button>
 </div>
 </div>
-<div id="slotMenu" class="slot-menu"><div class="slot-menu-head" id="slotMenuHead"></div><button class="slot-menu-item" id="slotMenuToggle"></button><button class="slot-menu-item" id="slotMenuMulti">Block multiple slots…</button><button class="slot-menu-item slot-menu-cancel" id="slotMenuCancel">Cancel</button></div>
+<div id="slotMenu" class="slot-menu"><div class="slot-menu-head" id="slotMenuHead"></div><div style="padding:2px 12px 10px"><input type="text" id="slotMenuNote" placeholder="Note &mdash; who is this for?" style="width:100%;padding:8px 10px;font:inherit;font-size:12.5px;border:1px solid var(--input-line);border-radius:8px;background:var(--input-bg);color:var(--text)"/><div style="font-size:10.5px;color:var(--muted);margin-top:5px;line-height:1.35">Only you and your staff can see this.</div></div><button class="slot-menu-item" id="slotMenuToggle"></button><button class="slot-menu-item" id="slotMenuMulti">Block multiple slots…</button><button class="slot-menu-item slot-menu-cancel" id="slotMenuCancel">Cancel</button></div>
 <div class="overlay" id="multiCourtOverlay">
 <div class="modal" style="max-width:520px;max-height:88vh;overflow-y:auto">
 <h3 style="margin-bottom:4px">Block multiple courts</h3>
@@ -924,7 +1248,8 @@ table.sched td.book-cell.pending .stt{color:var(--pend-tx)}
 </div> <div class="form-err" id="cancelErr">
 </div> <div class="modal-actions"> <button class="btn-ghost" id="cancelBack">Go back</button> <button class="act act-cancel" id="cancelGo">Cancel booking</button> </div> </div>
 </div> <div id="boot" class="loading">Loading…</div> <div class="toast" id="toast">
-</div> <script>const TKA_LOGO="https://i.imgur.com/SPrzHHN.png";let db,auth,viewYear,viewMonth,secondaryApp=null,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],CONTACTS={},ALLB=[],analyticsLoaded=!1,allContactsLoaded=!1,curSection="dashboard"
+</div> <script>/* Optional fallback logo used only when settings/config has no logoUrl. Leave "" for none. */
+const DEFAULT_LOGO="";let db,auth,viewYear,viewMonth,secondaryApp=null,SETTINGS=null,COURTS=[],dayUnsub=null,pendingUnsub=null,selectedDate=null,currentView="list",DAY=[],PENDING=[],CONTACTS={},ALLB=[],analyticsLoaded=!1,allContactsLoaded=!1,curSection="dashboard"
 ;try{const e=firebase.initializeApp(firebaseConfig,"layawOwner");try{
 APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e).activate(APPCHECK_SITE_KEY,!0)
 }catch(e){console.warn("AppCheck:",e)}
@@ -966,10 +1291,13 @@ const e=await db.collection("settings").doc("config").get();if(e.exists){SETTING
 t.setProperty("--navy-d",SETTINGS.colorPrimaryDark||darken(SETTINGS.colorPrimary,.68)),
 t.setProperty("--sidebar",darken(SETTINGS.colorPrimary,.36)),
 t.setProperty("--sidebar-2",darken(SETTINGS.colorPrimary,.5))),
-t.setProperty("--green","#0D2863"),t.setProperty("--green-d","#0A1E4C")
-;const n=SETTINGS.businessName||"Dashboard";$("loginBiz").textContent=n,$("topBiz").textContent=n,(document.getElementById("topBizName")&&(document.getElementById("topBizName").textContent=n)),
+t.setProperty("--green",SETTINGS.colorAccent||SETTINGS.colorPrimary||"#242428"),t.setProperty("--green-d",SETTINGS.colorAccentDark||SETTINGS.colorPrimaryDark||"#17171A"),
+t.setProperty("--btn-tx",SETTINGS.colorAccentText||txOn(SETTINGS.colorAccent||SETTINGS.colorPrimary||"#242428")),
+t.setProperty("--nav-tx",SETTINGS.colorPrimaryText||txOn(SETTINGS.colorPrimary||"#242428")),
+accVars(t,SETTINGS.colorAccent||SETTINGS.colorPrimary||"#242428")
+;const n=SETTINGS.businessName||CLIENT.name||"Dashboard";$("loginBiz").textContent=n,$("topBiz").textContent=n,(document.getElementById("topBizName")&&(document.getElementById("topBizName").textContent=n)),
 $("footBiz").textContent=n,document.title=n+" — Owner",SETTINGS.tagline&&($("brandSub").textContent=SETTINGS.tagline),
-$("userAvatar").textContent=(n.trim()[0]||"O").toUpperCase(),(function(){var _lu=SETTINGS.logoUrl||TKA_LOGO;$("loginLogo").src=_lu,$("loginLogo").style.display="block";[$("brandLogo"),$("footLogo"),$("userAvatar")].forEach(function(e){if(!e)return;e.innerHTML="";var t=document.createElement("img");t.src=_lu;t.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:inherit;";e.appendChild(t)})})()}const t=await db.collection("courts").get();COURTS=[],t.forEach(e=>{const t=e.data()
+$("userAvatar").textContent=(n.trim()[0]||"O").toUpperCase(),(function(){var _lu=SETTINGS.logoUrl||DEFAULT_LOGO;if(!_lu)return;$("loginLogo").src=_lu,$("loginLogo").style.display="block";[$("brandLogo"),$("footLogo"),$("userAvatar")].forEach(function(e){if(!e)return;e.innerHTML="";var t=document.createElement("img");t.src=_lu;t.style.cssText="width:100%;height:100%;object-fit:cover;border-radius:inherit;";e.appendChild(t)})})()}const t=await db.collection("courts").get();COURTS=[],t.forEach(e=>{const t=e.data()
 ;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",type:t.type||"",
 status:t.status||(t.maintenance?"maintenance":""),blocks:Array.isArray(t.blocks)?t.blocks:[]})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name))}catch(e){
 console.warn(e)}
@@ -977,7 +1305,61 @@ $("appFoot").textContent="© "+(new Date).getFullYear()+" "+(SETTINGS&&SETTINGS.
 $("datePill").textContent=(new Date).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"
 })+" ("+(new Date).toLocaleDateString("en-US",{weekday:"short"})+")"}async function startDashboard(){
 SETTINGS||await loadBase();const e=today();viewYear=e.getFullYear(),viewMonth=e.getMonth(),selectedDate=dstr(e),
-renderCalendar(),renderSchedHead(),watchDay(),watchPending(),watchCourts(),startExpiryRefresh(),openSection("dashboard")}function setActiveNav(e){
+renderCalendar(),renderSchedHead(),watchDay(),watchPending(),watchCourts(),startExpiryRefresh(),openSection("dashboard")}/* ── Participants ─────────────────────────────────────────────────────────
+   Reads the participants collection, which the rules restrict to managers.
+   Loaded on demand when the section is opened, then filtered in memory so
+   typing in the search box costs nothing. */
+let PARTICIPANTS=null
+;function partSignedOn(ts){try{return ts&&ts.toDate?ts.toDate().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):""}catch(e){return""}}
+;function partEmergency(p){return [p.emergencyName,p.emergencyRelationship,p.emergencyNumber].filter(Boolean).join(" · ")}
+/* The sign-up page's questions, by storage key. Keep the keys identical to
+   QUESTIONS in site/signup/index.html — that page writes them, this one and
+   the CSV read them. Adding a question there means adding one line here.
+   Every answer is an array: a player may tick more than one. */
+;const PART_QUESTIONS=[
+{key:"bringsYou",label:"What brings them here"},
+{key:"heardFrom",label:"Heard about us from",other:"heardFromOther"},
+{key:"interests",label:"Interested in"},
+{key:"goals",label:"Playing goals"}]
+/* Answers join with "; " rather than ", " so a cell full of options still
+   reads as a list of options and not as a run-on sentence. */
+;function partAnswers(p,q){const a=Array.isArray(p[q.key])?p[q.key].filter(Boolean):[]
+;const other=q.other&&p[q.other]?String(p[q.other]).trim():""
+;const out=a.map(v=>"Other"===v&&other?"Other: "+other:v)
+;return out.join("; ")}
+;function partSource(p){return"signup"===p.source?"Sign-up page":"Checkout"}
+;async function renderParticipants(){const body=$("partBody");if(!body)return
+;body.innerHTML='<tr><td class="empty" colspan="9">Loading…</td></tr>'
+;try{const snap=await db.collection("participants").orderBy("acceptedAt","desc").get()
+;PARTICIPANTS=[];snap.forEach(d=>PARTICIPANTS.push(Object.assign({_id:d.id},d.data())))}
+catch(e){console.warn("participants load failed",e)
+;body.innerHTML='<tr><td class="empty" colspan="9">Could not load participants. Check your connection and try again.</td></tr>';return}
+;drawParticipants()}
+;function drawParticipants(){const body=$("partBody");if(!body||!PARTICIPANTS)return
+;const q=(($("partSearch")||{}).value||"").trim().toLowerCase()
+;const rows=PARTICIPANTS.filter(p=>!q||[p.name,p.email,p.contact].some(v=>String(v||"").toLowerCase().indexOf(q)>=0))
+;const cnt=$("partCount");if(cnt)cnt.textContent=PARTICIPANTS.length?(q?rows.length+" of "+PARTICIPANTS.length:PARTICIPANTS.length+(1===PARTICIPANTS.length?" person":" people")):""
+;if(!rows.length){body.innerHTML='<tr><td class="empty" colspan="9">'+(PARTICIPANTS.length?"No one matches that search.":"No one has signed the agreement yet.")+'</td></tr>';return}
+;body.innerHTML=rows.map(p=>'<tr data-pid="'+esc(p._id)+'" style="cursor:pointer"><td>'+esc(partSignedOn(p.acceptedAt))+"</td><td>"+esc(p.name||"")
++"</td><td>"+esc(p.email||"")+"</td><td>"+esc(p.contact||"")+"</td><td>"+esc(p.dateOfBirth||"")
++"</td><td>"+esc(p.address||"")+"</td><td>"+esc(partEmergency(p))+"</td><td>"+esc(p.agreementVersion||"")
++"</td><td>"+esc(partSource(p))+"</td></tr>").join("")
+/* The answers are too long for the table without turning it into a
+   13-column scroll, so the row opens the full profile instead. */
+;body.querySelectorAll("tr[data-pid]").forEach(tr=>{tr.onclick=()=>openParticipant(tr.getAttribute("data-pid"))})}
+;function openParticipant(id){const p=(PARTICIPANTS||[]).find(x=>x._id===id);if(!p)return
+;const row=(lab,val)=>val?'<div class="mrow"><span>'+esc(lab)+":</span> "+esc(val)+"</div>":""
+;const answers=PART_QUESTIONS.map(q=>row(q.label,partAnswers(p,q))).join("")
+;$("detailModal").innerHTML="<h3>"+esc(p.name||"Participant")+"</h3>"
++row("Signed",partSignedOn(p.acceptedAt))+row("Source",partSource(p))
++row("Email",p.email)+row("Mobile",p.contact)+row("Date of birth",p.dateOfBirth)
++row("Address",p.address)+row("Emergency contact",partEmergency(p))
++row("Agreement version",p.agreementVersion)+row("Booking",p.bookingId)
++(answers?'<div class="mrow" style="margin-top:12px;opacity:.7">&mdash;</div>'+answers:"")
++'<div class="modal-actions"><button class="btn-ghost" id="partClose">Close</button></div>'
+;$("detailOverlay").classList.add("show")
+;$("partClose").onclick=()=>$("detailOverlay").classList.remove("show")}
+;function setActiveNav(e){
 document.querySelectorAll(".nav-item").forEach(e=>e.classList.remove("active")),e&&e.classList.add("active")}
 function closeSidebar(){$("sidebar").classList.remove("open"),$("appBackdrop").classList.remove("show")}
 auth&&auth.onAuthStateChanged(async e=>{if($("boot").style.display="none",e){let t=!1;try{
@@ -1013,7 +1395,7 @@ $("newPw2").addEventListener("keydown",e=>{"Enter"===e.key&&$("pwSaveBtn").click
 dashboard:"Dashboard",bookings:"Bookings",customers:"Customers",reports:"Reports",settings:"Settings"}
 ;async function openSection(e){curSection=e,document.querySelectorAll(".sec").forEach(e=>e.classList.remove("show"))
 ;const t=$("sec-"+e)
-;t&&t.classList.add("show"),"dashboard"===e?renderDashboard():"reports"===e?renderReports():"pricing"===e?(fillSettings(),
+;t&&t.classList.add("show"),"participants"===e?renderParticipants():"dashboard"===e?renderDashboard():"reports"===e?renderReports():"pricing"===e?(fillSettings(),
 renderRates(),renderPromos()):"payments"===e?renderPayments():"settings"===e&&(loadAdmins(),fillSettings())}
 function showSoon(e,t){curSection="soon",document.querySelectorAll(".sec").forEach(e=>e.classList.remove("show")),
 $("sec-soon").classList.add("show"),$("soonTitle").textContent=e+" — coming soon",$("soonDesc").textContent=t}
@@ -1075,21 +1457,43 @@ function renderTimeChart(){const e=Number(SETTINGS.openHour??8),t=Number(SETTING
 ;ALLB.forEach(e=>{e.date===n&&"cancelled"!==e.status&&(e.slots||[]).forEach(e=>{const t=Math.floor(hm2min(e)/60)
 ;a[t]=(a[t]||0)+1})});const o=[];for(let n=e;n<t;n++)o.push({label:hourLabel(60*n),value:a[n]||0})
 ;const s=o.some(e=>e.value>0);$("timeChart").innerHTML=s?barChart(o):'<div class="empty">No bookings yet today.</div>'}
-function nowMin(){const e=new Date;return 60*e.getHours()+e.getMinutes()}function renderCourtStatus(){
+function nowMin(){const e=new Date;return 60*e.getHours()+e.getMinutes()}function slotKeyNow(mins,len){const st=Math.floor(mins/len)*len;return String(Math.floor(st/60)).padStart(2,"0")+":"+String(st%60).padStart(2,"0")}
+function renderCourtStatus(){
 const e=$("courtStatus");if(!COURTS.length)return void(e.innerHTML='<div class="empty">No courts set up yet.</div>');
 const t=dstr(today()),n=Number(SETTINGS.slotMinutes??60),a=nowMin();e.innerHTML="";COURTS.forEach(o=>{
 let s="avail",r="Available",unavail="unavailable"===String(o.status).toLowerCase();
 if(unavail){s="na",r="Not Available"}else if("maintenance"===String(o.status).toLowerCase()){s="maint",r="Maintenance"}else{
-ALLB.some(e=>e.date===t&&e.court===o.name&&"confirmed"===e.status&&(e.slots||[]).some(e=>{const t=hm2min(e);return a>=t&&a<t+n}))&&(s="occ",r="Occupied")}
-const i=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"Outdoor",c=document.createElement("div");c.className="court-card";c.dataset.cid=o.id;
+ALLB.some(e=>e.date===t&&e.court===o.name&&"confirmed"===e.status&&(e.slots||[]).some(e=>{const t=hm2min(e);return a>=t&&a<t+n}))&&(s="occ",r="Occupied");/* A block covering this minute is not "Available" either. */
+if("avail"===s&&isCourtBlocked(o,t,slotKeyNow(a,n)))s="maint",r="Blocked"}
+const i=o.type?o.type.charAt(0).toUpperCase()+o.type.slice(1):"",c=document.createElement("div");c.className="court-card";c.dataset.cid=o.id;
 const hint=unavail?"Tap to manage availability":"Tap to manage availability";
-c.innerHTML='<div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="cn">'+esc(o.name)+'</div><div class="ct">('+esc(i)+')</div><span class="pill '+s+'">'+r+'</span><div class="toggle-hint">'+hint+'</div>';
+c.innerHTML='<div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg></div><div class="cn">'+esc(o.name)+'</div>'+(i?'<div class="ct">('+esc(i)+')</div>':'')+'<span class="pill '+s+'">'+r+'</span><div class="toggle-hint">'+hint+'</div>';
 c.onclick=()=>openCourtModal(o);
 e.appendChild(c)})}
 let CAV_COURT=null;
-function openCourtModal(court){CAV_COURT=court;
+let BLOCK_NOTES={}/* ── Block notes ──────────────────────────────────────────────────────────
+   One note per court + date + SLOT. Kept out of courts/{id} on purpose: that
+   document is public so the booking page can grey out blocked slots, and these
+   notes name real people. */
+;function blockNoteKey(courtId,date,slot){return courtId+"__"+date+"__"+String(slot).replace(":","-")}
+;async function saveBlockNote(courtId,date,slot,note){const id=blockNoteKey(courtId,date,slot),txt=(note||"").trim()
+;try{if(txt){await db.collection("courtBlockNotes").doc(id).set({courtId:courtId,date:date,slot:slot,note:txt,
+updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:!0});BLOCK_NOTES[id]=txt}
+else{await db.collection("courtBlockNotes").doc(id).delete().catch(function(){});delete BLOCK_NOTES[id]}
+return!0}catch(e){console.warn("block note save failed",e);toast("Could not save the note.");return!1}}
+;async function loadBlockNotesForCourt(courtId){try{
+const snap=await db.collection("courtBlockNotes").where("courtId","==",courtId).get()
+;snap.forEach(function(d){const t=d.data();if(t&&t.date&&t.slot)BLOCK_NOTES[blockNoteKey(t.courtId,t.date,t.slot)]=t.note||""})}
+catch(e){console.warn("block notes load failed",e)}}
+;async function loadBlockNotesForDate(date){try{
+const snap=await db.collection("courtBlockNotes").where("date","==",date).get()
+;snap.forEach(function(d){const t=d.data();if(t&&t.slot)BLOCK_NOTES[blockNoteKey(t.courtId,t.date,t.slot)]=t.note||""})}
+catch(e){console.warn("block notes load failed",e)}}
+;function noteFor(courtId,date,slot){return BLOCK_NOTES[blockNoteKey(courtId,date,slot)]||""}
+
+;function openCourtModal(court){CAV_COURT=court;
 $("courtModalTitle").textContent=court.name+(court.type?" ("+court.type+")":"");
-renderCavStatus();$("cavDate").value="";renderCavSlots();renderCavBlocks();
+renderCavStatus();$("cavDate").value="";$("cavNote").value="";$("cavBulkNote").value="";renderCavSlots();renderCavBlocks();loadBlockNotesForCourt(court.id).then(renderCavBlocks);
 $("cavBulkStart").value="";$("cavBulkEnd").value="";renderBulkSlots();
 $("courtOverlay").classList.add("show")}
 function closeCourtModal(){$("courtOverlay").classList.remove("show");CAV_COURT=null}
@@ -1123,7 +1527,9 @@ async function cavBulkBlock(){const dates=bulkDates();if(!dates.length)return to
 const picked=[...$("cavBulkSlots").querySelectorAll(".cav-slot.on")].map(el=>el.dataset.k);if(!picked.length)return;
 const bl=courtBlocks().slice();dates.forEach(d=>{let ex=bl.find(b=>b.date===d);
 if(ex)ex.slots=[...new Set([...(ex.slots||[]),...picked])].sort();else bl.push({date:d,slots:picked.slice().sort()})});
-const ok=await saveCourtField({blocks:bl});if(ok){renderCavSlots(),renderCavBlocks();toast("Blocked "+dates.length+" day(s).")}}
+const ok=await saveCourtField({blocks:bl});if(ok){const nt=$("cavBulkNote").value;
+if(nt&&nt.trim()&&CAV_COURT)for(const d of dates)for(const sl of picked)await saveBlockNote(CAV_COURT.id,d,sl,nt);
+$("cavBulkNote").value="";renderCavSlots(),renderCavBlocks();toast("Blocked "+dates.length+" day(s).")}}
 async function cavBulkUnblock(){const dates=new Set(bulkDates());if(!dates.size)return toast("Check your dates.");
 const picked=new Set([...$("cavBulkSlots").querySelectorAll(".cav-slot.on")].map(el=>el.dataset.k));if(!picked.size)return;
 let bl=courtBlocks().map(b=>{if(!dates.has(b.date))return b;
@@ -1134,7 +1540,7 @@ if(!bl.length){wrap.innerHTML='<div class="cav-empty">No blocks set.</div>';retu
 wrap.innerHTML="";bl.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(b=>{
 const item=document.createElement("div");item.className="cav-block-item";
 const slots=(b.slots||[]).slice().sort().map(sl=>hourLabel(hm2min(sl))).join(", ");
-item.innerHTML='<div class="bd"><strong>'+esc(niceD(b.date))+'</strong><br>'+esc(slots)+'</div>';
+item.innerHTML='<div class="bd"><strong>'+esc(niceD(b.date))+'</strong></div>';const bd=item.querySelector(".bd");(b.slots||[]).slice().sort().forEach(function(sl){const row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:8px;margin-top:6px";const lab=document.createElement("span");lab.textContent=hourLabel(hm2min(sl));lab.style.cssText="font-size:12px;color:var(--muted);min-width:74px;flex-shrink:0";const inp=document.createElement("input");inp.type="text";inp.className="blk-note";inp.placeholder="Note — who is this for?";inp.value=CAV_COURT?noteFor(CAV_COURT.id,b.date,sl):"";inp.style.cssText="flex:1;padding:6px 9px;font:inherit;font-size:12.5px;border:1px solid var(--input-line);border-radius:8px;background:var(--input-bg);color:var(--text)";inp.onchange=async function(){if(CAV_COURT){await saveBlockNote(CAV_COURT.id,b.date,sl,inp.value);try{renderGrid()}catch(e){}toast("Note saved.")}};row.appendChild(lab);row.appendChild(inp);bd.appendChild(row)});
 const x=document.createElement("button");x.className="bx";x.textContent="Remove";
 x.onclick=()=>removeBlock(b.date);item.appendChild(x);wrap.appendChild(item)})}
 function niceD(d){const[y,m,da]=d.split("-").map(Number);return new Date(y,m-1,da).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric",year:"numeric"})}
@@ -1153,10 +1559,13 @@ const bl=courtBlocks().slice();const existing=bl.find(b=>b.date===d);
 if(existing){existing.slots=[...new Set([...(existing.slots||[]),...picked])].sort()}
 else bl.push({date:d,slots:picked.slice().sort()});
 const ok=await saveCourtField({blocks:bl});
-if(ok){renderCavSlots();renderCavBlocks();toast("Slots blocked for "+niceD(d)+".")}}
-async function removeBlock(date){const bl=courtBlocks().filter(b=>b.date!==date);
+if(ok){const nt=$("cavNote").value;
+if(nt&&nt.trim()&&CAV_COURT)for(const sl of picked)await saveBlockNote(CAV_COURT.id,d,sl,nt);
+$("cavNote").value="";renderCavSlots();renderCavBlocks();toast("Slots blocked for "+niceD(d)+".")}}
+async function removeBlock(date){const bl0=courtBlocks().find(function(x){return x.date===date});const bl=courtBlocks().filter(b=>b.date!==date);
 const ok=await saveCourtField({blocks:bl});
-if(ok){renderCavSlots();renderCavBlocks();toast("Block removed.")}}
+if(ok){if(CAV_COURT){const gone=(courtBlocks().find(function(x){return x.date===date})||{}).slots||[];const had=(bl0||[]).slots||[];for(const sl of had)await saveBlockNote(CAV_COURT.id,date,sl,"")}
+renderCavSlots();renderCavBlocks();toast("Block removed.")}}
 async function renderRecent(){const e=$("recentList"),t=orderGroups(ALLB.slice().sort((e,t)=>{
 const n=e.createdAt&&e.createdAt.seconds||0;return(t.createdAt&&t.createdAt.seconds||0)-n
 }).filter(e=>"cancelled"!==e.status)).slice(0,5);t.length?(await ensureContacts(t.map(e=>e[0])),e.innerHTML="",
@@ -1233,7 +1642,7 @@ function openSlotMenu(ev,court,slotKey,isBlocked){ev.stopPropagation();
 SLOTMENU_CTX={court:court,slotKey:slotKey,blocked:isBlocked};
 const menu=$("slotMenu");
 $("slotMenuHead").textContent=court.name+" · "+hourLabel(hm2minKey(slotKey));
-$("slotMenuToggle").textContent=isBlocked?"Open this slot":"Block this slot";
+$("slotMenuToggle").textContent=isBlocked?"Unblock this slot":"Block this slot";var __ni=$("slotMenuNote");__ni.value=noteFor(court.id,selectedDate,slotKey);__ni.onchange=async function(){await saveBlockNote(court.id,selectedDate,slotKey,__ni.value);try{renderGrid()}catch(e){}toast("Note saved.")};
 menu.classList.add("show");
 /* Position next to the tapped cell, kept inside the viewport. */
 const r=ev.currentTarget.getBoundingClientRect(),mw=menu.offsetWidth||200,mh=menu.offsetHeight||160;
@@ -1244,6 +1653,7 @@ menu.style.left=left+"px";menu.style.top=top+"px"}
 function closeSlotMenu(){$("slotMenu").classList.remove("show");SLOTMENU_CTX=null}
 function hm2minKey(k){const p=String(k||"").split(":");return 60*(Number(p[0])||0)+(Number(p[1])||0)}
 async function slotMenuToggle(){if(!SLOTMENU_CTX)return;const{court,slotKey,blocked}=SLOTMENU_CTX;
+const typedNote=($("slotMenuNote").value||"").trim();
 closeSlotMenu();
 const cur=Array.isArray(court.blocks)?court.blocks.map(b=>({date:b.date,slots:(b.slots||[]).slice()})):[];
 let next;
@@ -1253,6 +1663,11 @@ if(ex){if(!ex.slots.includes(slotKey))ex.slots.push(slotKey);ex.slots.sort()}
 else next.push({date:selectedDate,slots:[slotKey]})}
 try{await db.collection("courts").doc(court.id).update({blocks:next});
 const idx=COURTS.findIndex(c=>c.id===court.id);if(idx>=0)COURTS[idx].blocks=next;
+/* Opening the last blocked slot of a date leaves the note attached to
+   nothing — clear it so no name lingers. */
+/* This toggle affects ONE slot, so clear only that slot's note. */
+if(blocked)await saveBlockNote(court.id,selectedDate,slotKey,"");
+else if(typedNote)await saveBlockNote(court.id,selectedDate,slotKey,typedNote);
 renderCourtStatus();renderSchedHead();renderGrid();
 toast(blocked?"Slot opened.":"Slot blocked.")}
 catch(e){console.error(e),toast("Could not update. Please try again.")}}
@@ -1274,6 +1689,8 @@ try{renderSchedHead();renderGrid()}catch(e){}
 if(CAV_COURT){var fresh=COURTS.find(function(c){return c.id===CAV_COURT.id});if(fresh){CAV_COURT=fresh;try{renderCavStatus();renderCavBlocks();if($("cavDate").value)renderCavSlots()}catch(e){}}}
 },function(e){console.warn("courts watch:",e)})}
 function watchDay(){dayUnsub&&dayUnsub(),$("dayTitle").textContent=niceDate(selectedDate),
+/* block notes are per-date, so refresh them whenever the day changes */
+loadBlockNotesForDate(selectedDate).then(function(){try{renderGrid()}catch(e){}}),
 dayUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(async e=>{DAY=[],e.forEach(e=>DAY.push({
 id:e.id,...e.data()})),DAY.sort((e,t)=>{const n=e.createdAt&&e.createdAt.seconds||0
 ;return(t.createdAt&&t.createdAt.seconds||0)-n});const t=orderGroups(DAY.filter(e=>isLiveBooking(e)));let n=0,a=0
@@ -1337,6 +1754,7 @@ a.onclick=()=>openDetail(e),r.appendChild(a)}else{const t=document.createElement
 ;const o=document.createElement("div");
 if("unavailable"===String(e.status||"").toLowerCase()){o.className="scell-na",o.textContent="Not Available"}
 else if(isCourtBlocked(e,selectedDate,SLOTKEY)){o.className="scell-blocked",o.textContent="Blocked",
+(function(){const nt=noteFor(e.id,selectedDate,SLOTKEY);if(nt){o.title=nt;const d=document.createElement("div");d.textContent=nt;d.style.cssText="font-size:10.5px;opacity:.85;margin-top:2px;white-space:normal;line-height:1.3;font-weight:600";o.appendChild(d)}})(),
 o.style.cursor="pointer",o.onclick=ev=>openSlotMenu(ev,e,SLOTKEY,!0)}
 else{o.className="scell-open",o.textContent="Open",
 o.style.cursor="pointer",o.onclick=ev=>openSlotMenu(ev,e,SLOTKEY,!1)}
@@ -1630,7 +2048,16 @@ active:$("promoActive").checked,days:a,timeWindows:o,dateRanges:r,usageLimit:Num
 usageCount:0,minHours:Number($("promoMinHours").value||0),createdAt:firebase.firestore.FieldValue.serverTimestamp()}),
 $("promoOverlay").classList.remove("show"),toast("Promo code saved."),renderPromos()}catch(e){console.error(e),
 $("promoErr").textContent="Could not save. Make sure the promos rule is added in Firebase."}finally{c.disabled=!1,
-c.textContent="Save promo"}},$("exportCsvBtn").onclick=async()=>{await ensureAnalytics(),await ensureAllContacts()
+c.textContent="Save promo"}},$("partSearch")&&($("partSearch").oninput=drawParticipants),
+$("exportParticipantsBtn")&&($("exportParticipantsBtn").onclick=()=>{
+if(!PARTICIPANTS||!PARTICIPANTS.length)return toast("Nothing to export yet.")
+;const rows=[["Signed","Name","Email","Mobile","Date of birth","Address","Emergency name","Relationship","Emergency number","Agreement version","Booking ID","Source"].concat(PART_QUESTIONS.map(q=>q.label))]
+;PARTICIPANTS.forEach(p=>rows.push([partSignedOn(p.acceptedAt),p.name,p.email,p.contact,p.dateOfBirth,p.address,p.emergencyName,p.emergencyRelationship,p.emergencyNumber,p.agreementVersion,p.bookingId,partSource(p)].concat(PART_QUESTIONS.map(q=>partAnswers(p,q)))))
+;const body=rows.map(r=>r.map(v=>{const t=String(null==v?"":v);return/[",\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t}).join(",")).join("\n")
+;const blob=new Blob([body],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),a=document.createElement("a")
+;a.href=url,a.download=(SETTINGS&&SETTINGS.businessName||"club").replace(/[^a-z0-9]+/gi,"_").toLowerCase()+"_participants.csv"
+;document.body.appendChild(a),a.click(),a.remove(),URL.revokeObjectURL(url),toast("CSV exported.")}),
+$("exportCsvBtn").onclick=async()=>{await ensureAnalytics(),await ensureAllContacts()
 ;const e=[["Date","Booking ID","Court","Slots","Amount","Method","Status","Player","Contact"]]
 ;ALLB.slice().sort((e,t)=>e.date<t.date?1:-1).forEach(t=>{
 "cancelled"!==t.status&&e.push([t.date||"",t.bookingId||t.id,t.court||"",(t.slots||[]).join(" "),t.amount||0,t.paymentMethod||"",t.status||"",nameOf(t),contactOf(t)])
@@ -1668,4 +2095,36 @@ p+=n.length,t.textContent="Removed "+p+"/"+s.length+"…"}t.style.color="var(--g
 t.textContent="✓ Exported "+s.length+" receipt"+(1===s.length?"":"s")+" and freed storage. Booking records kept.",
 toast("Receipts exported & cleared.")}catch(e){console.error(e),t.style.color="var(--cancel)",
 t.textContent="Error: "+(e&&e.message||e)+". No receipts were deleted.",toast("Export failed — nothing deleted.")
-}finally{e.disabled=!1}},loadBase()</script> </body> </html>
+}finally{e.disabled=!1}},loadBase()</script> <script>/* LAYAW-MODAL-MOBILE */
+(function(){
+  /* Every dashboard has several overlays and each is opened from its own
+     place, so watch the class instead of patching each call site. */
+  function anyOpen(){return !!document.querySelector(".overlay.show, .modal-overlay.show")}
+  function sync(){document.body.classList.toggle("layaw-modal-open", anyOpen())}
+  try{
+    new MutationObserver(sync).observe(document.documentElement,
+      {subtree:true, attributes:true, attributeFilter:["class"]});
+    document.addEventListener("DOMContentLoaded", sync);
+    sync();
+  }catch(e){}
+})();
+</script><script>/* LAYAW-BUILD-STAMP */
+(function(){
+  /* So the build a phone has loaded can be read off the screen. */
+  var B = "2026-08-07a";
+  document.documentElement.setAttribute("data-build", B);
+  try{ console.log("LAYAW build " + B); }catch(e){}
+  function stamp(){
+    var side = document.querySelector(".sidebar");
+    if(!side || side.querySelector(".layaw-build")) return;
+    var d = document.createElement("div");
+    d.className = "layaw-build";
+    d.textContent = "build " + B;
+    d.style.cssText = "margin-top:auto;padding:10px 16px;font-size:10.5px;"
+      + "opacity:.45;letter-spacing:.04em";
+    side.appendChild(d);
+  }
+  document.addEventListener("DOMContentLoaded", stamp);
+  stamp();
+})();
+</script></body> </html>
