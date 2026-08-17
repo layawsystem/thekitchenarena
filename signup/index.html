@@ -1,0 +1,509 @@
+<!DOCTYPE html> <html lang="en"> <head><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"/><meta name="theme-color" content="#0A0A0C"/><!-- ⬇ PRE-LAUNCH ONLY — DELETE THIS ONE LINE ON GO-LIVE DAY ⬇
+     Keeps Google out of the sign-up page while the venue is still being set
+     up. Leave it in and the page will never appear in search results. -->
+<meta name="robots" content="noindex,nofollow"> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>First-Time Player Sign-Up</title> <link rel="preconnect" href="https://www.google.com"/> <link rel="preconnect" href="https://content-firebaseappcheck.googleapis.com" crossorigin/> <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+<!-- ══════════════════ CLIENT CONFIG · EDIT THIS BLOCK ONLY ══════════════════
+     Keep this block IDENTICAL in all 6 pages:
+       index.html · status.html · signup/index.html · admin/index.html
+       owner/index.html · owner/confirm.html
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+/* 1 · Firebase web config — console > Project settings > Your apps > Web app > Config */
+const firebaseConfig={
+apiKey:"AIzaSyBdm8eunNIggHZAUtkmYnCHXdyA0GgueuQ",
+authDomain:"rallysocial.firebaseapp.com",
+projectId:"rallysocial",
+storageBucket:"rallysocial.firebasestorage.app",
+messagingSenderId:"596573981033",
+appId:"1:596573981033:web:2c8dc245b783ed662d55f8"
+};
+/* 2 · App Check reCAPTCHA v3 SITE key (console > App Check > Apps > Web).
+       Leave the PASTE_ text as-is to run without App Check. */
+const APPCHECK_SITE_KEY="6Lffb3ctAAAAALXpz7GesLrsisxsj28sBIb4WWWE";
+/* 3 · Venue details — used for page titles and the Privacy / Terms text. */
+const CLIENT={
+name:"Rally Social",
+sport:"Pickleball",
+email:"hello@rallysocial.net",
+address:"Rally Social Sports Center, 2nd Floor, CityMall Dau, Dau Access Rd, Dau, Mabalacat, Pampanga 2010",
+siteUrl:"https://booking.rallysocial.net",
+docsUpdated:"July 28, 2026"
+};
+</script>
+<!-- ═════════════════════ END CLIENT CONFIG ═════════════════════ -->
+<script>/* ── LAYAW THEME HELPERS · identical in all 6 pages ────────────────────────
+   txOn(hex)        -> "#231803" or "#FFFFFF", whichever reads on that colour.
+   accVars(el,hex)  -> writes --acc-05 … --acc-55 (alpha shades) plus
+                       --acc-lite / --acc-tint (light mixes) and --link onto
+                       :root, so every highlight follows the client's accent. */
+function txOn(h){h=String(h||"").replace("#","");if(3===h.length)h=h.split("").map(function(c){return c+c}).join("");if(6!==h.length)return"#FFFFFF";var n=parseInt(h,16);function f(c){c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)}var L=.2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(255&n);return L>.205?"#231803":"#FFFFFF"}
+function accVars(el,h){h=String(h||"").replace("#","");if(3===h.length)h=h.split("").map(function(c){return c+c}).join("");if(6!==h.length||!el)return;var n=parseInt(h,16),r=n>>16&255,g=n>>8&255,b=255&n;function a(v){return"rgba("+r+","+g+","+b+","+v+")"}function mix(w){return"rgb("+Math.round(r+(255-r)*w)+","+Math.round(g+(255-g)*w)+","+Math.round(b+(255-b)*w)+")"}el.setProperty("--acc-05",a(.05));el.setProperty("--acc-08",a(.08));el.setProperty("--acc-12",a(.12));el.setProperty("--acc-22",a(.22));el.setProperty("--acc-40",a(.4));el.setProperty("--acc-55",a(.55));el.setProperty("--acc-lite",mix(.45));el.setProperty("--acc-tint",mix(.62));el.setProperty("--link",mix(.1));el.setProperty("--brand-l",mix(.35));el.setProperty("--btn-bd",a(.45));el.setProperty("--input-focus",a(.55));el.setProperty("--sel-bd",a(.55))}</script>
+<script>document.title=CLIENT.name+" — Player Sign-Up";</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* Glass theme tokens, same values as the booking page. This page was written
+   after the theme settled, so it uses them directly instead of the flat sheet
+   plus an override block. Firestore settings/config still overrides the four
+   brand colours at runtime — see applyTheme(). */
+:root{
+  --bg:#070708;
+  --card:rgba(255,255,255,.048);
+  --elev:rgba(255,255,255,.075);
+  --line:rgba(255,255,255,.10);
+  --text:#EAE6DE;
+  --text-2:#BFB9AE;
+  --muted:#8B857A;
+  --disabled:#57534A;
+  --input-bg:rgba(255,255,255,.04);
+  --input-line:rgba(255,255,255,.12);
+  --brand-l:#E1DDD6;
+  --glass:22px;
+  --radius:18px;
+  --shadow:0 18px 44px rgba(0,0,0,.55);
+  --acc-05:rgba(255,255,255,.045);
+  --acc-08:rgba(255,255,255,.07);
+  --acc-12:rgba(255,255,255,.10);
+  --acc-22:rgba(255,255,255,.16);
+  --acc-40:rgba(255,255,255,.28);
+  --acc-55:rgba(255,255,255,.38);
+  --acc-lite:#D8D3C8;
+  --acc-tint:#C9C2B4;
+  --link:var(--acc-lite);
+  --input-focus:var(--acc-55);
+  --info-bg:var(--acc-08);
+  --info-line:var(--acc-22);
+  --info-tx:var(--acc-tint);
+  --ok-bg:rgba(72,167,104,.14); --ok-tx:#7BD79B; --ok-bd:rgba(72,167,104,.34);
+  --err-tx:#EFA0A7;
+  --btn-dis-bg:rgba(255,255,255,.05);
+  --navy:#242428;  --navy-d:#17171A;
+  --green:#242428; --green-d:#17171A;
+  --btn-tx:#FFFFFF; --nav-tx:#FFFFFF; --btn-bd:rgba(255,255,255,.20);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{max-width:100%;overflow-x:hidden}
+body{
+  font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1150px 640px at 86% -8%,var(--acc-12),transparent 60%),
+    radial-gradient(880px 540px at -10% 106%,var(--acc-08),transparent 58%),
+    #070708;
+  background-attachment:fixed;
+}
+img{max-width:100%}
+.wrap{max-width:720px;margin:0 auto;padding:22px 16px 60px}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{width:52px;height:52px;border-radius:12px;object-fit:cover}
+.brand .eyebrow{font-size:11px;letter-spacing:.22em;font-weight:700;color:var(--link);text-transform:uppercase}
+.brand h1{font-size:22px;font-weight:800;color:#F7F5F1;letter-spacing:-.02em;line-height:1.1}
+.subline{color:var(--muted);font-size:14px;margin:10px 2px 0}
+
+.card{
+  background:linear-gradient(158deg,rgba(255,255,255,.062),rgba(255,255,255,.022));
+  -webkit-backdrop-filter:blur(var(--glass)) saturate(150%);
+  backdrop-filter:blur(var(--glass)) saturate(150%);
+  border:1px solid rgba(255,255,255,.085);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.075);
+  border-radius:var(--radius);padding:18px;margin-top:16px;
+}
+.card h3{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-.01em;margin-bottom:6px}
+.card .hint{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.55}
+.step{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--link);text-transform:uppercase;margin-bottom:8px}
+
+label.fl{display:block;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--text)}
+label.fl .opt{font-weight:500;font-size:12.5px;color:var(--muted);margin-left:6px}
+.field-gap{margin-bottom:16px}
+.field-gap:last-child{margin-bottom:0}
+input[type=email],input[type=tel],input[type=text],input[type=date]{
+  width:100%;padding:12px 14px;border:1px solid var(--input-line);border-radius:10px;
+  font:inherit;background:var(--input-bg);color:var(--text);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+input:focus{outline:2px solid var(--input-focus);border-color:var(--acc-55)}
+/* Safari renders an empty date input as blank with no affordance at all. */
+input[type=date]{min-height:46px}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.75)}
+
+/* ── Multi-answer question groups ────────────────────────────────────────
+   Q2–Q5 are checkboxes, not radios: Jay confirmed a player may pick more
+   than one. Each option is a full-width tap target — on a phone these are
+   the only things on the page a thumb has to hit accurately. */
+.opts{display:grid;gap:8px}
+@media (min-width:560px){.opts{grid-template-columns:1fr 1fr}}
+.opt-row{
+  display:flex;gap:11px;align-items:flex-start;cursor:pointer;
+  border:1px solid var(--input-line);border-radius:12px;padding:12px 14px;
+  background:var(--input-bg);transition:border-color .12s ease,background .12s ease;
+}
+.opt-row:hover{border-color:var(--acc-40)}
+.opt-row.on{border-color:var(--acc-55);background:var(--acc-08)}
+.opt-row input{width:18px;height:18px;flex:none;margin-top:1px;accent-color:var(--green);cursor:pointer}
+.opt-row span{font-size:13.5px;line-height:1.45;color:var(--text-2)}
+.opt-row.on span{color:var(--text)}
+.other-wrap{margin-top:10px;display:none}
+.other-wrap.show{display:block}
+
+/* ── Participant Agreement ───────────────────────────────────────────── */
+#agreementBody{max-height:300px;overflow-y:auto;padding:16px 18px;border:1px solid var(--input-line);border-radius:12px;background:var(--input-bg);font-size:13.5px;line-height:1.65;color:var(--text-2)}
+#agreementBody h2{font-size:14px;font-weight:800;color:var(--text);margin:0 0 6px;letter-spacing:.01em}
+#agreementBody h3{font-size:13px;font-weight:800;color:var(--text);margin:18px 0 6px}
+#agreementBody p{margin:0 0 9px}
+#agreementBody ul{margin:0 0 10px;padding-left:20px}
+#agreementBody li{margin:0 0 3px}
+#agreementBody strong{color:var(--text)}
+.agr-scrollnote{font-size:12px;color:var(--muted);margin:8px 0 18px;text-align:center}
+.agr-accept{display:flex;gap:11px;align-items:flex-start;margin-top:18px;padding:14px 16px;border:1px solid var(--input-line);border-radius:12px;background:var(--acc-05);cursor:pointer}
+.agr-accept input{width:19px;height:19px;flex-shrink:0;margin-top:1px;accent-color:var(--green);cursor:pointer}
+.agr-accept span{font-size:13.5px;line-height:1.55;color:var(--text-2)}
+
+.btn{
+  width:100%;background:var(--green);color:var(--btn-tx);
+  border:1px solid var(--btn-bd);padding:15px;border-radius:12px;
+  font:inherit;font-weight:700;font-size:16px;cursor:pointer;margin-top:18px;
+  box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.38);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 62%);
+  transition:background-color .15s ease;
+}
+.btn:hover{background-color:var(--green-d)}
+.btn:disabled{background:var(--btn-dis-bg);background-image:none;color:var(--disabled);border-color:rgba(255,255,255,.08);box-shadow:none;cursor:not-allowed}
+.submit-note{font-size:12.5px;color:var(--muted);margin-top:12px;text-align:center;line-height:1.6}
+.submit-note a{color:var(--link)}
+
+.note{border:1px solid var(--info-line);background:var(--info-bg);color:var(--info-tx);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.6;margin-top:14px}
+.note.ok{border-color:var(--ok-bd);background:var(--ok-bg);color:var(--ok-tx)}
+
+.error-box,.loading{text-align:center;padding:60px 16px;color:var(--muted)}
+.error-box{color:var(--err-tx);font-weight:600}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(16,16,19,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);color:#fff;padding:14px 20px;border-radius:12px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center;z-index:60}
+.toast.show{opacity:1}
+
+.success{max-width:520px;margin:40px auto;text-align:center}
+.success .check{width:84px;height:84px;border-radius:50%;background:var(--ok-bg);color:var(--ok-tx);display:grid;place-items:center;font-size:42px;margin:0 auto 18px}
+.success h2{color:var(--text);font-size:26px;margin-bottom:14px}
+.success p.msg{color:var(--muted);font-size:14px;margin-bottom:22px;line-height:1.7}
+
+.footer{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);text-align:center}
+.footer-addr{display:flex;justify-content:center;align-items:center;margin-bottom:8px}
+.footer-addr a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13.5px;font-weight:600;text-decoration:none}
+.footer-addr a:hover{color:var(--brand-l);text-decoration:underline}
+.footer-addr a svg{width:15px;height:15px;flex:none}
+.footer-social{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 4px}
+.footer-social a{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:13.5px;font-weight:600;text-decoration:none}
+.footer-social a:hover{color:var(--brand-l);text-decoration:underline}
+.footer-social a svg{width:15px;height:15px;flex:none}
+.footer-meta{font-size:12px;color:var(--muted);margin-top:10px}
+.footer-meta a{color:var(--muted);text-decoration:none}
+.footer-meta a:hover{text-decoration:underline}
+.footer .dot{margin:0 6px;color:var(--muted)}
+</style></head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <img id="logo" alt="" style="display:none"/>
+    <div>
+      <div class="eyebrow" id="bizEyebrow">Pickleball</div>
+      <h1 id="bizName">Loading…</h1>
+    </div>
+  </div>
+  <p class="subline" id="bizTagline"></p>
+
+  <div id="loading" class="loading">Loading the sign-up form…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6"><span id="loadHintMsg">First visit takes a few seconds longer. Still connecting&hellip;</span><br><br><button id="retryLoad" style="display:none;margin-top:8px;background:var(--green,#E0B654);color:#231803;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div>
+  <div id="errorBox" class="error-box" style="display:none"></div>
+
+  <div id="app" style="display:none">
+    <div class="card">
+      <h3 id="welcomeTitle">Welcome!</h3>
+      <p class="hint" id="welcomeText">We're excited to have you play with us. Please complete this short form so we can get to know you and help you have a great first experience.</p>
+      <p class="hint" style="margin-bottom:0">You only fill this in once. After this, booking a court skips the agreement and goes straight to payment.</p>
+    </div>
+
+    <div class="card">
+      <div class="step">Step 1 of 3</div>
+      <h3>Your information</h3>
+      <p class="hint">The venue needs these to reach you, and to reach someone on your behalf if anything happens on court.</p>
+      <div class="field-gap"><label class="fl" for="nameInput">Full name</label><input type="text" id="nameInput" autocomplete="name" placeholder="Juan Dela Cruz"/></div>
+      <div class="field-gap"><label class="fl" for="contactInput">Mobile number</label><input type="tel" id="contactInput" autocomplete="tel" placeholder="09XX XXX XXXX"/></div>
+      <div class="field-gap"><label class="fl" for="emailInput">Email address</label><input type="email" id="emailInput" autocomplete="email" placeholder="you@email.com"/><div id="emailNote"></div></div>
+      <div class="field-gap"><label class="fl" for="dobInput">Date of birth</label><input type="date" id="dobInput"/></div>
+      <div class="field-gap"><label class="fl" for="addrInput">Home address</label><input type="text" id="addrInput" autocomplete="street-address" placeholder="House/unit, street, barangay, city"/></div>
+      <div class="field-gap"><label class="fl" for="ecNameInput">Emergency contact &mdash; name</label><input type="text" id="ecNameInput" placeholder="Full name"/></div>
+      <div class="field-gap"><label class="fl" for="ecRelInput">Emergency contact &mdash; relationship <span class="opt">optional</span></label><input type="text" id="ecRelInput" placeholder="Spouse, parent, sibling, friend"/></div>
+      <div class="field-gap"><label class="fl" for="ecNumInput">Emergency contact &mdash; mobile number</label><input type="tel" id="ecNumInput" placeholder="09XX XXX XXXX"/></div>
+    </div>
+
+    <div class="card">
+      <div class="step">Step 2 of 3</div>
+      <h3>Getting to know you</h3>
+      <p class="hint">All optional, and you may tick as many as you like in each question.</p>
+      <div id="questions"></div>
+    </div>
+
+    <div class="card" id="agreementCard">
+      <div class="step">Step 3 of 3</div>
+      <h3>Participant Agreement</h3>
+      <p class="hint">Please read this before you sign up. You accept it once &mdash; next time you book with this email address, we skip straight to payment.</p>
+      <div id="agreementBody"></div>
+      <p class="agr-scrollnote" id="agrEffective"></p>
+      <label class="agr-accept" for="agrAccept">
+        <input type="checkbox" id="agrAccept"/>
+        <span>I have read, understood, and voluntarily agree to be bound by this Participant Agreement. I understand it includes a release of liability and an assumption of risk.</span>
+      </label>
+    </div>
+
+    <button class="btn" id="submitBtn">Complete Sign-Up</button>
+    <p class="submit-note">By submitting you also agree to our <a href="#" id="lnkPrivacy">Privacy Policy</a> and <a href="#" id="lnkTerms">Terms of Service</a>.</p>
+
+    <div class="footer"><div id="footerLinks"></div></div>
+  </div>
+
+  <div id="successView" class="success" style="display:none">
+    <div class="check">&#10003;</div>
+    <h2 id="successTitle">You're all set!</h2>
+    <p class="msg" id="successMsg"></p>
+    <a class="btn" id="bookNowBtn" style="display:block;text-decoration:none;text-align:center">Book a Court</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=e=>document.getElementById(e)
+;let db=null,SETTINGS=null,AGREEMENT=null,alreadySigned="",signedCheckedFor=""
+
+/* ── The five questions ───────────────────────────────────────────────────
+   Straight from the venue's own sign-up sheet. All four are multi-answer —
+   the client confirmed a player may tick more than one — so every answer is
+   stored as an array. Editing this list is the whole job of changing the
+   form: the fields, the Owner list columns and the CSV all read from `key`
+   and `label`, so nothing else has to be touched.
+   `other:true` adds a free-text box that only appears once "Other" is ticked. */
+const QUESTIONS=[
+{key:"bringsYou",label:"What brings you to "+(CLIENT.name||"us")+" today?",options:[
+"I'm completely new to pickleball","I've played a few times","I'm a beginner",
+"I'm an intermediate player","I'm an advanced player","I'm here with friends/family"]},
+{key:"heardFrom",label:"How did you hear about "+(CLIENT.name||"us")+"?",other:!0,options:[
+"Facebook","Instagram","TikTok","Google / Google Maps","Friend or family",
+"Pickleball group/community","Walk-in / saw the location","Event or promotion"]},
+{key:"interests",label:"What are you most interested in?",options:[
+"Open Play","Private Court Rental","Beginner Lessons","Group Coaching","Tournaments",
+"Social Events","Joining a Regular Playing Group","Just having fun and meeting new players!"]},
+{key:"goals",label:"How would you describe your playing goals?",options:[
+"Learn the basics","Improve my skills","Meet new people","Play for fitness",
+"Play competitively","Find regular players/partners","Just have fun!"]}
+]
+
+;function toast(e){const t=$("toast");t.textContent=e,t.classList.add("show"),setTimeout(()=>t.classList.remove("show"),2600)}
+function showError(e){window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",
+$("app").style.display="none",$("errorBox").style.display="block",$("errorBox").textContent=e}
+function esc(e){return String(null==e?"":e).replace(/[&<>"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[e]))}
+function slug(e){return String(e||"").trim().replace(/[^A-Za-z0-9]+/g,"-").replace(/^-+|-+$/g,"").toLowerCase()||"v"}
+;async function sha256Hex(str){try{
+const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str))
+;return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("")
+}catch(e){console.warn("hash unavailable",e);return""}}
+
+/* ── Firebase ─────────────────────────────────────────────────────────── */
+try{const app=firebase.initializeApp(firebaseConfig)
+;try{APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&(window.__appCheck=firebase.appCheck(app),
+window.__appCheck.activate(APPCHECK_SITE_KEY,!0))}catch(e){console.warn("AppCheck:",e)}
+db=firebase.firestore()/* No offline persistence, for the same reason as the booking page: the
+   multi-tab IndexedDB primary-lease handover stalls reads on this origin. */
+}catch(e){showError("Could not connect. Check the Firebase config at the top of this file.")}
+
+async function loadData(){if(!db)return;try{
+const _to=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))])
+/* Same cold-load shape as the booking page: a first visit has to fetch
+   reCAPTCHA, run it, trade it for an App Check token and only then open the
+   first Firestore connection. Wait for the token, then retry once on timeout
+   so a genuine permission error still surfaces immediately. */
+;const _reads=()=>Promise.all([
+db.collection("settings").doc("config").get(),
+db.collection("settings").doc("agreement").get().catch(()=>null)])
+;if(window.__appCheck)try{await _to(window.__appCheck.getToken(),1e4)}catch(_){}
+let _rs;try{_rs=await _to(_reads(),12e3)}
+catch(_e){if("timeout"!==_e.message)throw _e;_rs=await _to(_reads(),15e3)}
+const[cfg,ag]=_rs;if(!cfg.exists)return void showError("Settings not found.")
+;SETTINGS=cfg.data(),AGREEMENT=ag&&ag.exists?ag.data():null
+;applyTheme(),renderBrand(),renderQuestions(),renderAgreement(),renderFooterLinks()
+;window.__clearLoadHint&&window.__clearLoadHint()
+;$("loading").style.display="none",$("app").style.display="block"
+}catch(e){console.error(e)
+;showError("timeout"===e.message?(window.__inApp?"Couldn't connect. If you opened this from Messenger or Facebook, tap ••• and choose “Open in browser”, then try again.":"Couldn't connect. Reload the page."):"Failed to load: "+(e.message||e))}}
+
+function applyTheme(){const e=document.documentElement.style,
+p=SETTINGS.colorPrimary||"#242428",a=SETTINGS.colorAccent||"#242428"
+;e.setProperty("--navy",p),e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||"#17171A"),
+e.setProperty("--green",a),e.setProperty("--green-d",SETTINGS.colorAccentDark||"#17171A"),
+e.setProperty("--btn-tx",SETTINGS.colorAccentText||txOn(a)),
+e.setProperty("--nav-tx",SETTINGS.colorPrimaryText||txOn(p)),accVars(e,a)}
+
+function renderBrand(){const n=SETTINGS.businessName||CLIENT.name||"Court Booking"
+;$("bizEyebrow").textContent=SETTINGS.sport||CLIENT.sport||"Court"
+;$("bizName").textContent=n,$("bizTagline").textContent=SETTINGS.tagline||""
+;document.title=n+" — Player Sign-Up"
+;$("welcomeTitle").textContent="Welcome to "+n+"!"
+;$("bookNowBtn").href=(SETTINGS.siteUrl||CLIENT.siteUrl||"/").replace(/\/+$/,"")+"/"
+;if(SETTINGS.logoUrl){const l=$("logo");l.src=SETTINGS.logoUrl,l.style.display="block"}}
+
+/* ── Questions ────────────────────────────────────────────────────────── */
+function renderQuestions(){$("questions").innerHTML=QUESTIONS.map((q,qi)=>{
+const opts=q.options.map((o,oi)=>'<label class="opt-row" for="q'+qi+'_'+oi+'"><input type="checkbox" id="q'+qi+'_'+oi+'" data-q="'+qi+'" value="'+esc(o)+'"/><span>'+esc(o)+"</span></label>").join("")
+;const other=q.other?'<label class="opt-row" for="q'+qi+'_other" style="grid-column:1/-1"><input type="checkbox" id="q'+qi+'_other" data-q="'+qi+'" data-other="1" value="Other"/><span>Other</span></label>':""
+;const box=q.other?'<div class="other-wrap" id="otherWrap'+qi+'"><input type="text" id="otherText'+qi+'" placeholder="Please tell us"/></div>':""
+;return'<div class="field-gap" style="margin-bottom:22px"><label class="fl" style="margin-bottom:10px">'+esc(q.label)+'</label><div class="opts">'+opts+other+"</div>"+box+"</div>"}).join("")
+/* One handler for every box: keeps the tapped row highlighted and shows the
+   free-text field only while "Other" is actually ticked. */
+;$("questions").addEventListener("change",e=>{const el=e.target;if("checkbox"!==el.type)return
+;el.closest(".opt-row").classList.toggle("on",el.checked)
+;if("1"===el.getAttribute("data-other")){const w=$("otherWrap"+el.getAttribute("data-q"))
+;w&&w.classList.toggle("show",el.checked);el.checked&&$("otherText"+el.getAttribute("data-q")).focus()}})}
+
+function answersFor(qi){const q=QUESTIONS[qi],out=[]
+;document.querySelectorAll('#questions input[data-q="'+qi+'"]').forEach(el=>{
+if(el.checked&&"1"!==el.getAttribute("data-other"))out.push(el.value)})
+;const otherBox=$("q"+qi+"_other")
+;if(q.other&&otherBox&&otherBox.checked)out.push("Other")
+;return out}
+function otherTextFor(qi){const el=$("otherText"+qi);return el?el.value.trim():""}
+
+/* ── Agreement ────────────────────────────────────────────────────────── */
+function renderAgreement(){const card=$("agreementCard")
+/* A venue with no agreement seeded still gets a working sign-up form; it
+   just collects the details and the questions, and nothing is signed. */
+;if(!AGREEMENT||!AGREEMENT.bodyHtml){card.style.display="none";return}
+;$("agreementBody").innerHTML=AGREEMENT.bodyHtml
+;$("agrEffective").textContent=(AGREEMENT.effectiveDate?"Effective "+AGREEMENT.effectiveDate+" · ":"")+"Version "+(AGREEMENT.version||"1.0")}
+
+/* Has this address been here before, and how?
+   participantSignatures is the only collection this page is allowed to READ —
+   participants is manager-only — so it is also how the page knows whether a
+   sign-up record already exists. The two are written in one batch, so a
+   signature carrying source:"signup" at the current version proves the
+   matching participants document exists. That matters because the rules allow
+   create on participants but NOT update: a second submit under the same id
+   would be denied. Rather than open that rule up — the document holds a home
+   address and an emergency contact, and the id is derived from an email
+   anybody could guess — the page simply does not write again.
+   Returns "signup", "checkout" or "" (never been here). */
+async function existingSignature(email){try{const h=await sha256Hex(email);if(!h)return""
+;const d=await db.collection("participantSignatures").doc(h).get()
+;if(!d.exists)return""
+;if(AGREEMENT&&d.data().agreementVersion!==AGREEMENT.version)return""
+/* signed an older version — they have to accept the current one again */
+;return"signup"===d.data().source?"signup":"checkout"}catch(e){return""}}
+
+;async function checkExisting(){const email=($("emailInput").value||"").trim().toLowerCase(),note=$("emailNote")
+;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){note.innerHTML="",alreadySigned="",signedCheckedFor="";return}
+;if(email===signedCheckedFor)return
+;signedCheckedFor=email
+;const found=await existingSignature(email)
+;if(email!==signedCheckedFor)return
+/* a newer keystroke already superseded this lookup */
+;alreadySigned=found
+;note.innerHTML="signup"===found?'<div class="note ok">You have already signed up with this email address &mdash; no need to do it again. Go straight to booking a court.</div>'
+:"checkout"===found?'<div class="note ok">You have already signed the agreement at checkout, so booking will not ask you again. Fill this in anyway so we get to know you.</div>':""}
+
+/* Someone re-opening the form with an address that is already signed up.
+   Not an error and not phrased as one — they are already on the list, which
+   is what they came here for. */
+function showAlreadyDone(email){$("app").style.display="none"
+;$("successTitle").textContent="You're already signed up"
+;$("successMsg").textContent="We already have "+email+" on the list, so there's nothing more to do. Book a court and we'll skip straight to payment. To change any of your details, message the venue."
+;$("successView").style.display="block",window.scrollTo({top:0,behavior:"smooth"})}
+
+/* ── Submit ───────────────────────────────────────────────────────────── */
+$("submitBtn").onclick=async()=>{
+const name=$("nameInput").value.trim(),contact=$("contactInput").value.trim(),
+email=$("emailInput").value.trim().toLowerCase()
+;if(!name)return void toast("Please enter your full name.")
+;if(!contact)return void toast("Please enter your mobile number.")
+;if(!email)return void toast("Please enter your email address.")
+;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return void toast("Please enter a valid email address.")
+;if(!$("dobInput").value)return void toast("Please enter your date of birth.")
+;if(!$("addrInput").value.trim())return void toast("Please enter your home address.")
+;if(!$("ecNameInput").value.trim())return void toast("Please enter an emergency contact name.")
+;if(!$("ecNumInput").value.trim())return void toast("Please enter an emergency contact number.")
+;const needsAgreement=!(!AGREEMENT||!AGREEMENT.bodyHtml)
+;if(needsAgreement&&!$("agrAccept").checked)return void toast("Please read and accept the Participant Agreement.")
+;const hash=await sha256Hex(email)
+;if(!hash)return void toast("Your browser could not complete this step. Please update it, or use Chrome or Safari.")
+
+;const btn=$("submitBtn");btn.disabled=!0,btn.textContent="Submitting…"
+/* Checked again here, not just on blur: the address may have been edited
+   after the blur check, and a stale answer would send the write into a
+   permission-denied that reads to the player as "something went wrong". */
+;if("signup"===await existingSignature(email)){btn.disabled=!1,btn.textContent="Complete Sign-Up"
+;return void showAlreadyDone(email)}
+;try{
+const rec={source:"signup",bookingId:"",name:name,email:email,contact:contact,
+dateOfBirth:$("dobInput").value||"",address:$("addrInput").value.trim(),
+emergencyName:$("ecNameInput").value.trim(),emergencyRelationship:$("ecRelInput").value.trim(),
+emergencyNumber:$("ecNumInput").value.trim(),
+agreementVersion:needsAgreement&&AGREEMENT.version||"",
+agreementContentHash:needsAgreement&&AGREEMENT.contentHash||"",
+acceptedAt:firebase.firestore.FieldValue.serverTimestamp()}
+;QUESTIONS.forEach((q,qi)=>{rec[q.key]=answersFor(qi);if(q.other)rec[q.key+"Other"]=otherTextFor(qi)})
+
+/* One document per email PER AGREEMENT VERSION. Re-submitting the same
+   version overwrites, so nobody appears twice in the venue's list for
+   fixing a typo; signing a NEW version writes a new document, so the record
+   of what each person actually agreed to is never overwritten. */
+;const batch=db.batch()
+;batch.set(db.collection("participants").doc("signup_"+hash+"_"+slug(needsAgreement?AGREEMENT.version:"none")),rec)
+/* merge, and deliberately no lastBookingId: someone who signed at checkout
+   first already has a real booking id in there, and blanking it would throw
+   away the only link from a signature back to the booking that produced it. */
+;if(needsAgreement)batch.set(db.collection("participantSignatures").doc(hash),{
+agreementVersion:AGREEMENT.version||"",source:"signup",
+signedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:!0})
+;await batch.commit()
+
+;$("app").style.display="none"
+;$("successTitle").textContent="You're all set!"
+;$("successMsg").textContent=needsAgreement
+?"Thanks, "+name.split(" ")[0]+"! You're on the list. Next time you book a court with "+email+", we'll skip the agreement and go straight to payment."
+:"Thanks, "+name.split(" ")[0]+"! You're on the list. See you on court."
+;$("successView").style.display="block",window.scrollTo({top:0,behavior:"smooth"})
+}catch(e){console.error(e),btn.disabled=!1,btn.textContent="Complete Sign-Up"
+;toast("Could not submit. Please check your connection and try again.")}}
+
+$("emailInput").addEventListener("blur",checkExisting)
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+const IC_PIN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+;const IC_FB='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.3v7A10 10 0 0 0 22 12z"/></svg>'
+;const IC_IG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>'
+;const LAYAW_FB="https://www.facebook.com/profile.php?id=61591455718209"
+;function renderFooterLinks(){let out=""
+;if(SETTINGS.address||SETTINGS.addressName){const t=SETTINGS.addressName||SETTINGS.address
+;out='<div class="footer-addr"><a href="'+esc(SETTINGS.mapsLink||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(SETTINGS.address||t))+'" target="_blank" rel="noopener">'+IC_PIN+"<span>"+esc(t)+"</span></a></div>"}
+;const soc=[]
+;SETTINGS.facebookLink&&soc.push('<a href="'+esc(SETTINGS.facebookLink)+'" target="_blank" rel="noopener">'+IC_FB+"<span>"+esc(SETTINGS.facebookName||"Facebook")+"</span></a>")
+;SETTINGS.instagramLink&&soc.push('<a href="'+esc(SETTINGS.instagramLink)+'" target="_blank" rel="noopener">'+IC_IG+"<span>"+esc(SETTINGS.instagramName||"Instagram")+"</span></a>")
+;out+=soc.length?'<div class="footer-social">'+soc.join('<span class="dot">•</span>')+"</div>":""
+;out+='<div class="footer-meta"><a href="'+LAYAW_FB+'" target="_blank" rel="noopener">Built by Layaw System</a></div>'
+;$("footerLinks").innerHTML=out}
+
+/* Privacy and Terms live on the booking page, which opens them from the URL
+   hash. Linking there instead of copying ~12KB of legal text keeps one copy
+   of the wording — two copies drift the first time either is edited. */
+;(function(){const base=(CLIENT.siteUrl||"").replace(/\/+$/,"")
+;$("lnkPrivacy").href=base+"/#privacy",$("lnkTerms").href=base+"/#terms"})()
+
+/* ── Cold-load hint, same behaviour as the booking page ───────────────── */
+;(function(){var ua=navigator.userAgent||""
+;var inApp=/FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|Twitter|GSA/i.test(ua);window.__inApp=inApp
+;var hintTimer=setTimeout(function(){var h=$("loadHint")
+;if(h&&$("loading")&&"none"!==$("loading").style.display){var m=$("loadHintMsg")
+;if(m&&inApp)m.innerHTML="Still connecting. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) — it is much faster."
+;h.style.display="block"}},inApp?800:1e4)
+;var retryTimer=setTimeout(function(){var b=$("retryLoad"),l=$("loading")
+;if(b&&l&&"none"!==l.style.display)b.style.display="inline-block"},3e4)
+;var rb=$("retryLoad");rb&&(rb.onclick=function(){location.reload()})
+;window.__clearLoadHint=function(){clearTimeout(hintTimer);clearTimeout(retryTimer)}})(),loadData()
+</script>
+</body></html>
