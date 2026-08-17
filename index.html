@@ -1,7 +1,47 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>The Kitchen Arena — Book a Court</title> <link rel="icon" href="/assets/logo.png"/> <link rel="apple-touch-icon" href="/assets/logo.png"/> <link rel="preconnect" href="https://www.google.com"/> <link rel="preconnect" href="https://content-firebaseappcheck.googleapis.com" crossorigin/> <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/> <script>const firebaseConfig={apiKey:"AIzaSyBSrRgYCe5StJzFUOTWUkD386N_umIdazY",
-authDomain:"thekitchenarena-aa581.firebaseapp.com",projectId:"thekitchenarena-aa581",
-storageBucket:"thekitchenarena-aa581.firebasestorage.app",messagingSenderId:"362982223133",
-appId:"1:362982223133:web:002a4cf854c184d00105f4"},APPCHECK_SITE_KEY="6LfGkkYtAAAAAGJX9V18qtqASaqdeXd-a6JjCpa1"</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#0D2863;--navy-d:#0A1E4C;--green:#0D2863;--green-d:#0A1E4C;--btn-bd:#24407F;--bg:#0B1220;--card:#191c25;--elev:#1B2740;--line:#273248;--text:#F1F5F9;--text-2:#C3CEDD;--muted:#8A99AD;--disabled:#64748B;--brand-l:#9DBBF5;--link:#7FA7F0;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#15336B;--sel-tx:#FFFFFF;--sel-bd:#3B5CA0;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#232C3B;--past-tx:#7E8CA0;--past-bd:#333F52;--input-bg:#0E1626;--input-line:#2E3B52;--input-focus:#3B5CA0;--info-bg:#132445;--info-line:#25406E;--info-tx:#AFC3E6;--btn-dis-bg:#232E42;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
+<!DOCTYPE html> <html lang="en"> <head><link rel="icon" href="/favicon.ico" sizes="any"/><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"/><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png"/><meta name="theme-color" content="#0A0A0C"/><!-- ⬇ PRE-LAUNCH ONLY — DELETE THIS ONE LINE ON GO-LIVE DAY ⬇
+     Keeps Google out of the booking page while the venue is still being set
+     up. Leave it in and the site will never appear in search results. -->
+<meta name="robots" content="noindex,nofollow"> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width,initial-scale=1"/> <title>Book a Court</title> <link rel="preconnect" href="https://www.google.com"/> <link rel="preconnect" href="https://content-firebaseappcheck.googleapis.com" crossorigin/> <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin/>
+<!-- ══════════════════ CLIENT CONFIG · EDIT THIS BLOCK ONLY ══════════════════
+     Keep this block IDENTICAL in all 5 pages:
+       index.html · status.html · admin/index.html · owner/index.html · owner/confirm.html
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+/* 1 · Firebase web config — console > Project settings > Your apps > Web app > Config */
+const firebaseConfig={
+apiKey:"AIzaSyBdm8eunNIggHZAUtkmYnCHXdyA0GgueuQ",
+authDomain:"rallysocial.firebaseapp.com",
+projectId:"rallysocial",
+storageBucket:"rallysocial.firebasestorage.app",
+messagingSenderId:"596573981033",
+appId:"1:596573981033:web:2c8dc245b783ed662d55f8"
+};
+/* 2 · App Check reCAPTCHA v3 SITE key (console > App Check > Apps > Web).
+       Leave the PASTE_ text as-is to run without App Check. */
+const APPCHECK_SITE_KEY="6Lffb3ctAAAAALXpz7GesLrsisxsj28sBIb4WWWE";
+/* 3 · Venue details — used for page titles and the Privacy / Terms text. */
+const CLIENT={
+name:"Rally Social",
+sport:"Pickleball",
+email:"hello@rallysocial.net",
+address:"Rally Social Sports Center, 2nd Floor, CityMall Dau, Dau Access Rd, Dau, Mabalacat, Pampanga 2010",
+siteUrl:"https://booking.rallysocial.net",
+docsUpdated:"July 28, 2026"
+};
+</script>
+<!-- ═════════════════════ END CLIENT CONFIG ═════════════════════ -->
+<script>/* ── LAYAW THEME HELPERS · identical in all 5 pages ────────────────────────
+   txOn(hex)        -> "#231803" or "#FFFFFF", whichever reads on that colour.
+                       Crossover at WCAG luminance 0.205, the point where white
+                       and near-black give equal contrast. Any brand colour a
+                       client picks gets readable button text with no config.
+   accVars(el,hex)  -> writes --acc-05 … --acc-55 (alpha shades) plus
+                       --acc-lite / --acc-tint (light mixes) and --link onto
+                       :root, so every highlight in the glass theme follows the
+                       client's accent instead of a hardcoded colour. */
+function txOn(h){h=String(h||"").replace("#","");if(3===h.length)h=h.split("").map(function(c){return c+c}).join("");if(6!==h.length)return"#FFFFFF";var n=parseInt(h,16);function f(c){c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)}var L=.2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(255&n);return L>.205?"#231803":"#FFFFFF"}
+function accVars(el,h){h=String(h||"").replace("#","");if(3===h.length)h=h.split("").map(function(c){return c+c}).join("");if(6!==h.length||!el)return;var n=parseInt(h,16),r=n>>16&255,g=n>>8&255,b=255&n;function a(v){return"rgba("+r+","+g+","+b+","+v+")"}function mix(w){return"rgb("+Math.round(r+(255-r)*w)+","+Math.round(g+(255-g)*w)+","+Math.round(b+(255-b)*w)+")"}function dk(t){return"rgb("+Math.round(r*t)+","+Math.round(g*t)+","+Math.round(b*t)+")"}el.setProperty("--acc-05",a(.05));el.setProperty("--acc-08",a(.08));el.setProperty("--acc-12",a(.12));el.setProperty("--acc-22",a(.22));el.setProperty("--acc-40",a(.4));el.setProperty("--acc-55",a(.55));el.setProperty("--acc-lite",mix(.45));el.setProperty("--acc-tint",mix(.62));el.setProperty("--link",mix(.1));el.setProperty("--brand-l",mix(.35));el.setProperty("--chart","#"+h);el.setProperty("--chart-d",dk(.72));el.setProperty("--chart-l",mix(.45));el.setProperty("--pos","#"+h);el.setProperty("--btn-bd",a(.45));el.setProperty("--input-focus",a(.55));el.setProperty("--sel-bd",a(.55))}</script>
+<script>document.title=CLIENT.name+" — Book a Court";</script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script> <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script> <link rel="preconnect" href="https://fonts.googleapis.com"/> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/> <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/> <style>:root{--navy:#242428;--navy-d:#17171A;--green:#242428;--green-d:#17171A;--btn-bd:#3A3A42;--bg:#101013;--card:#191c25;--elev:#1C1C21;--line:#2B2B32;--text:#F1F5F9;--text-2:#CACAD1;--muted:#8E8E97;--disabled:#6B6B73;--brand-l:#B9B9C1;--link:#B9B9C1;--open-bg:#15321F;--open-tx:#48A768;--open-bd:#205E37;--sel-bg:#2B2B32;--sel-tx:#FFFFFF;--sel-bd:#4A4A55;--book-bg:#3E1A20;--book-tx:#E88A92;--book-bd:#6E2A31;--pend-bg:#3E3212;--pend-tx:#E0B93E;--pend-bd:#8A6A1E;--past-bg:#26262C;--past-tx:#8E8E97;--past-bd:#333338;--input-bg:#141418;--input-line:#33333C;--input-focus:#4A4A55;--info-bg:#1A1A20;--info-line:#33333C;--info-tx:#C6C6CE;--btn-dis-bg:#26262C;--cancel:#E88A92;--radius:16px;--shadow:0 12px 30px rgba(0,0,0,.45)}
 *{box-sizing:border-box;margin:0;padding:0}
 body,html{max-width:100%;overflow-x:hidden}
 body{font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -155,7 +195,7 @@ input:focus{outline:2px solid var(--input-focus);border-color:var(--input-focus)
 .upload img.preview{max-width:200px;border-radius:10px;margin-top:6px}
 .hold-note{background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:16px}
 .hold-note strong{color:var(--pend-tx)}
-.timer-bar{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:16px;box-shadow:0 8px 24px rgba(21,69,95,.22)}
+.timer-bar{position:sticky;top:8px;z-index:20;display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;border-radius:14px;padding:14px 18px;margin-bottom:16px;box-shadow:0 8px 24px var(--acc-22)}
 .timer-bar .tb-ico{font-size:22px;line-height:1}
 .timer-bar .tb-txt{font-size:13px;font-weight:600;opacity:.92}
 .timer-bar .tb-txt strong{display:block;font-size:12px;font-weight:700;opacity:.8;letter-spacing:.02em}
@@ -201,12 +241,379 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 @media (min-width:1001px){.grid-layout>div{position:sticky;top:18px;align-self:start}
 .table-scroll{max-height:calc(100vh - 240px);overflow-y:auto}
 }
-</style> </head> <body> <div id="iabBanner" style="display:none;position:sticky;top:0;z-index:60;background:#0B97A6;color:#fff;padding:12px 16px;font-size:13.5px;line-height:1.5;text-align:center;font-weight:600">For the best experience, open this page in your browser: tap the <strong>&#8942;</strong> or <strong>&hellip;</strong> menu, then choose <strong>&ldquo;Open in browser&rdquo;</strong> (Chrome or Safari).<button id="iabClose" style="margin-left:10px;background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:6px;padding:3px 9px;font-weight:700;cursor:pointer">Got it</button></div> <div class="wrap"> <div class="brand"> <img id="logo" alt="" style="display:none"/> <div>
-<div class="eyebrow">Pickleball</div>
+
+/* ══════════════════════ LAYAW GLASS THEME v1 ══════════════════════
+   Appended override — nothing above this line was edited. Delete this
+   block to go back to the flat theme.
+
+   Colour source of truth stays Firestore settings/config. At runtime the
+   page writes these onto :root as inline styles, which beat this sheet:
+
+     colorPrimary     -> --navy / --navy-d      nav, calendar, chips
+     colorAccent      -> --green / --green-d    primary buttons
+     slotSelectedBg   -> --sel-bg
+     (auto)           -> --btn-tx / --nav-tx / --sel-tx
+                         readable text, picked from luminance
+     (auto)           -> --acc-05 … --acc-55, --acc-lite, --acc-tint
+                         alpha + light tints of the accent, used for every
+                         highlight below
+
+   Nothing here is client-specific: the values in :root are only the
+   pre-load fallbacks. A client's brand colour flows through automatically.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#070708;
+  --card:rgba(255,255,255,.048);
+  --elev:rgba(255,255,255,.075);
+  --line:rgba(255,255,255,.10);
+  --text:#EAE6DE;
+  --text-2:#BFB9AE;
+  --muted:#8B857A;
+  --disabled:#57534A;
+  --input-bg:rgba(255,255,255,.04);
+  --input-line:rgba(255,255,255,.12);
+  --brand-l:#E1DDD6;
+  --glass:22px;
+  --radius:18px;
+  --shadow:0 18px 44px rgba(0,0,0,.55);
+
+  /* Accent tints — replaced at runtime with shades of colorAccent.
+     These neutral fallbacks keep the theme usable before Firestore loads
+     and on any page that does not apply a theme. */
+  --acc-05:rgba(255,255,255,.045);
+  --acc-08:rgba(255,255,255,.07);
+  --acc-12:rgba(255,255,255,.10);
+  --acc-22:rgba(255,255,255,.16);
+  --acc-40:rgba(255,255,255,.28);
+  --acc-55:rgba(255,255,255,.38);
+  --acc-lite:#D8D3C8;
+  --acc-tint:#C9C2B4;
+  --link:var(--acc-lite);
+  --input-focus:var(--acc-55);
+  --info-bg:var(--acc-08);
+  --info-line:var(--acc-22);
+  --info-tx:var(--acc-tint);
+
+  /* Slot states, re-tuned as translucent tints for a dark glass surface */
+  --open-bg:rgba(72,167,104,.14);   --open-tx:#7BD79B;  --open-bd:rgba(72,167,104,.34);
+  --book-bg:rgba(232,138,146,.13);  --book-tx:#EFA0A7;  --book-bd:rgba(232,138,146,.30);
+  --pend-bg:rgba(224,185,62,.14);   --pend-tx:#E8C766;  --pend-bd:rgba(224,185,62,.32);
+  --past-bg:rgba(255,255,255,.045); --past-tx:#7C776D;  --past-bd:rgba(255,255,255,.07);
+  --ok-bg:rgba(72,167,104,.14);     --ok-tx:#7BD79B;
+  --conf-bg:rgba(72,167,104,.14);   --conf-tx:#7BD79B;
+  --cancel-bg:rgba(232,138,146,.13);--cancel-tx:#EFA0A7;
+  --btn-dis-bg:rgba(255,255,255,.05);
+
+  /* Pre-load brand fallbacks. Firestore overrides all four. */
+  --navy:#242428;  --navy-d:#17171A;
+  --green:#242428; --green-d:#17171A;
+  --sel-bg:#2B2B32;
+  --btn-tx:#FFFFFF; --nav-tx:#FFFFFF; --sel-tx:#FFFFFF;
+}
+
+/* ── Page: near-black with a slow wash of the brand colour ──────── */
+body{
+  background:
+    radial-gradient(1150px 640px at 86% -8%,var(--acc-12),transparent 60%),
+    radial-gradient(880px 540px at -10% 106%,var(--acc-08),transparent 58%),
+    #070708;
+  background-attachment:fixed;
+}
+
+/* ── Glass surfaces ─────────────────────────────────────────────── */
+.card,.modal,.modal-box,.modal-doc,.login-card,.notif,.stat,.kpi,.pos,.slot-menu,.cav-section,.booking,.nitem,.admin-row,.promo-row,.rate-row,.court-card,.mc-court{
+  background:linear-gradient(158deg,rgba(255,255,255,.062),rgba(255,255,255,.022));
+  -webkit-backdrop-filter:blur(var(--glass)) saturate(150%);
+  backdrop-filter:blur(var(--glass)) saturate(150%);
+  border:1px solid rgba(255,255,255,.085);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.075);
+}
+.stat,.kpi,.booking,.nitem,.admin-row,.promo-row,.rate-row,.court-card,.mc-court,.cav-section,.pos{
+  box-shadow:0 8px 22px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.card{border-radius:var(--radius)}
+/* a brand-tinted rim on the panel the eye should land on */
+.summary.card,.login-card,.status-card{
+  border-color:var(--acc-22);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.09),0 0 0 1px var(--acc-05);
+}
+
+/* ── Type ───────────────────────────────────────────────────────── */
+.card h3,.modal h3,.det-title,.sec-head h2,.card-head h3{color:var(--text);letter-spacing:-.01em}
+.brand .eyebrow,.login-card .eyebrow,.topbar .eyebrow{color:var(--link);letter-spacing:.22em}
+.brand h1{color:#F7F5F1}
+
+/* ── Brand-coloured surfaces: readable text, no flat fills ──────── */
+.btn,.act-confirm,.mb-btn,.btn-walk{
+  background:var(--green);
+  color:var(--btn-tx);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 10px 26px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.38);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 62%);
+}
+.btn:hover,.act-confirm:hover,.btn-walk:hover{background-color:var(--green-d)}
+.btn:disabled,.mb-btn:disabled{
+  background:var(--btn-dis-bg);background-image:none;color:var(--disabled);
+  border-color:rgba(255,255,255,.08);box-shadow:none;
+}
+/* the original .mobile-bar .mb-btn rule (2 classes) outranks a bare .mb-btn,
+   so the phone CTA has to be re-stated at matching specificity or it stays white */
+.mobile-bar .mb-btn{
+  background:var(--green);color:var(--btn-tx);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 62%);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:0 8px 20px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.38);
+}
+.mobile-bar .mb-btn:disabled{
+  background:rgba(255,255,255,.07);background-image:none;color:var(--disabled);
+  border-color:rgba(255,255,255,.08);box-shadow:none;
+}
+.btn-apply,.btn-navy,.cal-day.active,.toggle button.on,.timer-bar,.wcell.sel{
+  background:var(--navy);
+  color:var(--nav-tx);
+  background-image:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,0) 62%);
+}
+.btn-apply:hover,.btn-navy:hover{background-color:var(--navy-d)}
+.cal-day.active{box-shadow:0 6px 16px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+.timer-bar{border:1px solid rgba(255,255,255,.18);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.timer-bar .tb-count{background:rgba(0,0,0,.18)}
+.topbar{
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));
+  -webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);
+  border-bottom:1px solid rgba(255,255,255,.10);color:var(--text);
+}
+.topbar h1{color:#F7F5F1}
+.bell .dot{border-color:rgba(20,20,22,.9)}
+.mobile-bar{
+  background:rgba(12,12,14,.72);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);backdrop-filter:blur(20px) saturate(150%);
+  border-top:1px solid rgba(255,255,255,.10);
+}
+
+/* ── Ghost / secondary ──────────────────────────────────────────── */
+.btn-ghost,.copy-btn,.mini-btn,.doc-x,.signout,.bell,.icon-btn{
+  background:rgba(255,255,255,.055);
+  border:1px solid rgba(255,255,255,.11);
+  color:var(--text);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.btn-ghost:hover,.copy-btn:hover,.mini-btn:hover{
+  background:var(--acc-12);border-color:var(--acc-40);color:var(--acc-lite);
+}
+
+/* ── Inputs ─────────────────────────────────────────────────────── */
+input,select,textarea,.fi,.note-input{
+  background:var(--input-bg);
+  border:1px solid var(--input-line);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+input:focus,select:focus,textarea:focus,.fi:focus,.note-input:focus{
+  outline:2px solid var(--input-focus);border-color:var(--acc-55);
+}
+
+/* ── Slot grid ──────────────────────────────────────────────────── */
+table.slots thead th,table.sched thead th,table.slots .time-cell,table.sched td.time-cell{
+  background:rgba(10,10,12,.82);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.09);
+}
+table.slots td.cell,table.sched td.cell{border-bottom:1px solid rgba(255,255,255,.055)}
+.cell-inner,.scell-open,.scell-blocked,.scell-na,.wcell{border-radius:11px;letter-spacing:.01em}
+.cell-open,.scell-open{box-shadow:inset 0 0 0 1px var(--open-bd)}
+.cell-open:hover{outline:2px solid var(--green);outline-offset:-2px}
+.cell-selected{
+  background:var(--sel-bg);color:var(--sel-tx);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),0 6px 16px rgba(0,0,0,.35);
+}
+.cell-blocked,.scell-blocked{background:rgba(224,149,74,.13);color:#E5A863;box-shadow:inset 0 0 0 1px rgba(224,149,74,.28)}
+.legend .sw{box-shadow:inset 0 0 0 1px rgba(255,255,255,.10)}
+
+/* ── Info / notes ───────────────────────────────────────────────── */
+.info-bar,.hold-note,.contact-box{
+  background:var(--info-bg);border:1px solid var(--info-line);color:var(--info-tx);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+}
+.pay-note,.note,.sum-note,.cal-note{color:var(--muted)}
+.help-box{background:rgba(224,185,62,.10);border:1px solid rgba(224,185,62,.24)}
+
+/* ── Hero, upload, misc ─────────────────────────────────────────── */
+.hero-wrap{border:1px solid rgba(255,255,255,.09);box-shadow:0 22px 50px rgba(0,0,0,.6)}
+.upload{border:2px dashed rgba(255,255,255,.14);background:rgba(255,255,255,.02)}
+.upload:hover{border-color:var(--acc-40);background:var(--acc-05)}
+.pay-opt{background:rgba(255,255,255,.045);border:1.5px solid rgba(255,255,255,.10)}
+.pay-opt.on{border-color:var(--acc-55);background:var(--acc-12);color:var(--acc-lite)}
+.toast{
+  background:rgba(16,16,18,.88);color:var(--text);
+  border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+}
+.modal-overlay,.overlay,.backdrop{background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.footer{border-top:1px solid rgba(255,255,255,.08)}
+.sidebar{
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  -webkit-backdrop-filter:blur(24px) saturate(150%);backdrop-filter:blur(24px) saturate(150%);
+  border-right:1px solid rgba(255,255,255,.09);
+}
+.nav-item.active{background:var(--acc-12);color:var(--acc-lite)}
+
+/* ── Cheaper glass on small screens / reduced transparency ──────── */
+@media (max-width:1000px){:root{--glass:14px}}
+@media (prefers-reduced-transparency:reduce){
+  .card,.modal,.modal-box,.modal-doc,.login-card,.notif,.stat,.kpi,.sidebar{
+    -webkit-backdrop-filter:none;backdrop-filter:none;background:#141416;
+  }
+}
+/* Fallback where backdrop-filter is unsupported (older Android WebView) */
+@supports not (backdrop-filter:blur(2px)){
+  .card,.modal,.modal-box,.modal-doc,.login-card,.notif,.stat,.kpi,.sidebar{background:#141416}
+}
+/* ════════════════════ END LAYAW GLASS THEME ════════════════════ */
+
+/* ══════════════════════ LAYAW MOTION v2 ══════════════════════
+   Booking page transitions.
+
+     Continue  · desktop >1000px : Reservation Summary card flips to centre
+               · mobile  ≤1000px : grid pushes back, checkout rises as a sheet
+     Submit    · all devices     : gold seal draws, then settles into the
+                                   receipt's check mark
+
+   Purely additive — delete this block and the JS block to remove.
+   Everything is skipped under prefers-reduced-motion.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 1a · Continue, desktop: summary card -> checkout ────────── */
+.rs-ghost{
+  position:fixed;z-index:70;pointer-events:none;
+  transform-origin:50% 50%;backface-visibility:hidden;
+  will-change:transform,opacity;
+}
+.rs-ghost>*{margin:0!important;width:100%!important;height:100%!important;overflow:hidden}
+#app.rs-dim{opacity:.5;transform:scale(.992);transition:opacity .22s ease,transform .22s ease}
+
+#checkoutView.rs-in{animation:rsFlipIn .40s cubic-bezier(.2,.75,.3,1) both;transform-origin:50% 42%}
+@keyframes rsFlipIn{
+  from{transform:perspective(1800px) rotateY(-84deg) scale(.94);opacity:0}
+  to{transform:none;opacity:1}
+}
+
+/* ── 1b · Continue, mobile: push the grid back, raise a sheet ── */
+/* The grid recedes while the slots are being held, so the sheet has
+   something to rise over and the player keeps their bearings. */
+#app.rs-push{
+  transform:scale(.94) translateY(-8px);
+  border-radius:22px;overflow:hidden;opacity:.45;
+  transition:transform .30s cubic-bezier(.32,.72,0,1),opacity .30s ease,border-radius .30s ease;
+  will-change:transform,opacity;
+}
+#mobileBar.rs-bar-out{transform:translateY(115%);transition:transform .28s cubic-bezier(.4,0,1,1)}
+
+#checkoutView.rs-sheet{
+  position:relative;
+  animation:rsSheet .46s cubic-bezier(.22,1,.30,1) both;
+  border-radius:24px 24px 0 0;
+  box-shadow:0 -18px 44px rgba(0,0,0,.6);
+}
+@keyframes rsSheet{
+  from{transform:translateY(88vh) scale(.98);opacity:.4}
+  to{transform:none;opacity:1}
+}
+/* grabber — the cue that says "this is a sheet". Fades as the sheet lands. */
+#checkoutView.rs-sheet::before{
+  content:"";position:absolute;top:9px;left:50%;margin-left:-19px;
+  width:38px;height:4px;border-radius:999px;background:rgba(255,255,255,.30);
+  animation:rsGrab .46s cubic-bezier(.22,1,.30,1) both;
+}
+@keyframes rsGrab{0%{opacity:0}30%{opacity:1}72%{opacity:1}100%{opacity:0}}
+
+/* ── 2 · Submit: the gold seal ──────────────────────────────── */
+.rs-seal{position:fixed;inset:0;z-index:96;display:none;place-items:center;pointer-events:none}
+.rs-seal.on{display:grid}
+.rs-seal-scrim{
+  position:absolute;inset:0;
+  background:radial-gradient(58vmax 58vmax at 50% 46%,var(--acc-12),rgba(6,6,8,.88) 62%);
+  -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+  animation:rsScrimIn .26s ease both;
+}
+.rs-seal-mark{width:clamp(126px,13.5vmin,172px);height:clamp(126px,13.5vmin,172px);overflow:visible;will-change:transform}
+.rs-seal-ring{
+  fill:none;stroke:var(--green,#242428);stroke-width:3.5;stroke-linecap:round;
+  stroke-dasharray:289.03;stroke-dashoffset:289.03;
+  transform:rotate(-90deg);transform-origin:60px 60px;
+  animation:rsRing .62s .06s cubic-bezier(.25,.8,.30,1) both;
+}
+.rs-seal-check{
+  fill:none;stroke:var(--green,#242428);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:64;stroke-dashoffset:64;
+  animation:rsCheck .34s .50s cubic-bezier(.30,.90,.40,1) both;
+}
+.rs-seal-glow{
+  fill:none;stroke:var(--green,#242428);stroke-width:1;opacity:0;
+  animation:rsGlow .85s .58s ease-out both;
+}
+@keyframes rsScrimIn{from{opacity:0}to{opacity:1}}
+@keyframes rsRing{to{stroke-dashoffset:0}}
+@keyframes rsCheck{to{stroke-dashoffset:0}}
+@keyframes rsGlow{0%{opacity:0;stroke-width:1}45%{opacity:.5;stroke-width:9}100%{opacity:0;stroke-width:15}}
+
+/* the receipt is held back until the seal settles onto its check mark */
+#successView.rs-hold{opacity:0}
+#successView.rs-arrive{animation:rsArrive .50s cubic-bezier(.2,.8,.3,1) both}
+@keyframes rsArrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* gold rim on the receipt's check, so the seal reads as having landed there */
+#successView .check{box-shadow:0 0 0 2px var(--acc-40),0 12px 30px rgba(0,0,0,.45)}
+
+/* ── Accessibility / low-power ──────────────────────────────── */
+@media (prefers-reduced-motion:reduce){
+  .rs-ghost,.rs-seal{display:none!important}
+  #checkoutView.rs-in,#checkoutView.rs-sheet,#checkoutView.rs-sheet::before,
+  #successView.rs-arrive{animation:none!important}
+  #checkoutView.rs-sheet{border-radius:0;box-shadow:none}
+  #app.rs-dim,#app.rs-push{opacity:1;transform:none;border-radius:0}
+  #successView.rs-hold{opacity:1}
+  #mobileBar.rs-bar-out{transform:none}
+}
+/* ═════════════════════ END LAYAW MOTION ═════════════════════ */
+
+</style> <style>/* LAYAW-NATIVE-CONTROLS */:root{color-scheme:dark}select option,select optgroup{background:#16161B;color:#EAE6DE}</style><style>/* ── LAYAW AMBIENT MOTION v1 ─────────────────────────────────────────
+   The two brand glows were painted straight onto <body> and sat still, which
+   is what made the page read as flat. They move to their own fixed layers so
+   they can be animated with transform/opacity only — GPU-composited, no
+   repaint, no layout. Base colour moves to <html> so z-index:-1 sits above it.
+
+   Slow drift, not a pulse: players stare at this page for 1-3 minutes while
+   picking slots, and anything that throbs starts reading as a notification.
+   ~2px/second — invisible frame to frame, clearly different after 30s.
+   The two layers run on 54s and 71s so they never fall into sync.
+
+   Delete this whole block to remove the effect. Nothing else depends on it.
+   ──────────────────────────────────────────────────────────────────── */
+html{background:#070708}
+body{background:transparent!important}
+body::before,body::after{content:"";position:fixed;inset:-18%;pointer-events:none;z-index:-1;will-change:transform,opacity}
+body::before{background:radial-gradient(1150px 640px at 86% 12%,var(--acc-12),transparent 60%);animation:layawDriftA 54s ease-in-out infinite alternate}
+body::after{background:radial-gradient(880px 540px at 8% 90%,var(--acc-08),transparent 58%);animation:layawDriftB 71s ease-in-out infinite alternate}
+@keyframes layawDriftA{0%{transform:translate3d(0,0,0) scale(1);opacity:.82}50%{transform:translate3d(-3.5%,2.6%,0) scale(1.07);opacity:1}100%{transform:translate3d(2.6%,-2%,0) scale(1.02);opacity:.9}}
+@keyframes layawDriftB{0%{transform:translate3d(0,0,0) scale(1.05);opacity:.88}50%{transform:translate3d(3%,-3%,0) scale(1);opacity:1}100%{transform:translate3d(-2.2%,2.6%,0) scale(1.06);opacity:.84}}
+@media (prefers-reduced-motion:reduce){body::before,body::after{animation:none;opacity:.9}}
+</style><style>/* LAYAW-PARTICIPANT-AGREEMENT */
+#agreementCard .agr-intro{margin:-6px 0 14px}
+#agreementBody{max-height:300px;overflow-y:auto;padding:16px 18px;border:1px solid var(--input-line);border-radius:12px;background:var(--input-bg);font-size:13.5px;line-height:1.65;color:var(--text-2)}
+#agreementBody h2{font-size:14px;font-weight:800;color:var(--text);margin:0 0 6px;letter-spacing:.01em}
+#agreementBody h3{font-size:13px;font-weight:800;color:var(--text);margin:18px 0 6px}
+#agreementBody p{margin:0 0 9px}
+#agreementBody ul{margin:0 0 10px;padding-left:20px}
+#agreementBody li{margin:0 0 3px}
+#agreementBody strong{color:var(--text)}
+.agr-scrollnote{font-size:12px;color:var(--muted);margin:8px 0 18px;text-align:center}
+.agr-accept{display:flex;gap:11px;align-items:flex-start;margin-top:18px;padding:14px 16px;border:1px solid var(--input-line);border-radius:12px;background:var(--acc-05,rgba(255,255,255,.03));cursor:pointer}
+.agr-accept input{width:19px;height:19px;flex-shrink:0;margin-top:1px;accent-color:var(--green);cursor:pointer}
+.agr-accept span{font-size:13.5px;line-height:1.55;color:var(--text-2)}
+</style></head> <body> <div id="iabBanner" style="display:none;position:sticky;top:0;z-index:60;background:#0B97A6;color:#fff;padding:12px 16px;font-size:13.5px;line-height:1.5;text-align:center;font-weight:600">For the best experience, open this page in your browser: tap the <strong>&#8942;</strong> or <strong>&hellip;</strong> menu, then choose <strong>&ldquo;Open in browser&rdquo;</strong> (Chrome or Safari).<button id="iabClose" style="margin-left:10px;background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:6px;padding:3px 9px;font-weight:700;cursor:pointer">Got it</button></div> <div class="wrap"> <div class="brand"> <img id="logo" alt="" style="display:none"/> <div>
+<div class="eyebrow" id="bizEyebrow">Pickleball</div>
 <h1 id="bizName">Loading…</h1>
 </div> </div> <p class="subline" id="bizTagline">
 </p> <div id="heroWrap" class="hero-wrap" style="display:none">
-</div> <div id="loading" class="loading">Connecting to the booking system…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6">Taking longer than usual. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) for the best experience.<br><br><button id="retryLoad" style="margin-top:8px;background:var(--teal,#0B97A6);color:#fff;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div> <div id="errorBox" class="error-box" style="display:none">
+</div> <div id="loading" class="loading">Connecting to the booking system…<div id="loadHint" style="display:none;margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6"><span id="loadHintMsg">First visit takes a few seconds longer. Still connecting&hellip;</span><br><br><button id="retryLoad" style="display:none;margin-top:8px;background:var(--green,#E0B654);color:#231803;border:none;border-radius:8px;padding:10px 18px;font:inherit;font-weight:700;cursor:pointer">Retry</button></div></div> <div id="errorBox" class="error-box" style="display:none">
 </div> <div id="app" style="display:none"> <div class="grid-layout"> <div> <div class="card"> <h3>Select a date</h3> <div class="cal-nav"> <button class="btn-ghost" id="prevMonth">‹</button> <button class="btn-ghost today" id="todayBtn">Today</button> <button class="btn-ghost" id="nextMonth">›</button> </div> <div class="cal-month" id="calMonth">
 </div> <div class="cal-grid" id="calGrid">
 </div> <p class="cal-note" id="calNote">
@@ -245,7 +652,7 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <div class="lab">Past</div>
 <div class="sub">Unavailable</div>
 </div>
-</div> </div> </div> </div> <div class="card"> <h3>Select your slots</h3> <div class="info-bar">Tap a cell to select. You can pick slots across <strong>multiple dates</strong> — switch dates and your selections are kept.</div> <div class="table-scroll">
+</div>  </div> </div> </div> <div class="card"> <h3>Select your slots</h3> <div class="info-bar">Tap a cell to select. You can pick slots across <strong>multiple dates</strong> — switch dates and your selections are kept.</div> <div class="table-scroll">
 <table class="slots">
 <thead>
 <tr id="gridHead">
@@ -278,7 +685,7 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 <label class="fl">Email</label>
 <input type="email" id="emailInput" placeholder="you@email.com" inputmode="email" autocomplete="email"/>
 <div class="sum-note" style="margin-top:6px">We'll send your booking status and confirmation to this email.</div>
-</div> </div> <div class="card"> <h3>Select a payment method</h3> <p class="sum-note" style="margin:-6px 0 14px">Choose one option below.</p> <div class="pay-methods" id="payMethods">
+</div> </div> <div class="card" id="agreementCard" style="display:none"> <h3>First time booking with us</h3> <p class="sum-note agr-intro">Please read and accept the Participant Agreement. You only do this once &mdash; next time you book with this email address, we will skip straight to payment.</p> <div id="agreementBody"></div> <p class="agr-scrollnote" id="agrEffective"></p> <div class="field-gap"> <label class="fl">Date of birth</label> <input type="date" id="dobInput"/> </div> <div class="field-gap"> <label class="fl">Home address</label> <input type="text" id="addrInput" placeholder="House/unit, street, barangay, city"/> </div> <div class="field-gap"> <label class="fl">Emergency contact &mdash; name</label> <input type="text" id="ecNameInput" placeholder="Full name"/> </div> <div class="field-gap"> <label class="fl">Emergency contact &mdash; relationship</label> <input type="text" id="ecRelInput" placeholder="Spouse, parent, sibling, friend"/> </div> <div class="field-gap"> <label class="fl">Emergency contact &mdash; mobile number</label> <input type="tel" id="ecNumInput" placeholder="09XX XXX XXXX"/> </div> <label class="agr-accept" for="agrAccept"> <input type="checkbox" id="agrAccept"/> <span>I have read, understood, and voluntarily agree to be bound by this Participant Agreement. I understand it includes a release of liability and an assumption of risk.</span> </label> </div> <div class="card"> <h3>Select a payment method</h3> <p class="sum-note" style="margin:-6px 0 14px">Choose one option below.</p> <div class="pay-methods" id="payMethods">
 </div> <div class="pay-detail" id="payDetail" style="display:none">
 </div> </div> <div class="card"> <h3>Upload receipt</h3> <p class="sum-note" style="margin:-6px 0 14px">Upload your payment proof. <strong style="color:var(--cancel)">Required.</strong>
 </p> <div class="upload" id="uploadBox"> <div class="big">☁️ Tap to upload image</div> <div class="small">JPG or PNG, max 5MB</div> <img class="preview" id="receiptPreview" style="display:none"/> </div> <input type="file" id="receiptInput" accept="image/*" style="display:none"/> </div> <button class="btn btn-navy" id="submitBtn">Submit Booking</button> <div class="hold-note">🔒 Your slot is held as <strong>Pending</strong>. We'll confirm it shortly after verifying your payment.</div> <div class="footer" id="footerLinks2">
@@ -295,10 +702,43 @@ table.slots .time-cell{position:sticky;left:0;background:var(--card);z-index:2}
 </div> </div> </div> <div class="toast" id="toast">
 </div> <script>(function(){try{var ua=navigator.userAgent||"";if(/FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|Twitter|GSA/i.test(ua)){var b=document.getElementById("iabBanner");if(b){b.style.display="block";var c=document.getElementById("iabClose");if(c)c.onclick=function(){b.style.display="none"}}}}catch(e){}})();
 let db;try{const e=firebase.initializeApp(firebaseConfig);try{
-APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&firebase.appCheck(e).activate(APPCHECK_SITE_KEY,!0)
-}catch(e){console.warn("AppCheck:",e)}db=firebase.firestore();try{db.enablePersistence({synchronizeTabs:!0}).catch(function(){})}catch(e){}}catch(e){
+APPCHECK_SITE_KEY&&0!==APPCHECK_SITE_KEY.indexOf("PASTE_")&&(window.__appCheck=firebase.appCheck(e),window.__appCheck.activate(APPCHECK_SITE_KEY,!0))
+}catch(e){console.warn("AppCheck:",e)}db=firebase.firestore()/* No offline persistence here on purpose. synchronizeTabs made every read queue behind an IndexedDB primary-lease handover, and with a few tabs open on this origin that handover stalls and the reads hang until they time out — the "Couldn't connect" report. Availability has to be live anyway; a cached free slot that is actually taken is worse than a slightly slower load. */}catch(e){
 showError("Could not connect. Check the Firebase config at the top of this file.")}
-let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,reserving=!1,availReady=!1,availDate=null
+let viewYear,viewMonth,SETTINGS=null,COURTS=[],RATES=[],PROMOS=[],appliedPromo=null,selectedDate=null,cart=new Set,bookedSet=new Set,pendingSet=new Set,availUnsub=null,chosenPayment=null,receiptData=null,holdTimer=null,holdDeadline=0,reservedIds=[],reservedLockIds=[],reservedBookingId=null,releasingBookingId=null,reserving=!1,availReady=!1,availDate=null
+/* ── Participant agreement ────────────────────────────────────────────────
+   AGREEMENT is settings/agreement, or null for venues that do not use one.
+   agreementRequired is recomputed whenever the email changes: we hash the
+   address and look up a single participantSignatures document. A hit for the
+   CURRENT version means they have already signed and see nothing. */
+;let AGREEMENT=null,agreementRequired=!1,agreementHash="",agreementCheckedFor=""
+;async function sha256Hex(str){try{
+const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str))
+;return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("")
+}catch(e){console.warn("hash unavailable",e);return""}}
+;async function refreshAgreementGate(){const card=$("agreementCard");if(!card)return
+;if(!AGREEMENT||!AGREEMENT.bodyHtml){card.style.display="none";agreementRequired=!1;return}
+;const email=($("emailInput").value||"").trim().toLowerCase()
+;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){card.style.display="none";agreementRequired=!1;agreementCheckedFor="";return}
+;if(email===agreementCheckedFor)return
+;agreementCheckedFor=email
+;const h=await sha256Hex(email);
+/* No Web Crypto (very old browser): ask everyone rather than silently skip. */
+agreementHash=h
+;let signed=!1
+;if(h)try{const d=await db.collection("participantSignatures").doc(h).get()
+;signed=d.exists&&d.data().agreementVersion===AGREEMENT.version}catch(e){signed=!1}
+;if(email!==agreementCheckedFor)return
+/* a newer keystroke already superseded this lookup */
+;agreementRequired=!signed
+;if(agreementRequired){$("agreementBody").innerHTML=AGREEMENT.bodyHtml
+;$("agrEffective").textContent=(AGREEMENT.effectiveDate?"Effective "+AGREEMENT.effectiveDate+" · ":"")+"Version "+(AGREEMENT.version||"1.0")
+;$("agreementBody").scrollTop=0}
+;card.style.display=agreementRequired?"block":"none"}
+;function resetAgreementFields(){agreementRequired=!1;agreementHash="";agreementCheckedFor=""
+;const c=$("agreementCard");if(c)c.style.display="none"
+;["dobInput","addrInput","ecNameInput","ecRelInput","ecNumInput"].forEach(id=>{const el=$(id);if(el)el.value=""})
+;const a=$("agrAccept");if(a)a.checked=!1}
 /* ── EASY-EDIT SETTING ── minutes of grace before a time slot is marked "Past".
    A slot stays open for this many minutes AFTER its start time, then turns Past.
    Example at 15: the 8:00–9:00 slot stays Open until 8:15, then shows Past at 8:16. */
@@ -319,25 +759,41 @@ return"₱"+Number(e).toLocaleString("en-PH")}function darken(e,t){
 }function ck(e,t,o){return e+"|"+t+"|"+o}
 function isBlocked(court,date,slotKey){return Array.isArray(court.blocks)&&court.blocks.some(b=>b.date===date&&Array.isArray(b.slots)&&b.slots.includes(slotKey))}async function loadData(){if(db)try{
 const _to=(p,ms)=>Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),ms))]);
-const[e,t,rr,pp]=await _to(Promise.all([
+/* A cold load fetches the reCAPTCHA script, runs it, exchanges it for an
+   App Check token and only then opens the first Firestore connection. That
+   chain does not fit in 12s on mobile data, which is why the very first visit
+   always failed and a reload always worked — the reload had a cached token.
+   Wait for the token, then retry once. Only a timeout is retried, so a genuine
+   permission error still surfaces straight away. */
+const _reads=()=>Promise.all([
 db.collection("settings").doc("config").get(),
 db.collection("courts").get(),
 db.collection("rates").get().catch(()=>null),
-db.collection("promos").get().catch(()=>null)
-]),12e3);if(!e.exists)return void showError("Settings not found.")
-;SETTINGS=e.data();if(COURTS=[],t.forEach(e=>{const t=e.data()
+db.collection("promos").get().catch(()=>null),
+db.collection("settings").doc("agreement").get().catch(()=>null)
+]);
+if(window.__appCheck)try{await _to(window.__appCheck.getToken(),1e4)}catch(_){}
+let _rs;try{_rs=await _to(_reads(),12e3)}
+catch(_e){if("timeout"!==_e.message)throw _e;_rs=await _to(_reads(),15e3)}
+const[e,t,rr,pp,ag]=_rs;if(!e.exists)return void showError("Settings not found.")
+;SETTINGS=e.data();AGREEMENT=(ag&&ag.exists)?ag.data():null;if(COURTS=[],t.forEach(e=>{const t=e.data()
 ;!1!==t.active&&COURTS.push({id:e.id,name:t.name||"Court",status:t.status||"",blocks:Array.isArray(t.blocks)?t.blocks:[]})}),COURTS.sort((e,t)=>e.name.localeCompare(t.name)),
 !COURTS.length)return void showError("No active courts found.");RATES=[];if(rr)rr.forEach(e=>{const t=e.data();let o=hm2min(t.start),n=hm2min(t.end);n<=o&&(n+=1440),RATES.push({start:o,end:n,
 rate:Number(t.rate)})}),RATES.sort((e,t)=>e.start-t.start);PROMOS=[];if(pp)pp.forEach(e=>PROMOS.push({id:e.id,...e.data()}));applyTheme(),renderBrand(),startHero(),renderFooterLinks();const o=today();viewYear=o.getFullYear(),
 viewMonth=o.getMonth(),selectedDate=dstr(o),renderCalendar(),renderGridHead(),watchAvailability(),watchCourtsLive(),updateSummary(),
 window.__clearLoadHint&&window.__clearLoadHint(),$("loading").style.display="none",$("app").style.display="block"}catch(e){console.error(e),
-showError("timeout"===e.message?"Couldn't connect. If you opened this from Messenger or Facebook, tap ••• and choose “Open in browser”, then try again.":"Failed to load data: "+(e.message||e))}}function applyTheme(){
-const e=document.documentElement.style,t=SETTINGS.colorPrimary||"#0D2863",o=SETTINGS.colorAccent||"#0D2863"
-;e.setProperty("--navy",t),e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||"#0A1E4C"),e.setProperty("--green",o),
-e.setProperty("--green-d",SETTINGS.colorAccentDark||"#0A1E4C"),
-e.setProperty("--sel-bg",SETTINGS.slotSelectedBg||"#15336B")}function renderBrand(){
-if($("bizName").textContent=SETTINGS.businessName||"Court Booking",$("bizTagline").textContent=SETTINGS.tagline||"",
-document.title=(SETTINGS.businessName||"Court")+" — Booking",SETTINGS.logoUrl){const e=$("logo");e.src=SETTINGS.logoUrl,
+showError("timeout"===e.message?(window.__inApp?"Couldn't connect. If you opened this from Messenger or Facebook, tap ••• and choose “Open in browser”, then try again.":"Couldn't connect. Reload the page."):"Failed to load data: "+(e.message||e))}}function applyTheme(){
+const e=document.documentElement.style,t=SETTINGS.colorPrimary||"#242428",o=SETTINGS.colorAccent||"#242428"
+;e.setProperty("--navy",t),e.setProperty("--navy-d",SETTINGS.colorPrimaryDark||"#17171A"),e.setProperty("--green",o),
+e.setProperty("--green-d",SETTINGS.colorAccentDark||"#17171A")
+;const sb=SETTINGS.slotSelectedBg||"#2B2B32";e.setProperty("--sel-bg",sb),
+/* Readable text on brand-coloured surfaces + accent tints for the glass theme. */
+e.setProperty("--btn-tx",SETTINGS.colorAccentText||txOn(o)),
+e.setProperty("--nav-tx",SETTINGS.colorPrimaryText||txOn(t)),
+e.setProperty("--sel-tx",SETTINGS.slotSelectedText||txOn(sb)),accVars(e,o)}function renderBrand(){
+if($("bizEyebrow")&&($("bizEyebrow").textContent=SETTINGS.sport||CLIENT.sport||"Court"),
+$("bizName").textContent=SETTINGS.businessName||CLIENT.name||"Court Booking",$("bizTagline").textContent=SETTINGS.tagline||"",
+document.title=(SETTINGS.businessName||CLIENT.name||"Court")+" — Booking",SETTINGS.logoUrl){const e=$("logo");e.src=SETTINGS.logoUrl,
 e.style.display="block"}}function heroImages(){
 return Array.isArray(SETTINGS.heroUrls)&&SETTINGS.heroUrls.length?SETTINGS.heroUrls.filter(Boolean):SETTINGS.heroUrl?[SETTINGS.heroUrl]:[]
 }
@@ -369,12 +825,18 @@ SETTINGS.instagramLink&&t.push('<a href="'+esc(SETTINGS.instagramLink)+'" target
 ;const o=e+(t.length?'<div class="footer-social">'+t.join('<span class="dot">•</span>')+"</div>":"")+('<div class="footer-meta"><button type="button" class="flink" data-doc="privacy">Privacy</button><span class="dot">·</span><button type="button" class="flink" data-doc="terms">Terms</button><span class="dot">·</span><a href="'+LAYAW_FB+'" target="_blank" rel="noopener">Built by Layaw System</a></div>')
 ;$("footerLinks").innerHTML=o,$("footerLinks2").innerHTML=o,document.querySelectorAll("[data-doc]").forEach(e=>{
 e.onclick=()=>openDoc(e.getAttribute("data-doc"))})}const DOC_PRIVACY={title:"Privacy Policy",
-html:'<p class="upd">Last updated: July 3, 2026</p>\n<h4>1. Introduction</h4>\n<p>Welcome to The Kitchen Arena. This site is a white-label court booking experience powered by the Layaw System ("Platform"), operated by Layaw System ("we," "our," or "us"). The Kitchen Arena is the venue you are booking with. For personal information processed through the Platform, Layaw System is the personal information controller. We follow the Data Privacy Act of 2012 (Republic Act No. 10173).</p>\n<p>When you submit a booking, you confirm that you have read and agree to this Privacy Policy. If you do not agree, please do not submit a booking. If you only browse without booking, we may still collect limited technical data (such as cookies or security logs).</p>\n<h4>2. When We Are Allowed to Use Your Information</h4>\n<p>We use your personal information only when the law allows, including when:</p>\n<ul><li>We need it to handle your booking (our agreement with you)</li><li>You consent — for example, when you submit a booking and agree to this Policy</li><li>We have a valid business need that respects your rights — such as preventing fraud or keeping the Platform secure</li><li>The law requires us to keep or use certain records</li></ul>\n<p>If we rely on your consent, you may withdraw it (Section 10). Some information is required to complete a booking; without it, we may not be able to confirm your reservation.</p>\n<h4>3. Information We Collect</h4>\n<p><strong>You provide:</strong></p>\n<ul><li><strong>Booking details:</strong> name, phone number, email, court choice, date and time, and booking reference</li><li><strong>Proof of payment:</strong> if the venue requires it, a receipt image you upload so the venue can verify your payment</li><li><strong>Messages to us:</strong> feedback, support requests, and other communications</li></ul>\n<p><strong>Collected automatically:</strong> usage data, device data (browser, OS, IP address), and cookies/local storage used for staff/owner sign-in, security, and preferences.</p>\n<p><strong>Payments — what we do not collect:</strong> we do not ask for your card number, e-wallet login, or bank credentials on our booking form. Paying the venue (cash, bank transfer, or QR such as GCash) happens directly with the venue. We do not process card payments. If you upload a receipt image, we store it only so the venue can confirm your payment.</p>\n<h4>4. Cookies and Outside Services We Use</h4>\n<p>We rely on trusted providers who may handle personal information only to perform their work for us:</p>\n<ul><li><strong>Google Firebase</strong> (Firestore, Authentication, App Check) — stores booking data, manages venue/staff sign-in, and verifies requests come from the real app. Data may be kept outside the Philippines.</li><li><strong>GitHub Pages</strong> — hosts the website; may log technical data such as IP addresses.</li><li><strong>Google reCAPTCHA v3</strong> — helps block bots and abuse.</li></ul>\n<h4>5. How We Use Your Information</h4>\n<ul><li>Run the booking Platform and manage your reservations</li><li>Send your booking details to the venue you chose</li><li>Send confirmations and booking-related messages</li><li>Verify a payment when you upload a receipt (status/reference only)</li><li>Improve the Platform, prevent fraud, and meet legal requirements in the Philippines</li></ul>\n<h4>6. Who We Share Information With</h4>\n<p>The venue you book with (The Kitchen Arena) receives the details needed for your reservation and should use them only to run the venue. We may also share information with service providers (Section 4), for legal requests, in a business change (with notice where the law requires), or with your permission. <strong>We do not sell your personal information.</strong></p>\n<h4>7. How We Protect Your Information</h4>\n<ul><li>Encrypted connections (HTTPS)</li><li>Access controls that keep your contact details readable only by the venue\'s authorized managers and staff</li><li>Security monitoring and vendor review</li></ul>\n<p>No online system is perfectly secure, but we work to protect your information.</p>\n<h4>8. How Long We Keep Information</h4>\n<p>We keep information only as long as we need it — while your booking is active and for support, up to seven (7) years for records the law requires (tax, accounting, compliance), and a shorter time for logs. You may ask us to delete data we hold; we will comply where the law allows.</p>\n<h4>9. If a Data Breach Occurs</h4>\n<p>If we learn of a breach that could seriously harm people, we will contain it, assess it, and notify the National Privacy Commission and affected users when the law requires. If you think your information was exposed, contact us using Section 14.</p>\n<h4>10. Your Rights (Philippines)</h4>\n<p>Under the Data Privacy Act you may have the right to be informed, access, correct, delete or block, object, withdraw consent, seek damages, and complain to the NPC. To use these rights, contact us (Section 14). You can also visit privacy.gov.ph.</p>\n<h4>11. Users Under 18</h4>\n<p>The Platform is for users 18 and older. We do not knowingly collect information from children. If you think a child gave us personal information, contact us and we will delete it.</p>\n<h4>12. Data Stored Outside the Philippines</h4>\n<p>Some providers (such as Google Firebase) store or process data in other countries. When we send data abroad, we follow the Data Privacy Act and share only what is needed to run the Platform.</p>\n<h4>13. Changes to This Policy</h4>\n<p>We may update this Policy. The new version will appear here with a new "Last updated" date. For important changes, we may also show a notice on the Platform.</p>\n<h4>14. Contact Us</h4>\n<p><strong>Layaw System</strong> (platform operator)<br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>The Kitchen Arena</strong> (venue)<br>Email: <a href="mailto:arbiejaynunag1210@gmail.com">arbiejaynunag1210@gmail.com</a><br>Location: Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga</p>\n<h4>15. Governing Law</h4>\n<p>This Privacy Policy follows the laws of the Republic of the Philippines, including the Data Privacy Act of 2012 (RA 10173) and rules from the National Privacy Commission.</p>'
+html:'<p class="upd">Last updated: '+esc(CLIENT.docsUpdated)+'</p>\n<h4>1. Introduction</h4>\n<p>Welcome to '+esc(CLIENT.name)+'. This site is a white-label court booking experience powered by the Layaw System ("Platform"), operated by Layaw System ("we," "our," or "us"). '+esc(CLIENT.name)+' is the venue you are booking with. For personal information processed through the Platform, Layaw System is the personal information controller. We follow the Data Privacy Act of 2012 (Republic Act No. 10173).</p>\n<p>When you submit a booking, you confirm that you have read and agree to this Privacy Policy. If you do not agree, please do not submit a booking. If you only browse without booking, we may still collect limited technical data (such as cookies or security logs).</p>\n<h4>2. When We Are Allowed to Use Your Information</h4>\n<p>We use your personal information only when the law allows, including when:</p>\n<ul><li>We need it to handle your booking (our agreement with you)</li><li>You consent — for example, when you submit a booking and agree to this Policy</li><li>We have a valid business need that respects your rights — such as preventing fraud or keeping the Platform secure</li><li>The law requires us to keep or use certain records</li></ul>\n<p>If we rely on your consent, you may withdraw it (Section 10). Some information is required to complete a booking; without it, we may not be able to confirm your reservation.</p>\n<h4>3. Information We Collect</h4>\n<p><strong>You provide:</strong></p>\n<ul><li><strong>Booking details:</strong> name, phone number, email, court choice, date and time, and booking reference</li><li><strong>Proof of payment:</strong> if the venue requires it, a receipt image you upload so the venue can verify your payment</li><li><strong>Messages to us:</strong> feedback, support requests, and other communications</li></ul>\n<p><strong>Collected automatically:</strong> usage data, device data (browser, OS, IP address), and cookies/local storage used for staff/owner sign-in, security, and preferences.</p>\n<p><strong>Payments — what we do not collect:</strong> we do not ask for your card number, e-wallet login, or bank credentials on our booking form. Paying the venue (cash, bank transfer, or QR such as GCash) happens directly with the venue. We do not process card payments. If you upload a receipt image, we store it only so the venue can confirm your payment.</p>\n<h4>4. Cookies and Outside Services We Use</h4>\n<p>We rely on trusted providers who may handle personal information only to perform their work for us:</p>\n<ul><li><strong>Google Firebase</strong> (Firestore, Authentication, App Check) — stores booking data, manages venue/staff sign-in, and verifies requests come from the real app. Data may be kept outside the Philippines.</li><li><strong>GitHub Pages</strong> — hosts the website; may log technical data such as IP addresses.</li><li><strong>Google reCAPTCHA v3</strong> — helps block bots and abuse.</li></ul>\n<h4>5. How We Use Your Information</h4>\n<ul><li>Run the booking Platform and manage your reservations</li><li>Send your booking details to the venue you chose</li><li>Send confirmations and booking-related messages</li><li>Verify a payment when you upload a receipt (status/reference only)</li><li>Improve the Platform, prevent fraud, and meet legal requirements in the Philippines</li></ul>\n<h4>6. Who We Share Information With</h4>\n<p>The venue you book with ('+esc(CLIENT.name)+') receives the details needed for your reservation and should use them only to run the venue. We may also share information with service providers (Section 4), for legal requests, in a business change (with notice where the law requires), or with your permission. <strong>We do not sell your personal information.</strong></p>\n<h4>7. How We Protect Your Information</h4>\n<ul><li>Encrypted connections (HTTPS)</li><li>Access controls that keep your contact details readable only by the venue\'s authorized managers and staff</li><li>Security monitoring and vendor review</li></ul>\n<p>No online system is perfectly secure, but we work to protect your information.</p>\n<h4>8. How Long We Keep Information</h4>\n<p>We keep information only as long as we need it — while your booking is active and for support, up to seven (7) years for records the law requires (tax, accounting, compliance), and a shorter time for logs. You may ask us to delete data we hold; we will comply where the law allows.</p>\n<h4>9. If a Data Breach Occurs</h4>\n<p>If we learn of a breach that could seriously harm people, we will contain it, assess it, and notify the National Privacy Commission and affected users when the law requires. If you think your information was exposed, contact us using Section 14.</p>\n<h4>10. Your Rights (Philippines)</h4>\n<p>Under the Data Privacy Act you may have the right to be informed, access, correct, delete or block, object, withdraw consent, seek damages, and complain to the NPC. To use these rights, contact us (Section 14). You can also visit privacy.gov.ph.</p>\n<h4>11. Users Under 18</h4>\n<p>The Platform is for users 18 and older. We do not knowingly collect information from children. If you think a child gave us personal information, contact us and we will delete it.</p>\n<h4>12. Data Stored Outside the Philippines</h4>\n<p>Some providers (such as Google Firebase) store or process data in other countries. When we send data abroad, we follow the Data Privacy Act and share only what is needed to run the Platform.</p>\n<h4>13. Changes to This Policy</h4>\n<p>We may update this Policy. The new version will appear here with a new "Last updated" date. For important changes, we may also show a notice on the Platform.</p>\n<h4>14. Contact Us</h4>\n<p><strong>Layaw System</strong> (platform operator)<br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>'+esc(CLIENT.name)+'</strong> (venue)<br>Email: <a href="mailto:'+esc(CLIENT.email)+'">'+esc(CLIENT.email)+'</a><br>Location: '+esc(CLIENT.address)+'</p>\n<h4>15. Governing Law</h4>\n<p>This Privacy Policy follows the laws of the Republic of the Philippines, including the Data Privacy Act of 2012 (RA 10173) and rules from the National Privacy Commission.</p>'
 },DOC_TERMS={title:"Terms of Service",
-html:'<p class="upd">Last updated: July 3, 2026</p>\n<h4>1. Acceptance of Terms</h4>\n<p>By accessing or using this booking site ("Platform"), you agree to these Terms of Service ("Terms"). If you do not agree, please do not use the Platform. The Platform is provided by Layaw System ("we," "us," or "our"). The Kitchen Arena is the venue operator for courts you book on this site.</p>\n<h4>2. Description of Service</h4>\n<p>The Platform lets you browse courts and time slots, book slots online, pay the venue directly via GCash or bank transfer and upload proof of payment, and receive booking confirmations once the venue confirms. The Platform facilitates bookings; it does not process card payments or hold funds.</p>\n<h4>3. Bookings and Accounts</h4>\n<p>To reserve a court, you provide your name, contact number, and email, and agree to give accurate information. You do not need an account to book. You must be at least 18 years old. Venue owners and staff access management tools through secured accounts and are responsible for keeping their credentials confidential.</p>\n<h4>4. Booking and Payment Terms</h4>\n<ul><li>A new booking starts as <strong>pending</strong> until the venue confirms it</li><li>Payment is made directly to the venue via GCash, bank transfer, or on-site cash — not through an online card processor on this Platform</li><li>When required, you upload a receipt so the venue can verify payment</li><li>Prices are shown in Philippine Pesos (PHP); the venue sets its own rates</li><li>Once reviewed, you receive a confirmation with a reference number you can check on the status page</li><li>Cancellations and refunds are determined by the venue</li><li>A pending booking that is not paid or confirmed within the venue\'s holding period may expire and be released to others</li></ul>\n<h4>5. Venue Terms</h4>\n<p>The Kitchen Arena is responsible for accurate court information, keeping availability and pricing current, honoring confirmed bookings, maintaining safe courts, handling customer service, complying with laws, and not discriminating against players.</p>\n<h4>6. User Conduct</h4>\n<p>You agree not to use the Platform for illegal purposes, impersonate others, upload malware, attempt unauthorized access, scrape data, interfere with operations, post false content or fake proof of payment, or harass venue staff or other users.</p>\n<h4>7. Intellectual Property</h4>\n<p>The Platform, including its software and design, is the property of Layaw System or its licensors. You may not copy, modify, distribute, sell, or lease any part without our written permission. The venue keeps ownership of photos and content it uploads but grants Layaw System a non-exclusive license to display them to operate the booking service.</p>\n<h4>8. Disclaimers and Limitation of Liability</h4>\n<p>The Platform is provided "AS IS" and "AS AVAILABLE" without warranties of any kind. We do not guarantee it will be uninterrupted, secure, or error-free, that listings are accurate, or that bookings will be honored by the venue. To the maximum extent permitted by law, Layaw System is not liable for any indirect, incidental, special, consequential, or punitive damages, or loss of profits, data, or goodwill, arising from your use of or inability to use the Platform, unauthorized access, disputes with the venue, or interruptions.</p>\n<h4>9. Indemnification</h4>\n<p>You agree to indemnify and hold harmless Layaw System and its operators from claims, liabilities, damages, and expenses (including reasonable legal fees) arising from your use of the Platform, your violation of these Terms or third-party rights, or content you submit.</p>\n<h4>10. Termination</h4>\n<p>We may suspend or terminate access to the Platform at any time, with or without notice, including if we believe you have violated these Terms. Upon termination, your right to use the Platform ceases.</p>\n<h4>11. Dispute Resolution</h4>\n<p>These Terms are governed by the laws of the Republic of the Philippines. Disputes shall be resolved in the appropriate courts of the Philippines. Before filing any legal action, we encourage you to contact us to seek an informal resolution.</p>\n<h4>12. Changes to Terms</h4>\n<p>We may modify these Terms at any time and will post the updated Terms with a new "Last updated" date. Continued use after changes constitutes acceptance.</p>\n<h4>13. Severability</h4>\n<p>If any provision is found unenforceable, it will be limited or removed to the minimum extent necessary, and the remaining provisions stay in effect.</p>\n<h4>14. Entire Agreement</h4>\n<p>These Terms, together with our Privacy Policy, are the entire agreement between you and Layaw System regarding the Platform and supersede prior agreements.</p>\n<h4>15. Contact Information</h4>\n<p><strong>Layaw System</strong><br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>The Kitchen Arena</strong><br>Email: <a href="mailto:arbiejaynunag1210@gmail.com">arbiejaynunag1210@gmail.com</a><br>Location: Mabalacat Logistics Center, Ninoy Aquino Highway, Brgy. Bundagul, Mabalacat City, Pampanga</p>'
+html:'<p class="upd">Last updated: '+esc(CLIENT.docsUpdated)+'</p>\n<h4>1. Acceptance of Terms</h4>\n<p>By accessing or using this booking site ("Platform"), you agree to these Terms of Service ("Terms"). If you do not agree, please do not use the Platform. The Platform is provided by Layaw System ("we," "us," or "our"). '+esc(CLIENT.name)+' is the venue operator for courts you book on this site.</p>\n<h4>2. Description of Service</h4>\n<p>The Platform lets you browse courts and time slots, book slots online, pay the venue directly via GCash or bank transfer and upload proof of payment, and receive booking confirmations once the venue confirms. The Platform facilitates bookings; it does not process card payments or hold funds.</p>\n<h4>3. Bookings and Accounts</h4>\n<p>To reserve a court, you provide your name, contact number, and email, and agree to give accurate information. You do not need an account to book. You must be at least 18 years old. Venue owners and staff access management tools through secured accounts and are responsible for keeping their credentials confidential.</p>\n<h4>4. Booking and Payment Terms</h4>\n<ul><li>A new booking starts as <strong>pending</strong> until the venue confirms it</li><li>Payment is made directly to the venue via GCash, bank transfer, or on-site cash — not through an online card processor on this Platform</li><li>When required, you upload a receipt so the venue can verify payment</li><li>Prices are shown in Philippine Pesos (PHP); the venue sets its own rates</li><li>Once reviewed, you receive a confirmation with a reference number you can check on the status page</li><li>Cancellations and refunds are determined by the venue</li><li>A pending booking that is not paid or confirmed within the venue\'s holding period may expire and be released to others</li></ul>\n<h4>5. Venue Terms</h4>\n<p>'+esc(CLIENT.name)+' is responsible for accurate court information, keeping availability and pricing current, honoring confirmed bookings, maintaining safe courts, handling customer service, complying with laws, and not discriminating against players.</p>\n<h4>6. User Conduct</h4>\n<p>You agree not to use the Platform for illegal purposes, impersonate others, upload malware, attempt unauthorized access, scrape data, interfere with operations, post false content or fake proof of payment, or harass venue staff or other users.</p>\n<h4>7. Intellectual Property</h4>\n<p>The Platform, including its software and design, is the property of Layaw System or its licensors. You may not copy, modify, distribute, sell, or lease any part without our written permission. The venue keeps ownership of photos and content it uploads but grants Layaw System a non-exclusive license to display them to operate the booking service.</p>\n<h4>8. Disclaimers and Limitation of Liability</h4>\n<p>The Platform is provided "AS IS" and "AS AVAILABLE" without warranties of any kind. We do not guarantee it will be uninterrupted, secure, or error-free, that listings are accurate, or that bookings will be honored by the venue. To the maximum extent permitted by law, Layaw System is not liable for any indirect, incidental, special, consequential, or punitive damages, or loss of profits, data, or goodwill, arising from your use of or inability to use the Platform, unauthorized access, disputes with the venue, or interruptions.</p>\n<h4>9. Indemnification</h4>\n<p>You agree to indemnify and hold harmless Layaw System and its operators from claims, liabilities, damages, and expenses (including reasonable legal fees) arising from your use of the Platform, your violation of these Terms or third-party rights, or content you submit.</p>\n<h4>10. Termination</h4>\n<p>We may suspend or terminate access to the Platform at any time, with or without notice, including if we believe you have violated these Terms. Upon termination, your right to use the Platform ceases.</p>\n<h4>11. Dispute Resolution</h4>\n<p>These Terms are governed by the laws of the Republic of the Philippines. Disputes shall be resolved in the appropriate courts of the Philippines. Before filing any legal action, we encourage you to contact us to seek an informal resolution.</p>\n<h4>12. Changes to Terms</h4>\n<p>We may modify these Terms at any time and will post the updated Terms with a new "Last updated" date. Continued use after changes constitutes acceptance.</p>\n<h4>13. Severability</h4>\n<p>If any provision is found unenforceable, it will be limited or removed to the minimum extent necessary, and the remaining provisions stay in effect.</p>\n<h4>14. Entire Agreement</h4>\n<p>These Terms, together with our Privacy Policy, are the entire agreement between you and Layaw System regarding the Platform and supersede prior agreements.</p>\n<h4>15. Contact Information</h4>\n<p><strong>Layaw System</strong><br>Email: <a href="mailto:layawsystem@gmail.com">layawsystem@gmail.com</a><br>Facebook: <a href="https://www.facebook.com/profile.php?id=61591455718209" target="_blank" rel="noopener">Layaw System</a></p>\n<p><strong>'+esc(CLIENT.name)+'</strong><br>Email: <a href="mailto:'+esc(CLIENT.email)+'">'+esc(CLIENT.email)+'</a><br>Location: '+esc(CLIENT.address)+'</p>'
 };function openDoc(e){const t="terms"===e?DOC_TERMS:DOC_PRIVACY;$("docTitle").textContent=t.title,
 $("docBody").innerHTML=t.html,$("docBody").scrollTop=0,$("docOverlay").classList.add("show")}function closeDoc(){
-$("docOverlay").classList.remove("show")}function advanceDays(){return Math.min(Number(SETTINGS.advanceDays??30),30)}
+$("docOverlay").classList.remove("show")}
+/* /#privacy and /#terms open the document straight away. The sign-up page
+   links here for both instead of carrying its own copy of the text — one
+   copy of the wording, so the two can never drift apart. */
+;(function(){function fromHash(){const h=(location.hash||"").slice(1).toLowerCase()
+;("privacy"===h||"terms"===h)&&openDoc(h)}window.addEventListener("hashchange",fromHash),fromHash()})()
+;function advanceDays(){return Math.min(Number(SETTINGS.advanceDays??30),30)}
 function maxDate(){const e=today();return e.setDate(e.getDate()+advanceDays()),e}function dateHasCart(e){
 for(const t of cart)if(t.slice(0,10)===e)return!0;return!1}function renderCalendar(){
 $("calMonth").textContent=["January","February","March","April","May","June","July","August","September","October","November","December"][viewMonth]+" "+viewYear
@@ -412,7 +874,7 @@ availUnsub=db.collection("bookings").where("date","==",selectedDate).onSnapshot(
 if(availDate!==selectedDate)return;bookedSet=new Set,
 pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cancelled"===t.status)return
 ;if("reserved"===t.status){const hu=t.holdUntil&&t.holdUntil.toMillis?t.holdUntil.toMillis():0
-;if(!hu||hu<now)return;if(reservedBookingId&&t.bookingId===reservedBookingId)return
+;if(!hu||hu<now)return;if(t.bookingId&&(t.bookingId===reservedBookingId||t.bookingId===releasingBookingId))return
 ;(t.slots||[]).forEach(e=>pendingSet.add(t.court+"|"+e));return}
 ;const o="confirmed"===t.status?bookedSet:pendingSet;(t.slots||[]).forEach(e=>o.add(t.court+"|"+e))}),availReady=!0,renderGrid()
 },e=>console.error(e)))}function renderGrid(){const e=$("gridBody");e.innerHTML=""
@@ -425,8 +887,12 @@ pendingSet=new Set;const now=Date.now();e.forEach(e=>{const t=e.data();if("cance
 ;buildSlots().forEach(a=>{const r=document.createElement("tr"),i=document.createElement("td");i.className="time-cell",
 i.textContent=a.label,r.appendChild(i);const s=t&&a.mins+PAST_ALLOWANCE_MIN<=o;COURTS.forEach(e=>{const t=document.createElement("td")
 ;t.className="cell";const o=e.name+"|"+a.key,n=ck(selectedDate,e.name,a.key),i=document.createElement("div")
-;i.className="cell-inner",s?(drop(n),i.className+=" cell-past",i.textContent="Past"):"unavailable"===String(e.status).toLowerCase()?(drop(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):isBlocked(e,selectedDate,a.key)?(drop(n),i.className+=" cell-booked",
-i.textContent="Booked"):availReady?bookedSet.has(o)?(drop(n),i.className+=" cell-booked",
+;i.className="cell-inner",/* Past wins over everything: once an hour has gone by, a player does not
+   care whether it was booked, blocked or the court was off. */
+s?(drop(n),i.className+=" cell-past",i.textContent="Past"):"unavailable"===String(e.status).toLowerCase()?(drop(n),i.className+=" cell-past cell-na",i.textContent="Not Available"):/* A slot the venue blocked is simply unavailable to a player. Showing
+   "Blocked" leaked internal state and invited questions; staff still see
+   the real status, and the note, on their own dashboards. */
+isBlocked(e,selectedDate,a.key)?(drop(n),i.className+=" cell-booked",i.textContent="Booked"):availReady?bookedSet.has(o)?(drop(n),i.className+=" cell-booked",
 i.textContent="Booked"):pendingSet.has(o)?(drop(n),i.className+=" cell-pending",
 i.textContent="Pending"):cart.has(n)?(i.className+=" cell-selected",i.textContent="Selected",i.onclick=()=>{
 cart.delete(n),afterCartChange()}):(i.className+=" cell-open",i.textContent="Open",i.onclick=()=>{cart.add(n),
@@ -515,14 +981,14 @@ status:"reserved",holdUntil:hu,createdAt:firebase.firestore.FieldValue.serverTim
 })}
 /* Release the current reservation: delete reserved booking docs AND their slot locks. */
 async function releaseReservation(){const bid=reservedBookingId,lockIds=reservedLockIds.slice()
-;reservedIds=[];reservedLockIds=[];reservedBookingId=null
+;releasingBookingId=bid;reservedIds=[];reservedLockIds=[];reservedBookingId=null
 ;try{const b=db.batch();let any=!1
 /* Delete by querying our own reserved docs (robust even if in-memory IDs were lost). */
 ;if(bid){const snap=await db.collection("bookings").where("bookingId","==",bid).get()
 ;snap.forEach(doc=>{if("reserved"===String(doc.data().status).toLowerCase()){b.delete(doc.ref);any=!0}})}
 ;lockIds.forEach(id=>{b.delete(db.collection("slotLocks").doc(id));any=!0})
 ;if(any)await b.commit()}
-catch(e){console.warn("release failed",e)}}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
+catch(e){console.warn("release failed",e)}finally{releasingBookingId=null;try{renderGrid()}catch(e){}}}function paymentOptions(){const e=[{key:"GCash",label:"GCash",
 name:SETTINGS.gcashName,number:SETTINGS.gcashNumber,qr:SETTINGS.gcashQrUrl},{key:"Maya",label:"Maya",
 name:SETTINGS.mayaName,number:SETTINGS.mayaNumber,qr:SETTINGS.mayaQrUrl},{key:"Bank",label:"Bank Transfer",
 name:SETTINGS.bankName,number:SETTINGS.bankNumber,qr:SETTINGS.bankQrUrl
@@ -560,9 +1026,22 @@ updateSummary()},$("expireBtn").onclick=()=>{$("expireOverlay").classList.remove
 $("checkoutView").style.display="none",$("successView").style.display="none",$("app").style.display="block",
 window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),$("nameInput").value="",$("contactInput").value="",
 $("emailInput").value="",appliedPromo=null,$("voucherInput")&&($("voucherInput").value=""),setVoucherMsg("",!0),
-$("receiptPreview").style.display="none";const e=$("uploadBox").querySelector(".big")
+$("receiptPreview").style.display="none";resetAgreementFields();const e=$("uploadBox").querySelector(".big")
 ;e&&(e.textContent="☁️ Tap to upload image"),renderGrid(),updateSummary(),renderCalendar(),window.scrollTo({top:0,
-behavior:"smooth"})},$("continueBtn").onclick=goCheckout,$("mbContinue").onclick=goCheckout,
+behavior:"smooth"})},$("emailInput").addEventListener("change",refreshAgreementGate),$("emailInput").addEventListener("blur",refreshAgreementGate),$("continueBtn").onclick=goCheckout,$("mbContinue").onclick=goCheckout,
+/* No unload/pagehide release here, deliberately. releaseReservation() is async
+   (a query plus a batch commit); the browser cancels in-flight requests while
+   the page unloads, so it never completes. This was tried and measured — the
+   reserved doc survived the reload every time.
+   Doing it properly needs navigator.sendBeacon() posting to a small HTTP
+   function that deletes the reserved docs + slotLocks server-side.
+   Not built because it is not a real-world defect: an abandoned hold only
+   blocks the person who abandoned it, and it clears itself once holdUntil
+   passes (settings.checkoutMinutes). The Kitchen Arena has run in production
+   on byte-identical code with no complaints.
+   Do NOT release on visibilitychange either — players switch to the GCash app
+   to pay and come back; releasing there would drop the slots of everyone who
+   is actually paying. */
 $("backToSlots").onclick=async()=>{clearHoldTimer();await releaseReservation();$("checkoutView").style.display="none",$("app").style.display="block",
 window.innerWidth<=1e3&&($("mobileBar").style.display="flex")},$("uploadBox").onclick=()=>$("receiptInput").click(),
 $("receiptInput").onchange=e=>{const t=e.target.files[0];if(!t)return
@@ -578,6 +1057,14 @@ const e=$("nameInput").value.trim(),t=$("contactInput").value.trim(),o=$("emailI
 ;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o))return void toast("Please enter a valid email address.")
 ;if(paymentOptions().length&&!chosenPayment)return void toast("Please select a payment method.")
 ;if(paymentOptions().length&&!receiptData)return void toast("Please upload your payment receipt.")
+;await refreshAgreementGate()
+;if(agreementRequired){
+if(!$("dobInput").value)return void toast("Please enter your date of birth.")
+;if(!$("addrInput").value.trim())return void toast("Please enter your home address.")
+;if(!$("ecNameInput").value.trim())return void toast("Please enter an emergency contact name.")
+;if(!$("ecNumInput").value.trim())return void toast("Please enter an emergency contact number.")
+;if(!$("agrAccept").checked)return void toast("Please read and accept the Participant Agreement.")
+;if(!agreementHash)return void toast("Your browser could not complete this step. Please update it, or use Chrome or Safari.")}
 ;const n=$("submitBtn");n.disabled=!0,n.textContent="Submitting…";try{
 /* The slots are already held by our reservation (goCheckout). Finalize it:
    flip each reserved doc to "pending" with its amount, then write the contact
@@ -593,6 +1080,16 @@ const a={};[...cart].forEach(e=>{const[t,o,n]=e.split("|");((a[t]=a[t]||{})[o]=a
 ;rsnap.forEach(doc=>{const t=doc.data();const amt=Math.round((s[t.date+"|"+t.court]||0)*d)
 ;i.update(doc.ref,{amount:amt,paymentMethod:chosenPayment||"",status:"pending",holdUntil:firebase.firestore.FieldValue.delete()})})
 ;reservedLockIds.forEach(id=>i.delete(db.collection("slotLocks").doc(id)))
+;;if(agreementRequired&&agreementHash){
+i.set(db.collection("participants").doc(r),{bookingId:r,name:e,email:o,contact:t,
+dateOfBirth:$("dobInput").value||"",address:$("addrInput").value.trim(),
+emergencyName:$("ecNameInput").value.trim(),emergencyRelationship:$("ecRelInput").value.trim(),
+emergencyNumber:$("ecNumInput").value.trim(),
+agreementVersion:AGREEMENT&&AGREEMENT.version||"",agreementContentHash:AGREEMENT&&AGREEMENT.contentHash||"",
+acceptedAt:firebase.firestore.FieldValue.serverTimestamp()})
+;i.set(db.collection("participantSignatures").doc(agreementHash),{
+agreementVersion:AGREEMENT&&AGREEMENT.version||"",lastBookingId:r,
+signedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:!0})}
 ;if(i.set(db.collection("bookingContacts").doc(r),{
 bookingId:r,bookerName:e,contact:t,email:o,promoCode:appliedPromo?String(appliedPromo.code||""):"",discount:c,
 createdAt:firebase.firestore.FieldValue.serverTimestamp()}),await i.commit(),reservedIds=[],reservedLockIds=[],reservedBookingId=null,receiptData)try{
@@ -610,5 +1107,148 @@ $("nameInput").value="",$("contactInput").value="",$("emailInput").value="",$("r
 $("uploadBox").querySelector(".big").textContent="☁️ Tap to upload image",$("successView").style.display="none",
 $("app").style.display="block",window.innerWidth<=1e3&&($("mobileBar").style.display="flex"),renderGrid(),
 updateSummary(),renderCalendar(),window.scrollTo({top:0,behavior:"smooth"})},setInterval(()=>{
-SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),(function(){var ua=navigator.userAgent||"";var inApp=/FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|Twitter|GSA/i.test(ua);
-var hintTimer=setTimeout(function(){var h=document.getElementById("loadHint");if(h&&document.getElementById("loading")&&"none"!==document.getElementById("loading").style.display)h.style.display="block"},inApp?800:6e3);var rb=document.getElementById("retryLoad");rb&&(rb.onclick=function(){location.reload()});window.__clearLoadHint=function(){clearTimeout(hintTimer)}})(),loadData()</script> </body> </html>
+SETTINGS&&COURTS.length&&selectedDate===dstr(today())&&"none"!==$("app").style.display&&renderGrid()},6e4),(function(){var ua=navigator.userAgent||"";var inApp=/FBAN|FBAV|FB_IAB|Instagram|Messenger|Line\/|Twitter|GSA/i.test(ua);window.__inApp=inApp;
+var hintTimer=setTimeout(function(){var h=document.getElementById("loadHint");if(h&&document.getElementById("loading")&&"none"!==document.getElementById("loading").style.display){var m=document.getElementById("loadHintMsg");if(m&&inApp)m.innerHTML="Still connecting. If you opened this from Messenger or Facebook, tap the <strong>•••</strong> menu and choose <strong>“Open in browser”</strong> (Chrome or Safari) — it is much faster.";h.style.display="block"}},inApp?800:1e4);/* The page now retries by itself for ~35s. Offering Retry before that has run out just makes people reload a page that was seconds from finishing — which is what the old 6s hint did. */var retryTimer=setTimeout(function(){var b=document.getElementById("retryLoad");var l=document.getElementById("loading");if(b&&l&&"none"!==l.style.display)b.style.display="inline-block"},3e4);var rb=document.getElementById("retryLoad");rb&&(rb.onclick=function(){location.reload()});window.__clearLoadHint=function(){clearTimeout(hintTimer);clearTimeout(retryTimer)}})(),loadData()</script> <!-- ══════════════════ LAYAW MOTION v2 · markup + behaviour ══════════════════ -->
+<div class="rs-seal" id="rsSeal" aria-hidden="true">
+<div class="rs-seal-scrim" id="rsSealScrim"></div>
+<svg class="rs-seal-mark" id="rsSealMark" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+<circle class="rs-seal-glow" cx="60" cy="60" r="46"/>
+<circle class="rs-seal-ring" cx="60" cy="60" r="46"/>
+<path class="rs-seal-check" d="M38 61.5 L53 76 L83 45"/>
+</svg>
+</div>
+<script>
+/* LAYAW MOTION v2 — additive. Hooks nothing in the app script; it watches
+   #checkoutView / #successView for their display flip and animates around it,
+   so the booking, reservation and payment logic stay untouched. */
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var checkout=$("checkoutView"),success=$("successView"),app=$("app"),
+      bar=$("mobileBar"),seal=$("rsSeal");
+  if(!checkout||!success)return;
+  var reduced=function(){return window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches};
+  var wide=function(){return window.innerWidth>1000};
+  var snap=null,guard=null,sealTimers=[];
+
+  function once(el,cls){
+    el.classList.add(cls);
+    el.addEventListener("animationend",function h(){el.classList.remove(cls);el.removeEventListener("animationend",h)});
+  }
+  function clearApp(){
+    if(guard){clearTimeout(guard);guard=null}
+    if(app)app.classList.remove("rs-dim","rs-push");
+    if(bar)bar.classList.remove("rs-bar-out");
+  }
+
+  /* ── 1 · Continue pressed ───────────────────────────────────────────── */
+  function grab(){
+    if(reduced())return;
+    guard=setTimeout(clearApp,8000);                 /* reservation failed / hung */
+    if(!wide()){                                     /* mobile: push the grid back */
+      if(app)app.classList.add("rs-push");
+      if(bar)bar.classList.add("rs-bar-out");
+      return;
+    }
+    if(app)app.classList.add("rs-dim");              /* desktop: snapshot the card */
+    var c=document.querySelector(".summary.card");
+    if(!c)return;
+    var r=c.getBoundingClientRect();
+    if(!r.width)return;
+    snap={html:c.outerHTML,r:r,t:Date.now()};
+  }
+  ["continueBtn","mbContinue"].forEach(function(id){
+    var b=$(id);if(b)b.addEventListener("click",grab,true);
+  });
+  ["backToSlots","expireBtn","anotherBtn"].forEach(function(id){
+    var b=$(id);if(b)b.addEventListener("click",function(){snap=null;clearApp();stopSeal()},true);
+  });
+
+  /* ── 2 · Checkout appeared ──────────────────────────────────────────── */
+  function enterCheckout(){
+    if(reduced()){clearApp();return}
+    if(!wide()||!snap||Date.now()-snap.t>8000){      /* mobile, or no usable snapshot */
+      snap=null;once(checkout,"rs-sheet");
+      setTimeout(clearApp,320);                      /* let the push-back read first */
+      return;
+    }
+    clearApp();
+    var target=checkout.querySelector(".card")||checkout;
+    var lr=target.getBoundingClientRect(),fr=snap.r;
+    if(!lr.width){snap=null;once(checkout,"rs-sheet");return}
+    var ghost=document.createElement("div");
+    ghost.className="rs-ghost";
+    ghost.style.cssText="left:"+fr.left+"px;top:"+fr.top+"px;width:"+fr.width+"px;height:"+fr.height+"px";
+    ghost.innerHTML=snap.html;
+    document.body.appendChild(ghost);
+    var dx=(lr.left+lr.width/2)-(fr.left+fr.width/2),
+        dy=(lr.top+lr.height/2)-(fr.top+fr.height/2),
+        s=Math.max(.45,Math.min(1.7,lr.width/fr.width));
+    checkout.style.visibility="hidden";
+    ghost.style.transition="transform .30s cubic-bezier(.45,0,.75,.55),opacity .30s ease-in";
+    requestAnimationFrame(function(){
+      ghost.style.transform="perspective(1800px) translate("+dx+"px,"+dy+"px) rotateY(84deg) scale("+s+")";
+      ghost.style.opacity=".3";
+    });
+    setTimeout(function(){
+      if(ghost.parentNode)ghost.parentNode.removeChild(ghost);
+      checkout.style.visibility="";
+      once(checkout,"rs-in");
+    },300);
+    snap=null;
+  }
+
+  /* ── 3 · Booking submitted: draw the seal, settle it into the receipt ─ */
+  function stopSeal(){
+    sealTimers.forEach(clearTimeout);sealTimers=[];
+    if(!seal)return;
+    seal.classList.remove("on");
+    success.classList.remove("rs-hold");
+    var m=$("rsSealMark"),sc=$("rsSealScrim");
+    if(m){m.style.transition="";m.style.transform="";m.style.opacity=""}
+    if(sc){sc.style.transition="";sc.style.opacity=""}
+  }
+  function drawSeal(){
+    clearApp();
+    if(reduced()||!seal)return;
+    stopSeal();
+    var mark=$("rsSealMark"),scrim=$("rsSealScrim");
+    success.classList.add("rs-hold");
+    seal.classList.remove("on");
+    void seal.offsetWidth;                            /* restart the keyframes */
+    seal.classList.add("on");
+
+    /* Settle the seal onto the receipt's own check mark, then hand over. */
+    sealTimers.push(setTimeout(function(){
+      var chk=success.querySelector(".check");
+      if(chk&&mark){
+        var mr=mark.getBoundingClientRect(),cr=chk.getBoundingClientRect();
+        if(cr.width){
+          mark.style.transition="transform .42s cubic-bezier(.4,0,.2,1),opacity .42s ease";
+          mark.style.transform="translate("+((cr.left+cr.width/2)-(mr.left+mr.width/2))+"px,"
+            +((cr.top+cr.height/2)-(mr.top+mr.height/2))+"px) scale("+(cr.width/mr.width)+")";
+          mark.style.opacity="0";
+        }
+      }
+      if(scrim){scrim.style.transition="opacity .42s ease";scrim.style.opacity="0"}
+      success.classList.remove("rs-hold");
+      once(success,"rs-arrive");
+    },1000));
+    sealTimers.push(setTimeout(stopSeal,1500));       /* safety net */
+  }
+
+  /* ── Watch the two views for their display flip ─────────────────────── */
+  var shown={};
+  function watch(el,key,fn){
+    new MutationObserver(function(){
+      var on=el.style.display!=="none"&&el.style.display!=="";
+      if(on&&!shown[key]){shown[key]=1;fn()}
+      else if(!on)shown[key]=0;
+    }).observe(el,{attributes:true,attributeFilter:["style"]});
+  }
+  watch(checkout,"checkout",enterCheckout);
+  watch(success,"success",drawSeal);
+})();
+</script>
+<!-- ════════════════════ END LAYAW MOTION ════════════════════ -->
+
+</body> </html>
